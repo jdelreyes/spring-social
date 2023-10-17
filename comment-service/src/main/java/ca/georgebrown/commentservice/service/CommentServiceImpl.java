@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class CommentServiceImpl implements CommentService {
 
 //        TODO: to get userId, read from cookies
     @Override
-    public HashMap<String, String> createComment(CommentRequest commentRequest) {
+    public Map<String, Object> createComment(CommentRequest commentRequest) {
 
         Comment comment = Comment.builder()
                 .content(commentRequest.getContent())
@@ -31,35 +32,33 @@ public class CommentServiceImpl implements CommentService {
 
         String commentId = commentRepository.save(comment).getId();
 
-        return new HashMap<String, String>() {{
+        return new HashMap<String, Object>() {{
             put("commentId", commentId);
+            put("status", true);
         }};
     }
 
     @Override
-    public CommentResponse getComment(String commentId) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where("id").is(commentId));
-
-        Comment comment = mongoTemplate.findOne(query, Comment.class);
+    public CommentResponse getCommentById(String commentId) {
+        Comment comment = this.queryComment("id", commentId);
 
         assert comment != null;
         return mapToCommentResponse(comment);
     }
 
     @Override
-    public void updateComment(String commentId, CommentRequest commentRequest) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where("id").is(commentId));
-
-        Comment comment = mongoTemplate.findOne(query, Comment.class);
+    public boolean updateComment(String commentId, CommentRequest commentRequest) {
+        Comment comment = this.queryComment("id", commentId);
 
         if (comment != null) {
             comment.setContent(commentRequest.getContent());
 
             commentRepository.save(comment);
+
+            return true;
         }
 
+        return false;
     }
 
     @Override
@@ -68,18 +67,32 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentResponse> getAllCommentsFromUser(String userId) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where("userId").is(userId));
+    public List<CommentResponse> getUserComments(String userId) {
+        List<Comment> commentList = this.queryComments("userId", userId);
+        return commentList.stream().map(this::mapToCommentResponse).toList();
+    }
 
-        List<Comment> commentList = mongoTemplate.find(query, Comment.class);
-
+    @Override
+    public List<CommentResponse> getPostComments(String postId) {
+        List<Comment> commentList = this.queryComments("postId", postId);
         return commentList.stream().map(this::mapToCommentResponse).toList();
     }
 
     @Override
     public List<CommentResponse> getAllComments() {
         return commentRepository.findAll().stream().map(this::mapToCommentResponse).toList();
+    }
+
+    private Comment queryComment(String key, Object value) {
+        Query query =new Query();
+        query.addCriteria(Criteria.where(key).is(value));
+        return mongoTemplate.findOne(query, Comment.class);
+    }
+
+    private List<Comment> queryComments(String key, Object value) {
+        Query query =new Query();
+        query.addCriteria(Criteria.where(key).is(value));
+        return mongoTemplate.find(query, Comment.class);
     }
 
     private CommentResponse mapToCommentResponse(Comment comment) {

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
@@ -23,35 +24,38 @@ public class UserController {
 
     // CREATE
     @PostMapping({"/signup"})
-    public ResponseEntity<HashMap<String, String>> signUp(@RequestBody UserRequest userRequest){
-        Pair<HashMap<String, String>, Boolean> userPair = userService.createUser(userRequest);
+    public ResponseEntity<Map<String, Object>> signUp(@RequestBody UserRequest userRequest){
+        Map<String, Object> userHashMap = userService.signUp(userRequest);
 
-        if (userPair.getSecond())
-            return new ResponseEntity<>(userPair.getFirst(), HttpStatus.CREATED);
+        if ((Boolean) userHashMap.get("status"))
+            return new ResponseEntity<>(userHashMap, HttpStatus.CREATED);
 
-        return new ResponseEntity<>(userPair.getFirst(), HttpStatus.CONFLICT);
+        return new ResponseEntity<>(userHashMap, HttpStatus.CONFLICT);
     }
 
     @PostMapping({"/login"})
-    public ResponseEntity<HashMap<String, String>> login(@RequestBody UserRequest userRequest, HttpServletResponse response) {
-        Pair<HashMap<String, String>, Boolean> userPair = userService.login(userRequest.getUserName(), userRequest.getPassword(), response);
+    public ResponseEntity<Map<String, Object>> login(@RequestBody UserRequest userRequest, HttpServletResponse response) {
+        Map<String, Object> userHashMap = userService.login(userRequest.getUserName(), userRequest.getPassword(), response);
 
-        if (userPair.getSecond())
-            return new ResponseEntity<>(userPair.getFirst(), HttpStatus.OK);
+        if ((Boolean) userHashMap.get("status"))
+            return new ResponseEntity<>(userHashMap, HttpStatus.OK);
 
-        return new ResponseEntity<>(userPair.getFirst(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(userHashMap, HttpStatus.BAD_REQUEST);
     }
 
-//    @GetMapping({"/{userId}/details"})
-//    @ResponseStatus(HttpStatus.OK)
-//    public UserResponse getUserById(@PathVariable String userId) {
-//        return userService.getUserById(userId);
-//    }
-
-    @GetMapping({"/{userName}/details"})
+    @GetMapping({"/{userNameOrId}/details"})
     @ResponseStatus(HttpStatus.OK)
-    public UserResponse getUserByUserName(@PathVariable String userName) {
-        return userService.getUserByUserName(userName);
+    public ResponseEntity<UserResponse> getUserByUserNameOrId(@PathVariable String userNameOrId) {
+        UserResponse userResponse;
+        userResponse = userService.getUserByUserName(userNameOrId);
+        if (userResponse!=null)
+            return new ResponseEntity<>(userResponse, HttpStatus.OK);
+
+        userResponse = userService.getUserById(userNameOrId);
+        if (userResponse!=null)
+            return new ResponseEntity<>(userResponse, HttpStatus.OK);
+
+        return new ResponseEntity<>(userResponse, HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping({"/all"})
@@ -63,11 +67,11 @@ public class UserController {
 
     // UPDATE
     @PutMapping({"/update/{userId}"})
-    public ResponseEntity<UserResponse> updateUser(@PathVariable("userId") String userId, @RequestBody UserRequest userRequest) {
-        UserResponse updatedUser = userService.updateUser(userId,userRequest);
-        if (updatedUser == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> updateUser(@PathVariable("userId") String userId, @RequestBody UserRequest userRequest) {
+        boolean isUserUpdated = userService.updateUser(userId,userRequest);
+        if (!isUserUpdated) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-        return new ResponseEntity<>(updatedUser, HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     // DELETE
@@ -79,12 +83,10 @@ public class UserController {
 
     @GetMapping({"/{userId}/posts"})
     public ResponseEntity<UserWithPosts> getUserPosts(@PathVariable String userId) {
-        Pair<UserWithPosts, Boolean> result =  userService.getUserPosts(userId);
-        boolean isSuccessful = result.getSecond();
-        UserWithPosts userWithPosts = result.getFirst();
+        UserWithPosts userWithPosts =  userService.getUserWithPosts(userId);
 
-        if (!isSuccessful) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        if (userWithPosts == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>(userWithPosts, HttpStatus.OK);

@@ -1,5 +1,6 @@
 package ca.georgebrown.userservice.service;
 
+import ca.georgebrown.userservice.dto.combined.UserWithPostsWithComments;
 import ca.georgebrown.userservice.dto.post.PostResponse;
 import ca.georgebrown.userservice.dto.combined.UserWithPosts;
 import ca.georgebrown.userservice.dto.user.UserRequest;
@@ -27,6 +28,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 @Service
@@ -38,23 +40,22 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
     private RestTemplate restTemplate;
-//    todo
 //    private ObjectMapper objectMapper;
-//    TODO: initiate a session
-//    private final SessionRepository sessionRepository;
 
     @Override
-    public Pair<HashMap<String, String>, Boolean> createUser(UserRequest userRequest) {
-        HashMap<String, String> userHashMap = new HashMap<>();
+    public Map<String, Object> signUp(UserRequest userRequest) {
+        Map<String, Object> userHashMap = new HashMap<>();
 
         if (!isEmailAddress(userRequest.getEmail())) {
+            userHashMap.put("status", false);
             userHashMap.put("message", "invalid email address");
-            return Pair.of(userHashMap, false);
+            return userHashMap;
         }
 
         if (userNameExists(userRequest.getUserName())) {
+            userHashMap.put("status", false);
             userHashMap.put("message", "userName already in use");
-            return Pair.of(userHashMap, false);
+            return userHashMap;
         }
 
         User user = User.builder()
@@ -65,47 +66,45 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         String userId = userRepository.save(user).getId();
+        userHashMap.put("status", true);
         userHashMap.put("userId", userId);
 
-        return Pair.of(userHashMap, true);
+        return userHashMap;
     }
 
     @Override
-    public Pair<HashMap<String, String>, Boolean> login(String userName, String password, HttpServletResponse response) {
-        Query query = new Query();
-        HashMap<String, String> userHashMap = new HashMap<>();
-        query.addCriteria(Criteria.where("userName").is(userName));
-
-        User user = mongoTemplate.findOne(query, User.class);
+    public Map<String, Object> login(String userName, String password, HttpServletResponse response) {
+        Map<String, Object> userHashMap = new HashMap<>();
+        User user = this.queryUser("userName", userName);
 
         if (user == null) {
+            userHashMap.put("status", false);
             userHashMap.put("message", "username and/or password do not match");
-            return Pair.of(userHashMap, false);
+            return userHashMap;
         }
         if (!passwordMatches(password, user.getPassword())) {
+            userHashMap.put("status", false);
             userHashMap.put("message", "username and/or password do not match");
-            return Pair.of(userHashMap, false);
+            return userHashMap;
         }
 
         setCookie(response, new HashMap<String, String>() {{
             put("userId", user.getId());
         }});
 
+        userHashMap.put("status", true);
         userHashMap.put("message", "successfully logged in");
-        return Pair.of(userHashMap, true);
+        return userHashMap;
+    }
+    @Override
+    public Map<String, Object> logout(HttpServletResponse httpServletResponse) {
+        this.removeCookie(httpServletResponse);
+        return new HashMap<String, Object>(){{put("message", "successfully logout");put("status", true);}};
     }
 
     @Override
-    public HashMap<String, String> logout() {
-        return null;
-    }
-
-    @Override
-    public UserResponse updateUser(String userId, UserRequest userRequest) {
-
-        Query query = new Query();
-        query.addCriteria(Criteria.where("id").is(userId));
-        User user = mongoTemplate.findOne(query, User.class);
+    public boolean updateUser(String userId, UserRequest userRequest) {
+        User user = this.queryUser("id", userId);
 
         if (user != null) {
             user.setUserName(userRequest.getUserName());
@@ -114,10 +113,9 @@ public class UserServiceImpl implements UserService {
 
             userRepository.save(user);
 
-            return mapToUserResponse(user);
+            return true;
         }
-
-        return null;
+        return false;
     }
 
     @Override
@@ -127,10 +125,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse getUserById(String userId) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where("id").is(userId));
-
-        User user = mongoTemplate.findOne(query, User.class);
+        User user =this.queryUser("id", userId);
 
         if (user != null)
             return mapToUserResponse(user);
@@ -139,10 +134,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse getUserByUserName(String userName) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where("userName").is(userName));
-
-        User user = mongoTemplate.findOne(query, User.class);
+        User user =this.queryUser("userName", userName);
 
         if (user != null)
             return mapToUserResponse(user);
@@ -155,11 +147,47 @@ public class UserServiceImpl implements UserService {
         return users.stream().map(this::mapToUserResponse).toList();
     }
 
+    public UserWithPosts getUserWithPosts(String userId) {
+        String microserviceUrl = "http://127.0.0.1:8081/api/post/" + userId + "/all";
+
+        ResponseEntity<List<PostResponse>> responseEntity = restTemplate.exchange(
+                microserviceUrl,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<PostResponse>>() {}
+        );
+        User user = this.queryUser("id", userId);
+
+        if (!userExists(user)) {
+            return null;
+        }
+
+        List<PostResponse> postResponseList = responseEntity.getBody();
+        UserResponse userResponse = mapToUserResponse(user);
+
+        return new UserWithPosts(userResponse, postResponseList);
+    }
+//    todo
+    @Override
+    public UserWithPostsWithComments getUserWithPostsWithComments(String userId) {
+        return null;
+    }
+
+    private List<User> queryUsers(String key, Object value) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(key).is(value));
+        return mongoTemplate.find(query, User.class);
+    }
+
+    private User queryUser(String key, Object value) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(key).is(value));
+        return mongoTemplate.findOne(query, User.class);
+    }
+
 //    TODO: finish method
     private boolean userNameExists(String userName) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where("userName").is(userName));
-        return mongoTemplate.findOne(query, User.class) != null;
+        return this.queryUser("userName", userName) != null;
     }
 
     private boolean isEmailAddress(String email) {
@@ -175,6 +203,10 @@ public class UserServiceImpl implements UserService {
 
     private boolean passwordMatches(String password, String HashedPassword) {
         return bCryptPasswordEncoder.matches(password, HashedPassword);
+    }
+
+    private boolean userExists(User user) {
+        return user != null;
     }
 
     private void setCookie(HttpServletResponse response, HashMap<String, String> userId) {
@@ -204,41 +236,10 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-    public Pair<UserWithPosts, Boolean> getUserPosts(String userId) {
-        String microserviceUrl = "http://127.0.0.1:8081/api/post/" + userId + "/all";
-
-        ResponseEntity<List<PostResponse>> responseEntity = restTemplate.exchange(
-                microserviceUrl,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<PostResponse>>() {}
-        );
-
-        Query query = new Query();
-
-        query.addCriteria(Criteria.where("id").is(userId));
-
-        User user = mongoTemplate.findOne(query, User.class);
-
-        if (!userExists(user)) {
-            return Pair.of(null, false);
-        }
-
-//        TODO
-//        ObjectNode jsonNodes = objectMapper.valueToTree(responseEntity.getBody());
-//
-//        jsonNodes.remove("userId");
-
-        List<PostResponse> postResponseList = responseEntity.getBody();
-        UserResponse userResponse = mapToUserResponse(user);
-
-        UserWithPosts userWithPosts = new UserWithPosts(userResponse, postResponseList);
-
-        return Pair.of(userWithPosts, true);
-    }
-
-    private boolean userExists(User user) {
-        return user != null;
+    public void removeCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie("remember-me", null);
+        cookie.setMaxAge(0); // Set the expiration time to zero (in the past)
+        response.addCookie(cookie);
     }
 
     private UserResponse mapToUserResponse(User user) {

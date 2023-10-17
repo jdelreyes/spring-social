@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -40,23 +41,24 @@ class UserServiceApplicationTests extends AbstractContainerBaseTest {
 
     public UserRequest getUserRequest() {
         return UserRequest.builder()
-				.userName("userName")
-                .email("email")
-                .password("password")
-                .bio("bio")
+				.userName("uniqueUserName")
+                .email("uniqueEmail@email.com")
+                .password("uniquePassword")
+                .bio("uniqueBio")
                 .build();
     }
 
-    private List<User> getUser() {
+    private List<User> getUserList() {
         List<User> users = new ArrayList<>();
         UUID uuid = UUID.randomUUID();
 
         User user = User.builder()
                 .id(uuid.toString())
-				.userName("userName")
-                .email("email")
-                .password("password")
-                .bio("bio")
+				.userName("uniqueUserName2")
+				.email("uniqueEmail2@email.com")
+				.dateTimeJoined(LocalDateTime.now())
+				.password("uniquePassword2")
+				.bio("uniqueBio2")
                 .build();
 
         users.add(user);
@@ -75,11 +77,11 @@ class UserServiceApplicationTests extends AbstractContainerBaseTest {
 	}
 
 	@Test
-	void createUser() throws Exception{
+	void createUser() throws Exception {
 		UserRequest userRequest = getUserRequest();
 		String userRequestJsonString = objectMapper.writeValueAsString(userRequest);
 
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/user/sign-up")
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/user/signup")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(userRequestJsonString))
 				.andExpect(MockMvcResultMatchers.status().isCreated());
@@ -90,9 +92,8 @@ class UserServiceApplicationTests extends AbstractContainerBaseTest {
 
 //        Query
 		Query query = new Query();
-		query.addCriteria(Criteria.where("firstName").is("firstName"));
-		List<User> user = mongoTemplate.find(query, User.class);
-		Assertions.assertTrue(user.size() == 1);
-
+		query.addCriteria(Criteria.where("userName").is("uniqueUserName"));
+		List<User> userList = mongoTemplate.find(query, User.class);
+		Assertions.assertTrue(userList.size() > 0);
 	}
 }

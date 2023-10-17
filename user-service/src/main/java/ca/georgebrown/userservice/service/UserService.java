@@ -1,20 +1,23 @@
 package ca.georgebrown.userservice.service;
 
+import ca.georgebrown.userservice.dto.combined.UserWithPosts;
+import ca.georgebrown.userservice.dto.combined.UserWithPostsWithComments;
 import ca.georgebrown.userservice.dto.user.UserRequest;
 import ca.georgebrown.userservice.dto.user.UserResponse;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.data.util.Pair;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
-    Pair<HashMap<String, String>, Boolean> createUser(UserRequest userRequest);
-    Pair<HashMap<String, String>, Boolean> login(String userName, String password, HttpServletResponse response);
-    HashMap<String, String> logout();
-    UserResponse updateUser(String userId, UserRequest userRequest);
+    Map<String, Object> signUp(UserRequest userRequest);
+    Map<String, Object> login(String userName, String password, HttpServletResponse response);
+    Map<String, Object> logout(HttpServletResponse httpServletResponse);
+    boolean updateUser(String userId, UserRequest userRequest);
     void deleteUser(String userId);
     UserResponse getUserById(String userId);
     UserResponse getUserByUserName(String userName);
     List<UserResponse> getAllUsers();
+    UserWithPosts getUserWithPosts(String userId);
+    UserWithPostsWithComments getUserWithPostsWithComments(String userId);
 }

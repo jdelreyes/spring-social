@@ -1,14 +1,16 @@
 package ca.georgebrown.postservice.controller;
 
-import ca.georgebrown.postservice.dto.PostRequest;
-import ca.georgebrown.postservice.dto.PostResponse;
+import ca.georgebrown.postservice.dto.post.PostRequest;
+import ca.georgebrown.postservice.dto.post.PostResponse;
 import ca.georgebrown.postservice.service.PostServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/post")
@@ -20,16 +22,19 @@ public class PostController {
 //    @PostMapping({"/create"})
     @PostMapping({"/{userId}/create"})
     @ResponseStatus(HttpStatus.CREATED)
-    public HashMap<String, String> createPost(@PathVariable("userId") String userId,
-                                              @RequestBody PostRequest postRequest) {
+    public Map<String, Object> createPost(@PathVariable("userId") String userId,
+                                          @RequestBody PostRequest postRequest) {
         return postService.createPost(userId, postRequest);
     }
 
     @PutMapping({"/update/{postId}"})
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updatePost(@PathVariable("postId") String postId,
-                           @RequestBody PostRequest postRequest) {
-        postService.updatePost(postId, postRequest);
+    public ResponseEntity<?> updatePost(@PathVariable("postId") String postId,
+                                     @RequestBody PostRequest postRequest) {
+        boolean isPostUpdated = postService.updatePost(postId, postRequest);
+        if (!isPostUpdated) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping({"/delete/{postId}"})
@@ -41,7 +46,7 @@ public class PostController {
     @GetMapping({"/{postId}/details"})
     @ResponseStatus(HttpStatus.OK)
     public PostResponse getPost(@PathVariable("postId") String postId) {
-        return postService.getPost(postId);
+        return postService.getPostById(postId);
     }
 
     @GetMapping({"/all"})
@@ -52,7 +57,7 @@ public class PostController {
 
     @GetMapping({"/{userId}/all"})
     @ResponseStatus(HttpStatus.OK)
-    public List<PostResponse> getAllPostsFromUser(@PathVariable("userId") String userId) {
-        return postService.getAllPostsFromUser(userId);
+    public List<PostResponse> getUserPosts(@PathVariable("userId") String userId) {
+        return postService.getUserPosts(userId);
     }
 }

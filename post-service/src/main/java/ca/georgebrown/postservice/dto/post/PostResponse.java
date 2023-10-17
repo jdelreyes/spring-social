@@ -1,4 +1,4 @@
-package ca.georgebrown.postservice.dto;
+package ca.georgebrown.postservice.dto.post;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
