@@ -3,6 +3,7 @@ package ca.georgebrown.postservice.controller;
 import ca.georgebrown.postservice.dto.post.PostRequest;
 import ca.georgebrown.postservice.dto.post.PostResponse;
 import ca.georgebrown.postservice.service.PostServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +21,10 @@ public class PostController {
 
 //    TODO: change @PostMapping to /create and just read from the userId in the cookie jar :D
 //    @PostMapping({"/create"})
-    @PostMapping({"/{userId}/create"})
+    @PostMapping({"/create"})
     @ResponseStatus(HttpStatus.CREATED)
-    public Map<String, Object> createPost(@PathVariable("userId") String userId,
-                                          @RequestBody PostRequest postRequest) {
-        return postService.createPost(userId, postRequest);
+    public Map<String, Object> createPost(@RequestBody PostRequest postRequest, HttpServletRequest httpServletRequest) {
+        return postService.createPost(postRequest, httpServletRequest);
     }
 
     @PutMapping({"/update/{postId}"})

@@ -2,6 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/comment-service/GBC_SpringSocial-GreenGang.comment-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/comment-service/GBC_SpringSocial-GreenGang.comment-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/friendship-service/GBC_SpringSocial-GreenGang.friendship-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/friendship-service/GBC_SpringSocial-GreenGang.friendship-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/post-service/GBC_SpringSocial-GreenGang.post-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/post-service/GBC_SpringSocial-GreenGang.post-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/user-service/GBC_SpringSocial-GreenGang.user-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/user-service/GBC_SpringSocial-GreenGang.user-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/comment-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/comment-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/friendship-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/friendship-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/post-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/post-service.main.iml" />

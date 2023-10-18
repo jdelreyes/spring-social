@@ -1,5 +1,6 @@
 package ca.georgebrown.userservice.service;
 
+import ca.georgebrown.userservice.dto.combined.UserWithComments;
 import ca.georgebrown.userservice.dto.combined.UserWithPosts;
 import ca.georgebrown.userservice.dto.combined.UserWithPostsWithComments;
 import ca.georgebrown.userservice.dto.user.UserRequest;
@@ -20,4 +21,5 @@ public interface UserService {
     List<UserResponse> getAllUsers();
     UserWithPosts getUserWithPosts(String userId);
     UserWithPostsWithComments getUserWithPostsWithComments(String userId);
+    UserWithComments getUserWithComments(String userId);
 }

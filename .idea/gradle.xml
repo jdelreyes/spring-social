@@ -8,6 +8,10 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/comment-service" />
+            <option value="$PROJECT_DIR$/friendship-service" />
+            <option value="$PROJECT_DIR$/post-service" />
+            <option value="$PROJECT_DIR$/user-service" />
           </set>
         </option>
       </GradleProjectSettings>

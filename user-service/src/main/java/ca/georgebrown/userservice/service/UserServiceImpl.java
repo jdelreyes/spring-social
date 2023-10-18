@@ -1,5 +1,6 @@
 package ca.georgebrown.userservice.service;
 
+import ca.georgebrown.userservice.dto.combined.UserWithComments;
 import ca.georgebrown.userservice.dto.combined.UserWithPostsWithComments;
 import ca.georgebrown.userservice.dto.post.PostResponse;
 import ca.georgebrown.userservice.dto.combined.UserWithPosts;
@@ -37,10 +38,10 @@ import java.util.regex.Pattern;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final MongoTemplate mongoTemplate;
+    @Autowired
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
     private RestTemplate restTemplate;
-//    private ObjectMapper objectMapper;
 
     @Override
     public Map<String, Object> signUp(UserRequest userRequest) {
@@ -148,19 +149,17 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserWithPosts getUserWithPosts(String userId) {
-        String microserviceUrl = "http://127.0.0.1:8081/api/post/" + userId + "/all";
+        String postServiceUrl = "http://127.0.0.1:8081/api/post/" + userId + "/all";
 
         ResponseEntity<List<PostResponse>> responseEntity = restTemplate.exchange(
-                microserviceUrl,
+                postServiceUrl,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<PostResponse>>() {}
         );
-        User user = this.queryUser("id", userId);
 
-        if (!userExists(user)) {
-            return null;
-        }
+        User user = this.queryUser("id", userId);
+        if (user == null) return null;
 
         List<PostResponse> postResponseList = responseEntity.getBody();
         UserResponse userResponse = mapToUserResponse(user);
@@ -170,6 +169,11 @@ public class UserServiceImpl implements UserService {
 //    todo
     @Override
     public UserWithPostsWithComments getUserWithPostsWithComments(String userId) {
+        return null;
+    }
+//    todo
+    @Override
+    public UserWithComments getUserWithComments(String userId) {
         return null;
     }
 
@@ -185,7 +189,6 @@ public class UserServiceImpl implements UserService {
         return mongoTemplate.findOne(query, User.class);
     }
 
-//    TODO: finish method
     private boolean userNameExists(String userName) {
         return this.queryUser("userName", userName) != null;
     }
@@ -205,10 +208,6 @@ public class UserServiceImpl implements UserService {
         return bCryptPasswordEncoder.matches(password, HashedPassword);
     }
 
-    private boolean userExists(User user) {
-        return user != null;
-    }
-
     private void setCookie(HttpServletResponse response, HashMap<String, String> userId) {
         Cookie cookie = new Cookie("remember-me", userId.get("userId"));
 
@@ -221,8 +220,15 @@ public class UserServiceImpl implements UserService {
         response.addCookie(cookie);
     }
 
-    private String readCookie(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
+    private Map<String, Object> validateUserIdFromCookie(HttpServletRequest httpServletRequest) {
+        String userId = getUserIdFromCookie(httpServletRequest);
+        if (userId == null)
+            return new HashMap<String, Object>(){{put("status", false);put("message", "no logged in user");}};
+        return new HashMap<String, Object>(){{put("status", true);put("userId", userId);}};
+    }
+
+    private String getUserIdFromCookie(HttpServletRequest httpServletRequest) {
+        Cookie[] cookies = httpServletRequest.getCookies();
 
         if (cookies != null) {
             for (Cookie cookie : cookies) {
