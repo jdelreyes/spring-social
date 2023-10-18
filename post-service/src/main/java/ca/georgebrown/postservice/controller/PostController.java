@@ -19,8 +19,6 @@ import java.util.Map;
 public class PostController {
     private final PostServiceImpl postService;
 
-//    TODO: change @PostMapping to /create and just read from the userId in the cookie jar :D
-//    @PostMapping({"/create"})
     @PostMapping({"/create"})
     @ResponseStatus(HttpStatus.CREATED)
     public Map<String, Object> createPost(@RequestBody PostRequest postRequest, HttpServletRequest httpServletRequest) {

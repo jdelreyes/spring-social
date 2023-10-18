@@ -1,20 +1,15 @@
-package ca.georgerbrown.friendshipservice.model;
+package ca.georgerbrown.friendshipservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document(value = "friendship")
-public class Friendship {
-    @Id
-    private String id;
+public class FriendshipRequest {
     private String requesterUserId;
     private String recipientUserId;
     private String status;
