@@ -1,5 +1,6 @@
-package ca.georgebrown.postservice.model;
+package ca.georgerbrown.friendshipservice.model;
 
+import ca.georgerbrown.friendshipservice.enums.FriendshipStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,18 +8,15 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document(value = "post")
-public class Post {
+@Document(value = "friendship")
+public class Friendship {
     @Id
     private String id;
-    private String title;
-    private String content;
-    private LocalDateTime dateTimePosted = LocalDateTime.now();
-    private String userId;
+    private String requesterUserId;
+    private String recipientUserId;
+    private FriendshipStatus status;
 }
