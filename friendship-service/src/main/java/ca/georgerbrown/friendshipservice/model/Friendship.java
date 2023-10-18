@@ -1,5 +1,6 @@
 package ca.georgerbrown.friendshipservice.model;
 
+import ca.georgerbrown.friendshipservice.enums.FriendshipStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,5 +18,5 @@ public class Friendship {
     private String id;
     private String requesterUserId;
     private String recipientUserId;
-    private String status;
+    private FriendshipStatus status = null;
 }

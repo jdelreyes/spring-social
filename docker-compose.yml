@@ -41,6 +41,105 @@ services:
     networks:
       - spring-social
 
+  post-service:
+    image: post-service
+    ports:
+      - "8081:8081"
+    #    builds app
+    build:
+      context: ./post-service
+      dockerfile: ./Dockerfile
+    container_name: post-service
+    environment:
+      # property available provided by spring
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - mongodb-post-service
+    networks:
+      - spring-social
+
+  mongodb-post-service:
+    image: mongo:latest
+    ports:
+      - "27016:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=rootadmin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - ./data/mongo/posts:/data/db
+      - ./init/mongo/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    container_name: mongodb-post-service
+    restart: unless-stopped
+    command: mongod --auth
+    networks:
+      - spring-social
+
+  comment-service:
+    image: comment-service
+    ports:
+      - "8082:8082"
+    #    builds app
+    build:
+      context: ./comment-service
+      dockerfile: ./Dockerfile
+    container_name: comment-service
+    environment:
+      # property available provided by spring
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - mongodb-comment-service
+    networks:
+      - spring-social
+
+  mongodb-comment-service:
+    image: mongo:latest
+    ports:
+      - "27015:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=rootadmin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - ./data/mongo/comments:/data/db
+      - ./init/mongo/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    container_name: mongodb-comment-service
+    restart: unless-stopped
+    command: mongod --auth
+    networks:
+      - spring-social
+
+  friendship-service:
+    image: friendship-service
+    ports:
+      - "8083:8083"
+    #    builds app
+    build:
+      context: ./friendship-service
+      dockerfile: ./Dockerfile
+    container_name: friendship-service
+    environment:
+      # property available provided by spring
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - mongodb-friendship-service
+    networks:
+      - spring-social
+
+  mongodb-friendship-service:
+    image: mongo:latest
+    ports:
+      - "27014:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=rootadmin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - ./data/mongo/friendships:/data/db
+      - ./init/mongo/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    container_name: mongodb-friendship-service
+    restart: unless-stopped
+    command: mongod --auth
+    networks:
+      - spring-social
+
   mongo-express-user-service:
     image: mongo-express
     ports:
