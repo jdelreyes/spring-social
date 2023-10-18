@@ -8,7 +8,7 @@
 # base image
 FROM gradle:8-jdk17-alpine AS builder
 
-#LABEL authors="jeromedelosreyes"
+LABEL authors="jeromedelosreyes"
 
 # copy the application files, the host machine to the image filesystem
 COPY --chown=gradle:gradle . /home/gradle/src

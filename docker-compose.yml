@@ -7,7 +7,6 @@
 version: '3.8'
 
 services:
-
   #  just a label
   user-service:
     image: user-service
