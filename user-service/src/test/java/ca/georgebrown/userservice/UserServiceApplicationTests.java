@@ -19,13 +19,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@AutoConfigureMockMvc
 @SpringBootTest
+@AutoConfigureMockMvc
 class UserServiceApplicationTests extends AbstractContainerBaseTest {
     @Autowired
     private MockMvc mockMvc;
@@ -42,7 +41,7 @@ class UserServiceApplicationTests extends AbstractContainerBaseTest {
     public UserRequest getUserRequest() {
         return UserRequest.builder()
 				.userName("uniqueUserName")
-                .email("uniqueEmail@email.com")
+                .email("uniqueemail@uemail.com")
                 .password("uniquePassword")
                 .bio("uniqueBio")
                 .build();
@@ -55,8 +54,7 @@ class UserServiceApplicationTests extends AbstractContainerBaseTest {
         User user = User.builder()
                 .id(uuid.toString())
 				.userName("uniqueUserName2")
-				.email("uniqueEmail2@email.com")
-				.dateTimeJoined(LocalDateTime.now())
+				.email("uniqueemail2@uemail.com")
 				.password("uniquePassword2")
 				.bio("uniqueBio2")
                 .build();
@@ -88,12 +86,60 @@ class UserServiceApplicationTests extends AbstractContainerBaseTest {
 
 
 //        Assertions
-		Assertions.assertTrue(userRepository.findAll().size() > 0);
+		Assertions.assertTrue(userRepository.findAll().size() == 1);
 
 //        Query
 		Query query = new Query();
 		query.addCriteria(Criteria.where("userName").is("uniqueUserName"));
 		List<User> userList = mongoTemplate.find(query, User.class);
-		Assertions.assertTrue(userList.size() > 0);
+
+		Assertions.assertTrue(userList.size() == 1);
+	}
+
+	@Test
+	void loginUser() throws Exception {
+		// Create a user
+		UserRequest userRequest = getUserRequest();
+		String userRequestJsonString = objectMapper.writeValueAsString(userRequest);
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/user/sign-up")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(userRequestJsonString))
+				.andExpect(MockMvcResultMatchers.status().isCreated());
+
+		// Attempt login with the created user
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(userRequestJsonString))
+				.andExpect(MockMvcResultMatchers.status().isOk());
+
+		// Try to log in with incorrect password
+		userRequest.setPassword("wrongPassword");
+		userRequestJsonString = objectMapper.writeValueAsString(userRequest);
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(userRequestJsonString))
+				.andExpect(MockMvcResultMatchers.status().isBadRequest());
+	}
+	@Test
+	void deleteUserTest() throws Exception {
+		// Create a user
+		UserRequest userRequest = getUserRequest();
+		String userRequestJsonString = objectMapper.writeValueAsString(userRequest);
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/user/sign-up")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(userRequestJsonString))
+				.andExpect(MockMvcResultMatchers.status().isCreated());
+
+		// Retrieve user
+		List<User> users = userRepository.findAll();
+		User user = users.get(0);
+
+		// Delete user
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/user/delete/" + user.getId()))
+				.andExpect(MockMvcResultMatchers.status().isNoContent());
+
+		// Ensure that the user is no longer present in the repository
+		List<User> remainingUsers = userRepository.findAll();
+		Assertions.assertTrue(remainingUsers.isEmpty());
 	}
 }

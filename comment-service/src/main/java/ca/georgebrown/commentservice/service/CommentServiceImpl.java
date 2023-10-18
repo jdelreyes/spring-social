@@ -4,6 +4,8 @@ import ca.georgebrown.commentservice.dto.CommentRequest;
 import ca.georgebrown.commentservice.dto.CommentResponse;
 import ca.georgebrown.commentservice.model.Comment;
 import ca.georgebrown.commentservice.repository.CommentRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -22,12 +24,16 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final MongoTemplate mongoTemplate;
 
-//        TODO: to get userId, read from cookies
     @Override
-    public Map<String, Object> createComment(CommentRequest commentRequest) {
+    public Map<String, Object> createComment(CommentRequest commentRequest, HttpServletRequest httpServletRequest) {
+        Map<String, Object> stringObjectMap = validateUserIdFromCookie(httpServletRequest);
+        if (!(Boolean) stringObjectMap.get("status"))
+            return stringObjectMap;
 
         Comment comment = Comment.builder()
                 .content(commentRequest.getContent())
+                .postId(commentRequest.getPostId())
+                .userId((String) stringObjectMap.get("userId"))
                 .build();
 
         String commentId = commentRepository.save(comment).getId();
@@ -93,6 +99,28 @@ public class CommentServiceImpl implements CommentService {
         Query query =new Query();
         query.addCriteria(Criteria.where(key).is(value));
         return mongoTemplate.find(query, Comment.class);
+    }
+
+    private Map<String, Object> validateUserIdFromCookie(HttpServletRequest httpServletRequest) {
+        String userId = getUserIdFromCookie(httpServletRequest);
+        if (userId == null)
+            return new HashMap<String, Object>(){{put("status", false);put("message", "no logged in user");}};
+        return new HashMap<String, Object>(){{put("status", true);put("userId", userId);}};
+    }
+
+    private String getUserIdFromCookie(HttpServletRequest httpServletRequest) {
+        Cookie[] cookies = httpServletRequest.getCookies();
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("remember-me".equals(cookie.getName())) {
+                    // userId value;
+                    return cookie.getValue();
+                }
+            }
+        }
+
+        return null;
     }
 
     private CommentResponse mapToCommentResponse(Comment comment) {
