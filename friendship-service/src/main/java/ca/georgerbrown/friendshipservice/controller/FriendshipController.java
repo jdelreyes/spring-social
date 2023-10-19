@@ -53,7 +53,7 @@ public class FriendshipController {
         return friendshipService.getAcceptedFriendList(userId);
     }
 
-    @GetMapping("/{userId}/accepted")
+    @GetMapping("/{userId}/rejected/")
     @ResponseStatus(HttpStatus.OK)
     List<FriendshipResponse> getRejectedFriendRequest(@PathVariable String userId) {
         return friendshipService.getRejectedFriendRequest(userId);

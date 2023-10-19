@@ -18,6 +18,7 @@ public class Comment {
     @Id
     private String id;
     private String content;
+    @Builder.Default
     private LocalDateTime dateTimeCommented = LocalDateTime.now();
 //    foreign keys
     private String postId;

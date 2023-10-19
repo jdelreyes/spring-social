@@ -19,6 +19,7 @@ public class Post {
     private String id;
     private String title;
     private String content;
+    @Builder.Default
     private LocalDateTime dateTimePosted = LocalDateTime.now();
     private String userId;
 }

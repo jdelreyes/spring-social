@@ -19,6 +19,7 @@ public class User {
     private String id;
 //    unique
     private String userName;
+    @Builder.Default
     private LocalDateTime dateTimeJoined = LocalDateTime.now();
     private String email;
     private String password;

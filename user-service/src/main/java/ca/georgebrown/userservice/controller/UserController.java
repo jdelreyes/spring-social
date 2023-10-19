@@ -45,6 +45,12 @@ public class UserController {
         return new ResponseEntity<>(userHashMap, HttpStatus.BAD_REQUEST);
     }
 
+    @PostMapping({"/logout"})
+    @ResponseStatus(HttpStatus.OK)
+    Map<String, Object> logout(HttpServletResponse httpServletResponse){
+        return userService.logout(httpServletResponse);
+    }
+
     @GetMapping({"/{userNameOrId}/details"})
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<UserResponse> getUserByUserNameOrId(@PathVariable String userNameOrId) {
@@ -108,6 +114,6 @@ public class UserController {
         UserWithPostsWithComments userWithPostsWithComments = userService.getUserWithPostsWithComments(userId);
         if (userWithPostsWithComments == null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(userWithComments, HttpStatus.OK)
+        return new ResponseEntity<>(userWithPostsWithComments, HttpStatus.OK);
     }
 }
