@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -66,7 +66,7 @@ public class UserController {
         return new ResponseEntity<>(userResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping({"/all"})
+    @GetMapping({"/"})
     @ResponseStatus(HttpStatus.OK)
     public List<UserResponse> getAllUsers() {
         return userService.getAllUsers();

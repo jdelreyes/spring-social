@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/comment")
+@RequestMapping("/api/comments")
 @RequiredArgsConstructor
 public class CommentController {
     private final CommentServiceImpl commentService;
@@ -42,19 +42,19 @@ public class CommentController {
         commentService.deleteComment(commentId);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     @ResponseStatus(HttpStatus.OK)
     public List<CommentResponse> getAllComments() {
         return commentService.getAllComments();
     }
 
-    @GetMapping("/{userId}/all")
+    @GetMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
     List<CommentResponse> getUserComments(@PathVariable String userId) {
         return commentService.getUserComments(userId);
     }
 
-    @GetMapping("/{postId}/all")
+    @GetMapping("/{postId}")
     @ResponseStatus(HttpStatus.OK)
     List<CommentResponse> getPostComments(@PathVariable String postId) {
         return commentService.getPostComments(postId);

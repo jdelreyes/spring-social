@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/post")
+@RequestMapping("/api/posts")
 @RequiredArgsConstructor
 public class PostController {
     private final PostServiceImpl postService;
@@ -48,25 +48,25 @@ public class PostController {
         return postService.getPostById(postId);
     }
 
-    @GetMapping({"/all"})
+    @GetMapping({"/"})
     @ResponseStatus(HttpStatus.OK)
     public List<PostResponse> getAllPosts() {
         return postService.getAllPosts();
     }
 
-    @GetMapping({"/{userId}/all"})
+    @GetMapping({"/{userId}"})
     @ResponseStatus(HttpStatus.OK)
     public List<PostResponse> getUserPosts(@PathVariable("userId") String userId) {
         return postService.getUserPosts(userId);
     }
 
-    @GetMapping("/{postId}/all/comments")
+    @GetMapping("/{postId}/comments")
     @ResponseStatus(HttpStatus.OK)
     public PostWithComments getPostComments(@PathVariable String postId) {
         return postService.getPostWithComments(postId);
     }
 
-    @GetMapping("/{userId}/all/posts/comments")
+    @GetMapping("/{userId}/posts/comments")
     @ResponseStatus(HttpStatus.OK)
     public List<PostWithComments> getUserPostsWithComments(@PathVariable String userId) {
         return postService.getUserWithPostsWithComments(userId);

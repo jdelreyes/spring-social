@@ -1,5 +1,6 @@
 package ca.georgerbrown.friendshipservice.service;
 
+import ca.georgerbrown.friendshipservice.dto.FriendshipRequest;
 import ca.georgerbrown.friendshipservice.dto.FriendshipResponse;
 import ca.georgerbrown.friendshipservice.enums.FriendshipStatus;
 import ca.georgerbrown.friendshipservice.model.Friendship;
@@ -25,10 +26,12 @@ public class FriendshipServiceImpl implements FriendshipService {
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public Map<String, Object> sendFriendRequest(String recipientId, HttpServletRequest httpServletRequest) {
+    public Map<String, Object> sendFriendRequest(FriendshipRequest friendshipRequest, HttpServletRequest httpServletRequest) {
         Map<String, Object> stringObjectMap = validateUserIdFromCookie(httpServletRequest);
         if (!(Boolean) stringObjectMap.get("status"))
             return stringObjectMap;
+
+        String recipientId = friendshipRequest.getRecipientUserId();
 
         Friendship friendship = friendshipRepository.findByRecipientUserIdAndRequesterUserId(recipientId,
                 (String) stringObjectMap.get("userId"));
@@ -64,10 +67,12 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public Map<String, Object> acceptFriendRequest(String recipientId, HttpServletRequest httpServletRequest) {
+    public Map<String, Object> acceptFriendRequest(FriendshipRequest friendshipRequest, HttpServletRequest httpServletRequest) {
         Map<String, Object> stringObjectMap = validateUserIdFromCookie(httpServletRequest);
         if (!(Boolean) stringObjectMap.get("status"))
             return stringObjectMap;
+
+        String recipientId = friendshipRequest.getRecipientUserId();
 
         if (isFriendRequestPending(recipientId, (String) stringObjectMap.get("userId")))
             return new HashMap<String, Object>() {{
@@ -88,10 +93,12 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public Map<String, Object> rejectFriendRequest(String recipientId, HttpServletRequest httpServletRequest) {
+    public Map<String, Object> rejectFriendRequest(FriendshipRequest friendshipRequest, HttpServletRequest httpServletRequest) {
         Map<String, Object> stringObjectMap = validateUserIdFromCookie(httpServletRequest);
         if (!(Boolean) stringObjectMap.get("status"))
             return stringObjectMap;
+
+        String recipientId = friendshipRequest.getRecipientUserId();
 
         if (isFriendRequestPending(recipientId, (String) stringObjectMap.get("userId")))
             return new HashMap<String, Object>() {{

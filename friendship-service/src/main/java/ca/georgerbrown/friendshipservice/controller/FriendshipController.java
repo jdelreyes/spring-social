@@ -1,5 +1,6 @@
 package ca.georgerbrown.friendshipservice.controller;
 
+import ca.georgerbrown.friendshipservice.dto.FriendshipRequest;
 import ca.georgerbrown.friendshipservice.dto.FriendshipResponse;
 import ca.georgerbrown.friendshipservice.service.FriendshipServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,48 +13,48 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/friendship")
+@RequestMapping("/api/friendships")
 @RequiredArgsConstructor
 public class FriendshipController {
     private final FriendshipServiceImpl friendshipService;
 
-    @PostMapping("/send/{recipientId}")
-    public ResponseEntity<Map<String, Object>> sendFriendRequest(@PathVariable String recipientId, HttpServletRequest httpServletRequest) {
-        Map<String, Object> stringObjectMap = friendshipService.sendFriendRequest(recipientId, httpServletRequest);
+    @PostMapping("/send")
+    public ResponseEntity<Map<String, Object>> sendFriendRequest(FriendshipRequest friendshipRequest, HttpServletRequest httpServletRequest) {
+        Map<String, Object> stringObjectMap = friendshipService.sendFriendRequest(friendshipRequest, httpServletRequest);
         if ((Boolean) stringObjectMap.get("status"))
             return new ResponseEntity<>(stringObjectMap, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(stringObjectMap, HttpStatus.CREATED);
     }
 
-    @PutMapping("/accept/{recipientId}")
-    public ResponseEntity<Map<String, Object>> acceptFriendRequest(@PathVariable String recipientId, HttpServletRequest httpServletRequest) {
-        Map<String, Object> stringObjectMap = friendshipService.acceptFriendRequest(recipientId, httpServletRequest);
+    @PutMapping("/accept")
+    public ResponseEntity<Map<String, Object>> acceptFriendRequest(FriendshipRequest friendshipRequest, HttpServletRequest httpServletRequest) {
+        Map<String, Object> stringObjectMap = friendshipService.acceptFriendRequest(friendshipRequest, httpServletRequest);
         if ((Boolean) stringObjectMap.get("status"))
             return new ResponseEntity<>(stringObjectMap, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(stringObjectMap, HttpStatus.OK);
     }
 
-    @PutMapping("/reject/{recipientId}")
-    public ResponseEntity<Map<String, Object>> rejectFriendRequest(@PathVariable String recipientId, HttpServletRequest httpServletRequest) {
-        Map<String, Object> stringObjectMap = friendshipService.rejectFriendRequest(recipientId, httpServletRequest);
+    @PutMapping("/reject")
+    public ResponseEntity<Map<String, Object>> rejectFriendRequest(FriendshipRequest friendshipRequest, HttpServletRequest httpServletRequest) {
+        Map<String, Object> stringObjectMap = friendshipService.rejectFriendRequest(friendshipRequest, httpServletRequest);
         if ((Boolean) stringObjectMap.get("status"))
             return new ResponseEntity<>(stringObjectMap, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(stringObjectMap, HttpStatus.OK);
     }
 
-    @GetMapping("/{userId}/pending")
+    @GetMapping("/{userId}/pending/list")
     @ResponseStatus(HttpStatus.OK)
     List<FriendshipResponse> getPendingFriendList(@PathVariable String userId) {
         return friendshipService.getPendingFriendList(userId);
     }
 
-    @GetMapping("/{userId}/accepted")
+    @GetMapping("/{userId}/accepted/list")
     @ResponseStatus(HttpStatus.OK)
     List<FriendshipResponse> getAcceptedFriendList(@PathVariable String userId) {
         return friendshipService.getAcceptedFriendList(userId);
     }
 
-    @GetMapping("/{userId}/rejected/")
+    @GetMapping("/{userId}/rejected/list")
     @ResponseStatus(HttpStatus.OK)
     List<FriendshipResponse> getRejectedFriendRequest(@PathVariable String userId) {
         return friendshipService.getRejectedFriendRequest(userId);
