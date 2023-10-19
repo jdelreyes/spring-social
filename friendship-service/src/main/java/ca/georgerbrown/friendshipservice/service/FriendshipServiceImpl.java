@@ -113,17 +113,20 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     @Override
     public List<FriendshipResponse> getPendingFriendList(String userId) {
-        return null;
+        List<Friendship> friendshipList = queryFriendshipsBasedOnStatus(userId,FriendshipStatus.PENDING);
+        return friendshipList.stream().map(this::mapToFriendshipResponse).toList();
     }
 
     @Override
     public List<FriendshipResponse> getAcceptedFriendList(String userId) {
-        return null;
+        List<Friendship> friendshipList = queryFriendshipsBasedOnStatus(userId,FriendshipStatus.ACCEPTED);
+        return friendshipList.stream().map(this::mapToFriendshipResponse).toList();
     }
 
     @Override
     public List<FriendshipResponse> getRejectedFriendRequest(String userId) {
-        return null;
+        List<Friendship> friendshipList = queryFriendshipsBasedOnStatus(userId,FriendshipStatus.REJECTED);
+        return friendshipList.stream().map(this::mapToFriendshipResponse).toList();
     }
 
     private boolean isFriendRequestPending(String recipientUserId, String requesterId) {
@@ -169,15 +172,10 @@ public class FriendshipServiceImpl implements FriendshipService {
         return null;
     }
 
-    private Friendship queryFriendship(String key, Object value) {
+    private List<Friendship> queryFriendshipsBasedOnStatus(Object userId, Object status) {
         Query query = new Query();
-        query.addCriteria(Criteria.where(key).is(value));
-        return mongoTemplate.findOne(query, Friendship.class);
-    }
-
-    private List<Friendship> queryFriendships(String key, Object value) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where(key).is(value));
+        query.addCriteria(Criteria.where("userId").is(userId));
+        query.addCriteria(Criteria.where("status").is(status));
         return mongoTemplate.find(query, Friendship.class);
     }
 
