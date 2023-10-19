@@ -1,5 +1,6 @@
 package ca.georgebrown.postservice.controller;
 
+import ca.georgebrown.postservice.dto.combined.PostWithComments;
 import ca.georgebrown.postservice.dto.post.PostRequest;
 import ca.georgebrown.postservice.dto.post.PostResponse;
 import ca.georgebrown.postservice.service.PostServiceImpl;
@@ -19,8 +20,6 @@ import java.util.Map;
 public class PostController {
     private final PostServiceImpl postService;
 
-//    TODO: change @PostMapping to /create and just read from the userId in the cookie jar :D
-//    @PostMapping({"/create"})
     @PostMapping({"/create"})
     @ResponseStatus(HttpStatus.CREATED)
     public Map<String, Object> createPost(@RequestBody PostRequest postRequest, HttpServletRequest httpServletRequest) {
@@ -30,7 +29,7 @@ public class PostController {
     @PutMapping({"/update/{postId}"})
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<?> updatePost(@PathVariable("postId") String postId,
-                                     @RequestBody PostRequest postRequest) {
+                                        @RequestBody PostRequest postRequest) {
         boolean isPostUpdated = postService.updatePost(postId, postRequest);
         if (!isPostUpdated) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
@@ -59,5 +58,17 @@ public class PostController {
     @ResponseStatus(HttpStatus.OK)
     public List<PostResponse> getUserPosts(@PathVariable("userId") String userId) {
         return postService.getUserPosts(userId);
+    }
+
+    @GetMapping("/{postId}/all/comments")
+    @ResponseStatus(HttpStatus.OK)
+    public PostWithComments getPostComments(@PathVariable String postId) {
+        return postService.getPostWithComments(postId);
+    }
+
+    @GetMapping("/{userId}/all/posts/comments")
+    @ResponseStatus(HttpStatus.OK)
+    public List<PostWithComments> getUserPostsWithComments(@PathVariable String userId) {
+        return postService.getUserWithPostsWithComments(userId);
     }
 }

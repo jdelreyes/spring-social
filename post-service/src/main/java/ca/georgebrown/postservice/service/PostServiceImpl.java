@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,6 +112,32 @@ public class PostServiceImpl implements PostService {
         PostResponse postResponse = mapToPostResponse(post);
 
         return new PostWithComments(postResponse, commentResponseList);
+    }
+
+    @Override
+    public List<PostWithComments> getUserWithPostsWithComments(String userId) {
+        // getting list of post with user id
+        List<Post> postList = this.queryPosts("userId", userId);
+        List<PostWithComments> postWithCommentsList = new ArrayList<>();
+
+        for (Post post : postList) {
+            String commentServiceUrl = "http://127.0.0.1:8082/api/comment/" + post.getId() + "/all";
+
+            ResponseEntity<List<CommentResponse>> responseEntity = restTemplate.exchange(
+                    commentServiceUrl,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<CommentResponse>>() {
+                    }
+            );
+            PostResponse postResponse = mapToPostResponse(post);
+
+            assert false;
+            postWithCommentsList.add(new PostWithComments(postResponse, responseEntity.getBody()));
+
+        }
+
+        return postWithCommentsList;
     }
 
     private Post queryPost(String key, Object value) {

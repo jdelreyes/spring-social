@@ -1,7 +1,6 @@
 # WEB APPLICATION USING JAVA: Assignment
 
-## Docker Network Configuration
-
+## Docker Container Scripts for Running Locally
 ```shell
 docker network create spring-social
 docker run -d --name user-service --network=spring-social -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=rootadmin -e MONGO_INITDB_ROOT_PASSWORD=password --restart unless-stopped mongo:latest
@@ -19,7 +18,16 @@ Comment Service: ```http://localhost:8082```
 
 Friendship Service ```http://localhost:8083```
 
-## Docker Build
+## MongoDB Port/URI
+User Service: ```27017:27017```
+
+Post Service: ```27016:27017```
+
+Comment Service: ```27015:27017```
+
+Friendship Service ```27014:27017```
+
+## Docker Build for Running in alpine environment
 ```shell
 docker-compose -p spring-social-green-gang -f docker-compose.yml up -d
 ```

@@ -1,7 +1,9 @@
 package ca.georgebrown.userservice.service;
 
+import ca.georgebrown.userservice.dto.combined.PostWithComments;
 import ca.georgebrown.userservice.dto.combined.UserWithComments;
 import ca.georgebrown.userservice.dto.combined.UserWithPostsWithComments;
+import ca.georgebrown.userservice.dto.comment.CommentResponse;
 import ca.georgebrown.userservice.dto.post.PostResponse;
 import ca.georgebrown.userservice.dto.combined.UserWithPosts;
 import ca.georgebrown.userservice.dto.user.UserRequest;
@@ -20,7 +22,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.util.Pair;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -169,12 +170,42 @@ public class UserServiceImpl implements UserService {
 //    todo
     @Override
     public UserWithPostsWithComments getUserWithPostsWithComments(String userId) {
-        return null;
+        String postWithCommentsServiceUrl = "http://127.0.0.1:8081/api/post/" + userId + "/all/posts/comments";
+
+        ResponseEntity<List<PostWithComments>> responseEntity = restTemplate.exchange(
+                postWithCommentsServiceUrl,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<PostWithComments>>() {}
+        );
+
+        User user = this.queryUser("id", userId);
+        if (user == null) return null;
+
+        List<PostWithComments> postWithCommentsList = responseEntity.getBody();
+        UserResponse userResponse = mapToUserResponse(user);
+
+        return new UserWithPostsWithComments(userResponse, postWithCommentsList);
     }
 //    todo
     @Override
     public UserWithComments getUserWithComments(String userId) {
-        return null;
+        String commentServiceUrl = "http://127.0.0.1:8082/api/comment/" + userId + "/all";
+
+        ResponseEntity<List<CommentResponse>> responseEntity = restTemplate.exchange(
+                commentServiceUrl,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<CommentResponse>>() {}
+        );
+
+        User user = this.queryUser("id", userId);
+        if (user == null) return null;
+
+        List<CommentResponse> commentResponses = responseEntity.getBody();
+        UserResponse userResponse = mapToUserResponse(user);
+
+        return new UserWithComments(userResponse, commentResponses);
     }
 
     private List<User> queryUsers(String key, Object value) {

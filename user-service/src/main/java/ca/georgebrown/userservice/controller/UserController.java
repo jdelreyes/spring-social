@@ -1,6 +1,8 @@
 package ca.georgebrown.userservice.controller;
 
+import ca.georgebrown.userservice.dto.combined.UserWithComments;
 import ca.georgebrown.userservice.dto.combined.UserWithPosts;
+import ca.georgebrown.userservice.dto.combined.UserWithPostsWithComments;
 import ca.georgebrown.userservice.dto.user.UserRequest;
 import ca.georgebrown.userservice.dto.user.UserResponse;
 import ca.georgebrown.userservice.service.UserServiceImpl;
@@ -92,4 +94,20 @@ public class UserController {
         return new ResponseEntity<>(userWithPosts, HttpStatus.OK);
     }
 
+    @GetMapping({"/{userId}/comments"})
+    public ResponseEntity<UserWithComments> getUserComments(@PathVariable String userId) {
+        UserWithComments userWithComments =  userService.getUserWithComments(userId);
+        if (userWithComments == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(userWithComments, HttpStatus.OK);
+    }
+
+    @GetMapping({"/{userId}/posts/comments"})
+    public ResponseEntity<UserWithPostsWithComments> getUserWithPostsWithComments(@PathVariable String userId) {
+        UserWithPostsWithComments userWithPostsWithComments = userService.getUserWithPostsWithComments(userId);
+        if (userWithPostsWithComments == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(userWithComments, HttpStatus.OK)
+    }
 }
