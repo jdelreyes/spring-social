@@ -18,5 +18,5 @@ public class Friendship {
     private String id;
     private String requesterUserId;
     private String recipientUserId;
-    private FriendshipStatus status = null;
+    private FriendshipStatus status;
 }

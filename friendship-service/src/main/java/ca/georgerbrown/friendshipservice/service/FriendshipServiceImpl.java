@@ -1,6 +1,7 @@
 package ca.georgerbrown.friendshipservice.service;
 
 import ca.georgerbrown.friendshipservice.dto.FriendshipResponse;
+import ca.georgerbrown.friendshipservice.enums.FriendshipStatus;
 import ca.georgerbrown.friendshipservice.model.Friendship;
 import ca.georgerbrown.friendshipservice.repository.FriendshipRepository;
 import jakarta.servlet.http.Cookie;
@@ -19,9 +20,9 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class FriendshipServiceImpl implements FriendshipService{
-    private final MongoTemplate mongoTemplate;
+public class FriendshipServiceImpl implements FriendshipService {
     private final FriendshipRepository friendshipRepository;
+    private final MongoTemplate mongoTemplate;
 
     @Override
     public Map<String, Object> sendFriendRequest(String recipientId, HttpServletRequest httpServletRequest) {
@@ -29,7 +30,37 @@ public class FriendshipServiceImpl implements FriendshipService{
         if (!(Boolean) stringObjectMap.get("status"))
             return stringObjectMap;
 
-        return null;
+        Friendship friendship = friendshipRepository.findByRecipientUserIdAndRequesterUserId(recipientId,
+                (String) stringObjectMap.get("userId"));
+
+        if (isFriendRequestAccepted(recipientId, (String) stringObjectMap.get("userId")) ||
+                isFriendRequestPending(recipientId, (String) stringObjectMap.get("userId"))) {
+            return new HashMap<String, Object>() {{
+                put("status", false);
+                put("message", "friend request already pending or accepted");
+            }};
+        }
+
+        // it exists, just need to change status to pending
+        if (isFriendRequestRejected(recipientId, (String) stringObjectMap.get("userId"))) {
+            friendship.setStatus(FriendshipStatus.PENDING);
+        }
+
+        // does not exist in document, making one
+        if (friendship == null) {
+            friendship = Friendship.builder()
+                    .requesterUserId((String) stringObjectMap.get("userId"))
+                    .recipientUserId(recipientId)
+                    .status(FriendshipStatus.PENDING)
+                    .build();
+        }
+
+        friendshipRepository.save(friendship);
+
+        return new HashMap<String, Object>() {{
+            put("status", true);
+            put("message", "successfully sent request");
+        }};
     }
 
     @Override
@@ -37,7 +68,23 @@ public class FriendshipServiceImpl implements FriendshipService{
         Map<String, Object> stringObjectMap = validateUserIdFromCookie(httpServletRequest);
         if (!(Boolean) stringObjectMap.get("status"))
             return stringObjectMap;
-        return null;
+
+        if (isFriendRequestPending(recipientId, (String) stringObjectMap.get("userId")))
+            return new HashMap<String, Object>() {{
+                put("status", false);
+                put("message", "no pending request");
+            }};
+
+        Friendship friendship = friendshipRepository.findByRecipientUserIdAndRequesterUserId(recipientId,
+                (String) stringObjectMap.get("userid"));
+
+        friendship.setStatus(FriendshipStatus.ACCEPTED);
+        friendshipRepository.save(friendship);
+
+        return new HashMap<String, Object>() {{
+            put("status", true);
+            put("message", "successfully sent request");
+        }};
     }
 
     @Override
@@ -45,7 +92,23 @@ public class FriendshipServiceImpl implements FriendshipService{
         Map<String, Object> stringObjectMap = validateUserIdFromCookie(httpServletRequest);
         if (!(Boolean) stringObjectMap.get("status"))
             return stringObjectMap;
-        return null;
+
+        if (isFriendRequestPending(recipientId, (String) stringObjectMap.get("userId")))
+            return new HashMap<String, Object>() {{
+                put("status", false);
+                put("message", "no pending request");
+            }};
+
+        Friendship friendship = friendshipRepository.findByRecipientUserIdAndRequesterUserId(recipientId,
+                (String) stringObjectMap.get("userid"));
+
+        friendship.setStatus(FriendshipStatus.REJECTED);
+        friendshipRepository.save(friendship);
+
+        return new HashMap<String, Object>() {{
+            put("status", true);
+            put("message", "successfully rejected");
+        }};
     }
 
     @Override
@@ -63,11 +126,32 @@ public class FriendshipServiceImpl implements FriendshipService{
         return null;
     }
 
+    private boolean isFriendRequestPending(String recipientUserId, String requesterId) {
+        Friendship friendship = friendshipRepository.findByRecipientUserIdAndRequesterUserId(recipientUserId, requesterId);
+        return friendship.getStatus() != FriendshipStatus.PENDING;
+    }
+
+    private boolean isFriendRequestAccepted(String recipientUserId, String requesterId) {
+        Friendship friendship = friendshipRepository.findByRecipientUserIdAndRequesterUserId(recipientUserId, requesterId);
+        return friendship.getStatus() == FriendshipStatus.ACCEPTED;
+    }
+
+    private boolean isFriendRequestRejected(String recipientUserId, String requesterId) {
+        Friendship friendship = friendshipRepository.findByRecipientUserIdAndRequesterUserId(recipientUserId, requesterId);
+        return friendship.getStatus() == FriendshipStatus.REJECTED;
+    }
+
     private Map<String, Object> validateUserIdFromCookie(HttpServletRequest httpServletRequest) {
         String userId = getUserIdFromCookie(httpServletRequest);
         if (userId == null)
-            return new HashMap<String, Object>(){{put("status", false);put("message", "no logged in user");}};
-        return new HashMap<String, Object>(){{put("status", true);put("userId", userId);}};
+            return new HashMap<String, Object>() {{
+                put("status", false);
+                put("message", "no logged in user");
+            }};
+        return new HashMap<String, Object>() {{
+            put("status", true);
+            put("userId", userId);
+        }};
     }
 
     private String getUserIdFromCookie(HttpServletRequest httpServletRequest) {
