@@ -31,7 +31,7 @@ COPY --from=builder /home/gradle/src/build/libs/*.jar /app/post-service.jar
 ENV MONGO_DB_USERNAME=rootadmin \
     MONGO_DB_PWD=password
 
-EXPOSE 8081
+EXPOSE 8084
 
 # runs the application
 ENTRYPOINT ["java", "-jar", "/app/post-service.jar"]

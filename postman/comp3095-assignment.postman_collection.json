@@ -265,11 +265,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8081/api/posts",
+							"raw": "localhost:8084/api/posts",
 							"host": [
 								"localhost"
 							],
-							"port": "8081",
+							"port": "8084",
 							"path": [
 								"api",
 								"posts"
@@ -293,11 +293,11 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8081/api/posts/create",
+							"raw": "localhost:8084/api/posts/create",
 							"host": [
 								"localhost"
 							],
-							"port": "8081",
+							"port": "8084",
 							"path": [
 								"api",
 								"posts",
@@ -322,11 +322,11 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8081/api/posts/update/{postId}",
+							"raw": "localhost:8084/api/posts/update/{postId}",
 							"host": [
 								"localhost"
 							],
-							"port": "8081",
+							"port": "8084",
 							"path": [
 								"api",
 								"posts",
@@ -343,11 +343,11 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:8081/api/posts/delete/{postId}",
+							"raw": "localhost:8084/api/posts/delete/{postId}",
 							"host": [
 								"localhost"
 							],
-							"port": "8081",
+							"port": "8084",
 							"path": [
 								"api",
 								"posts",
@@ -364,11 +364,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8081/api/posts/user/{userId}",
+							"raw": "localhost:8084/api/posts/user/{userId}",
 							"host": [
 								"localhost"
 							],
-							"port": "8081",
+							"port": "8084",
 							"path": [
 								"api",
 								"posts",
@@ -385,11 +385,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8081/api/posts/{postId}/comments",
+							"raw": "localhost:8084/api/posts/{postId}/comments",
 							"host": [
 								"localhost"
 							],
-							"port": "8081",
+							"port": "8084",
 							"path": [
 								"api",
 								"posts",
@@ -406,11 +406,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8081/api/posts/user{userId}/posts/comments",
+							"raw": "localhost:8084/api/posts/user{userId}/posts/comments",
 							"host": [
 								"localhost"
 							],
-							"port": "8081",
+							"port": "8084",
 							"path": [
 								"api",
 								"posts",
@@ -428,11 +428,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8081/api/posts/{postId}/details",
+							"raw": "localhost:8084/api/posts/{postId}/details",
 							"host": [
 								"localhost"
 							],
-							"port": "8081",
+							"port": "8084",
 							"path": [
 								"api",
 								"posts",
