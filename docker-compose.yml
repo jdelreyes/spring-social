@@ -44,7 +44,7 @@ services:
   post-service:
     image: post-service
     ports:
-      - "8081:8081"
+      - "8084:8084"
     #    builds app
     build:
       context: ./post-service

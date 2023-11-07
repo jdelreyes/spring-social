@@ -137,7 +137,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserWithPosts getUserWithPosts(Long userId) {
-        String postServiceUrl = "http://localhost:8081/api/posts/user/" + userId.toString();
+        String postServiceUrl = "http://localhost:8084/api/posts/user/" + userId.toString();
 
         ResponseEntity<List<PostResponse>> responseEntity = restTemplate.exchange(
                 postServiceUrl,
@@ -157,7 +157,7 @@ public class UserServiceImpl implements UserService {
 //    todo
     @Override
     public UserWithPostsWithComments getUserWithPostsWithComments(Long userId) {
-        String postWithCommentsServiceUrl = "http://127.0.0.1:8081/api/posts/" + userId + "/posts/comments";
+        String postWithCommentsServiceUrl = "http://127.0.0.1:8084/api/posts/" + userId + "/posts/comments";
 
         ResponseEntity<List<PostWithComments>> responseEntity = restTemplate.exchange(
                 postWithCommentsServiceUrl,

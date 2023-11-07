@@ -26,7 +26,7 @@ docker run -d --name friendship-service --network=spring-social -p 27014:27017 -
 ## Microservice Port
 User Service: `8080:8080`
 
-Post Service: `8081:8081`
+Post Service: `8084:8084`
 
 Comment Service: `8082:8082`
 
