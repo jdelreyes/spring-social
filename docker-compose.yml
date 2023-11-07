@@ -2,7 +2,7 @@
 # cannot have conflicting container names
 
 # COMMANDS:
-# docker-compose -p spring-social-green-gang -f docker-compose.yml up -d
+# docker-compose -p spring-social -f docker-compose.yml up -d
 
 version: '3.8'
 
@@ -21,23 +21,22 @@ services:
       # property available provided by spring
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
-      - mongodb-user-service
+      - postgresql-user-service
     networks:
       - spring-social
 
-  mongodb-user-service:
-    image: mongo:latest
+  postgresql-user-service:
+    image: postgres:latest
     ports:
-      - "27017:27017"
+      - "5432:5432"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=rootadmin
-      - MONGO_INITDB_ROOT_PASSWORD=password
+      POSTGRES_USER: rootadmin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: user-service
     volumes:
-      - ./data/mongo/users:/data/db
-      - ./init/mongo/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-    container_name: mongodb-user-service
+      - ./data/postgresql/users:/data/db
+    container_name: postgresql-user-service
     restart: unless-stopped
-    command: mongod --auth
     networks:
       - spring-social
 
@@ -67,7 +66,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=password
     volumes:
       - ./data/mongo/posts:/data/db
-      - ./init/mongo/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./init/mongo/docker-entrypoint-initdb.d/post-service-init.js:/docker-entrypoint-initdb.d/post-service-init.js:ro
     container_name: mongodb-post-service
     restart: unless-stopped
     command: mongod --auth
@@ -87,23 +86,22 @@ services:
       # property available provided by spring
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
-      - mongodb-comment-service
+      - postgresql-comment-service
     networks:
       - spring-social
 
-  mongodb-comment-service:
-    image: mongo:latest
+  postgresql-comment-service:
+    image: postgres:latest
     ports:
-      - "27015:27017"
+      - "5433:5432"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=rootadmin
-      - MONGO_INITDB_ROOT_PASSWORD=password
+      POSTGRES_USER: rootadmin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: comment-service
     volumes:
-      - ./data/mongo/comments:/data/db
-      - ./init/mongo/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-    container_name: mongodb-comment-service
+      - ./data/postgresql/comments:/data/db
+    container_name: postgresql-comment-service
     restart: unless-stopped
-    command: mongod --auth
     networks:
       - spring-social
 
@@ -117,8 +115,8 @@ services:
       dockerfile: ./Dockerfile
     container_name: friendship-service
     environment:
-      # property available provided by spring
       SPRING_PROFILES_ACTIVE: docker
+      # property available provided by spring
     depends_on:
       - mongodb-friendship-service
     networks:
@@ -133,25 +131,10 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=password
     volumes:
       - ./data/mongo/friendships:/data/db
-      - ./init/mongo/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./init/mongo/docker-entrypoint-initdb.d/friendship-service-init.js:/docker-entrypoint-initdb.d/friendship-service-init.js:ro
     container_name: mongodb-friendship-service
     restart: unless-stopped
     command: mongod --auth
-    networks:
-      - spring-social
-
-  mongo-express-user-service:
-    image: mongo-express
-    ports:
-      - "8086:8086"
-    environment:
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=rootadmin
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
-      - ME_CONFIG_MONGODB_SERVER=mongodb-user-service
-    container_name: mongo-express-user-service
-    restart: unless-stopped
-    depends_on:
-      - mongodb-user-service
     networks:
       - spring-social
 

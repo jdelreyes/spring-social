@@ -5,7 +5,15 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 data/
-init/
+
+### MACOS ###
+.DS_Store
+*/.DS_Store
+*/*/.DS_Store
+*/*/*/.DS_Store
+*/*/*/*/.DS_Store
+*/*/*/*/*/.DS_Store
+*/*/*/*/*/*/.DS_Store
 
 ### STS ###
 .apt_generated

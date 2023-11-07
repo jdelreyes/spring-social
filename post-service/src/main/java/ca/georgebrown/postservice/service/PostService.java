@@ -13,8 +13,8 @@ public interface PostService {
     boolean updatePost(String postId, PostRequest postRequest);
     void deletePost(String postId);
     PostResponse getPostById(String postId);
-    List<PostResponse> getAllPosts();
-    List<PostResponse> getUserPosts(String userId);
+    List<PostResponse> getPosts();
+    List<PostResponse> getUserPosts(Long userId);
     PostWithComments getPostWithComments(String postId);
-    List<PostWithComments> getUserWithPostsWithComments(String userId);
+    List<PostWithComments> getPostsWithCommentsByUserId(Long userId);
 }

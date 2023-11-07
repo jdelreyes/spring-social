@@ -1,25 +1,23 @@
 package ca.georgebrown.commentservice.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Document(value = "comment")
+@Entity(name = "comments")
+@Getter
+@Setter
+@Table
 public class Comment {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private String id;
+    private Long id;
     private String content;
     private LocalDateTime dateTimeCommented = LocalDateTime.now();
 //    foreign keys
     private String postId;
-    private String userId;
+    private Long userId;
 }

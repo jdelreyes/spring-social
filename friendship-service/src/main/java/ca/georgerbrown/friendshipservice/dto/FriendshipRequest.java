@@ -11,7 +11,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class FriendshipRequest {
-    private String requesterUserId;
-    private String recipientUserId;
-    private FriendshipStatus status;
+    private Long recipientUserId;
 }

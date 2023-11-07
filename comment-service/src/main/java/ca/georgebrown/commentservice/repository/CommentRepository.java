@@ -2,10 +2,13 @@ package ca.georgebrown.commentservice.repository;
 
 import ca.georgebrown.commentservice.model.Comment;
 import jakarta.annotation.Nonnull;
-import org.springframework.data.mongodb.repository.DeleteQuery;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CommentRepository extends MongoRepository<Comment, String> {
-    @DeleteQuery
-    void deleteById(@Nonnull String commentId);
+import java.util.List;
+
+public interface CommentRepository extends JpaRepository<Comment, Long> {
+    void deleteById(@Nonnull Long commentId);
+    Comment getCommentById(Long commentId);
+    List<Comment> getCommentsByUserId(Long userId);
+    List<Comment> getCommentsByPostId(String postId);
 }

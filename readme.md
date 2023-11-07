@@ -1,33 +1,43 @@
-# WEB APPLICATION USING JAVA: Assignment
+# WEB APPLICATION DEVELOPMENT USING JAVA: Assignment
 
-## Docker Container Scripts for Running Locally
+## Docker Compose
+Running this command will let you run the application through `Docker`. Make sure `Docker` is running.
+
 ```shell
+docker-compose -p spring-social -f docker-compose.yml up -d
+```
+
+## Docker Run
+<details>
+<summary>Running these commands will let you run the application through your IDE.</summary>
+
+```shell
+# network
 docker network create spring-social
-docker run -d --name user-service --network=spring-social -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=rootadmin -e MONGO_INITDB_ROOT_PASSWORD=password --restart unless-stopped mongo:latest
+# database
+docker run -d --name user-service --network=spring-social -p 5432:5432 -e POSTGRES_USER=rootadmin -e POSTGRES_PASSWORD=password -e POSTGRES_DB=user-service --restart unless-stopped postgres:latest -d postgres
 docker run -d --name post-service --network=spring-social -p 27016:27017 -e MONGO_INITDB_ROOT_USERNAME=rootadmin -e MONGO_INITDB_ROOT_PASSWORD=password --restart unless-stopped mongo:latest
-docker run -d --name comment-service --network=spring-social -p 27015:27017 -e MONGO_INITDB_ROOT_USERNAME=rootadmin -e MONGO_INITDB_ROOT_PASSWORD=password --restart unless-stopped mongo:latest
+docker run -d --name comment-service --network=spring-social -p 5433:5432 -e POSTGRES_USER=rootadmin -e POSTGRES_PASSWORD=password -e POSTGRES_DB=comment-service --restart unless-stopped postgres:latest -d postgres
 docker run -d --name friendship-service --network=spring-social -p 27014:27017 -e MONGO_INITDB_ROOT_USERNAME=rootadmin -e MONGO_INITDB_ROOT_PASSWORD=password --restart unless-stopped mongo:latest 
 ```
 
-## Microservice Port/URI
-User Service: ```http://localhost:8080```
+</details>
 
-Post Service: ```http://localhost:8081```
+## Microservice Port
+User Service: `8080:8080`
 
-Comment Service: ```http://localhost:8082```
+Post Service: `8081:8081`
 
-Friendship Service ```http://localhost:8083```
+Comment Service: `8082:8082`
 
-## MongoDB Port/URI
-User Service: ```27017:27017```
+Friendship Service `8083:8083`
 
-Post Service: ```27016:27017```
+## MongoDB port
+Post Service: `27016:27017`
 
-Comment Service: ```27015:27017```
+Friendship Service `27014:27017`
 
-Friendship Service ```27014:27017```
+## PostgresSQL Port
+User Service: `5432:5432`
 
-## Docker Build for Running in alpine environment
-```shell
-docker-compose -p spring-social-green-gang -f docker-compose.yml up -d
-```
+Comment Service: `5433:5432`

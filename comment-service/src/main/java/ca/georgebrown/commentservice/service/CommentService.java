@@ -9,10 +9,10 @@ import java.util.Map;
 
 public interface CommentService {
     Map<String, Object> createComment(CommentRequest commentRequest, HttpServletRequest httpServletRequest);
-    CommentResponse getCommentById(String commentId);
-    boolean updateComment(String commentId, CommentRequest commentRequest);
-    void deleteComment(String commentId);
-    List<CommentResponse> getAllComments();
-    List<CommentResponse> getUserComments(String userId);
+    CommentResponse getCommentById(Long commentId);
+    boolean updateComment(Long commentId, CommentRequest commentRequest);
+    void deleteComment(Long commentId);
+    List<CommentResponse> getComments();
+    List<CommentResponse> getUserComments(Long userId);
     List<CommentResponse> getPostComments(String postId);
 }

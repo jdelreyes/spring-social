@@ -10,18 +10,14 @@ import ca.georgebrown.userservice.dto.user.UserRequest;
 import ca.georgebrown.userservice.dto.user.UserResponse;
 import ca.georgebrown.userservice.model.User;
 import ca.georgebrown.userservice.repository.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,10 +31,10 @@ import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final MongoTemplate mongoTemplate;
     @Autowired
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
@@ -54,20 +50,20 @@ public class UserServiceImpl implements UserService {
             return userHashMap;
         }
 
-        if (userNameExists(userRequest.getUserName())) {
+        if (userRepository.getUserByUserName(userRequest.getUserName()) != null) {
             userHashMap.put("status", false);
             userHashMap.put("message", "userName already in use");
             return userHashMap;
         }
 
-        User user = User.builder()
-                .userName(userRequest.getUserName())
-                .email(userRequest.getEmail())
-                .password(bCryptPasswordEncoder.encode(userRequest.getPassword()))
-                .bio(userRequest.getBio())
-                .build();
+        // make user
+        User user = new User();
+        user.setUserName(userRequest.getUserName());
+        user.setEmail(userRequest.getEmail());
+        user.setPassword(bCryptPasswordEncoder.encode(userRequest.getPassword()));
+        user.setBio(userRequest.getBio());
 
-        String userId = userRepository.save(user).getId();
+        Long userId = userRepository.save(user).getId();
         userHashMap.put("status", true);
         userHashMap.put("userId", userId);
 
@@ -77,7 +73,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> login(String userName, String password, HttpServletResponse response) {
         Map<String, Object> userHashMap = new HashMap<>();
-        User user = this.queryUser("userName", userName);
+        User user = userRepository.getUserByUserName(userName);
 
         if (user == null) {
             userHashMap.put("status", false);
@@ -90,7 +86,7 @@ public class UserServiceImpl implements UserService {
             return userHashMap;
         }
 
-        setCookie(response, new HashMap<String, String>() {{
+        setCookie(response, new HashMap<String, Long>() {{
             put("userId", user.getId());
         }});
 
@@ -105,8 +101,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updateUser(String userId, UserRequest userRequest) {
-        User user = this.queryUser("id", userId);
+    public boolean updateUser(Long userId, UserRequest userRequest) {
+        User user = userRepository.getUserById(userId);
 
         if (user != null) {
             user.setUserName(userRequest.getUserName());
@@ -121,13 +117,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(String userId) {
+    public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
     }
 
     @Override
-    public UserResponse getUserById(String userId) {
-        User user =this.queryUser("id", userId);
+    public UserResponse getUserById(Long userId) {
+        User user = userRepository.getUserById(userId);
 
         if (user != null)
             return mapToUserResponse(user);
@@ -135,22 +131,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getUserByUserName(String userName) {
-        User user =this.queryUser("userName", userName);
-
-        if (user != null)
-            return mapToUserResponse(user);
-        return null;
-    }
-
-    @Override
-    public List<UserResponse> getAllUsers() {
+    public List<UserResponse> getUsers() {
         List<User> users = userRepository.findAll();
         return users.stream().map(this::mapToUserResponse).toList();
     }
 
-    public UserWithPosts getUserWithPosts(String userId) {
-        String postServiceUrl = "http://127.0.0.1:8081/api/post/" + userId + "/all";
+    public UserWithPosts getUserWithPosts(Long userId) {
+        String postServiceUrl = "http://localhost:8081/api/posts/user/" + userId.toString();
 
         ResponseEntity<List<PostResponse>> responseEntity = restTemplate.exchange(
                 postServiceUrl,
@@ -159,7 +146,7 @@ public class UserServiceImpl implements UserService {
                 new ParameterizedTypeReference<List<PostResponse>>() {}
         );
 
-        User user = this.queryUser("id", userId);
+        User user = userRepository.getUserById(userId);
         if (user == null) return null;
 
         List<PostResponse> postResponseList = responseEntity.getBody();
@@ -169,8 +156,8 @@ public class UserServiceImpl implements UserService {
     }
 //    todo
     @Override
-    public UserWithPostsWithComments getUserWithPostsWithComments(String userId) {
-        String postWithCommentsServiceUrl = "http://127.0.0.1:8081/api/post/" + userId + "/all/posts/comments";
+    public UserWithPostsWithComments getUserWithPostsWithComments(Long userId) {
+        String postWithCommentsServiceUrl = "http://127.0.0.1:8081/api/posts/" + userId + "/posts/comments";
 
         ResponseEntity<List<PostWithComments>> responseEntity = restTemplate.exchange(
                 postWithCommentsServiceUrl,
@@ -179,7 +166,7 @@ public class UserServiceImpl implements UserService {
                 new ParameterizedTypeReference<List<PostWithComments>>() {}
         );
 
-        User user = this.queryUser("id", userId);
+        User user = userRepository.getUserById(userId);
         if (user == null) return null;
 
         List<PostWithComments> postWithCommentsList = responseEntity.getBody();
@@ -189,8 +176,8 @@ public class UserServiceImpl implements UserService {
     }
 //    todo
     @Override
-    public UserWithComments getUserWithComments(String userId) {
-        String commentServiceUrl = "http://127.0.0.1:8082/api/comment/" + userId + "/all";
+    public UserWithComments getUserWithComments(Long userId) {
+        String commentServiceUrl = "http://127.0.0.1:8082/api/comments/user/" + userId;
 
         ResponseEntity<List<CommentResponse>> responseEntity = restTemplate.exchange(
                 commentServiceUrl,
@@ -199,29 +186,13 @@ public class UserServiceImpl implements UserService {
                 new ParameterizedTypeReference<List<CommentResponse>>() {}
         );
 
-        User user = this.queryUser("id", userId);
+        User user = userRepository.getUserById(userId);
         if (user == null) return null;
 
         List<CommentResponse> commentResponses = responseEntity.getBody();
         UserResponse userResponse = mapToUserResponse(user);
 
         return new UserWithComments(userResponse, commentResponses);
-    }
-
-    private List<User> queryUsers(String key, Object value) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where(key).is(value));
-        return mongoTemplate.find(query, User.class);
-    }
-
-    private User queryUser(String key, Object value) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where(key).is(value));
-        return mongoTemplate.findOne(query, User.class);
-    }
-
-    private boolean userNameExists(String userName) {
-        return this.queryUser("userName", userName) != null;
     }
 
     private boolean isEmailAddress(String email) {
@@ -239,8 +210,8 @@ public class UserServiceImpl implements UserService {
         return bCryptPasswordEncoder.matches(password, HashedPassword);
     }
 
-    private void setCookie(HttpServletResponse response, HashMap<String, String> userId) {
-        Cookie cookie = new Cookie("remember-me", userId.get("userId"));
+    private void setCookie(HttpServletResponse response, HashMap<String, Long> userId) {
+        Cookie cookie = new Cookie("remember-me", userId.get("userId").toString());
 
 //        7 days
         int seconds = 60 * 60 * 24 * 7;
@@ -252,20 +223,20 @@ public class UserServiceImpl implements UserService {
     }
 
     private Map<String, Object> validateUserIdFromCookie(HttpServletRequest httpServletRequest) {
-        String userId = getUserIdFromCookie(httpServletRequest);
+        Long userId = getUserIdFromCookie(httpServletRequest);
         if (userId == null)
             return new HashMap<String, Object>(){{put("status", false);put("message", "no logged in user");}};
         return new HashMap<String, Object>(){{put("status", true);put("userId", userId);}};
     }
 
-    private String getUserIdFromCookie(HttpServletRequest httpServletRequest) {
+    private Long getUserIdFromCookie(HttpServletRequest httpServletRequest) {
         Cookie[] cookies = httpServletRequest.getCookies();
 
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("remember-me".equals(cookie.getName())) {
                     // userId value;
-                    return cookie.getValue();
+                    return Long.parseLong(cookie.getValue());
                 }
             }
         }

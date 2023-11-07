@@ -12,11 +12,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document(value = "friendship")
+@Document(value = "friendships")
 public class Friendship {
     @Id
     private String id;
-    private String requesterUserId;
-    private String recipientUserId;
+    private Long requesterUserId;
+    private Long recipientUserId;
     private FriendshipStatus status;
 }

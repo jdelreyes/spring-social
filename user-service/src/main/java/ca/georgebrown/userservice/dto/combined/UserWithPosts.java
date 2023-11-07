@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 public class UserWithPosts {
-    private String id;
+    private Long id;
     private String userName;
     private String email;
     private LocalDateTime dateTimeJoined;

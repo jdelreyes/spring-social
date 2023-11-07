@@ -1,68 +1,165 @@
 package ca.georgebrown.postservice;
 
 import ca.georgebrown.postservice.dto.post.PostRequest;
-import ca.georgebrown.postservice.dto.post.PostResponse;
-import ca.georgebrown.postservice.repository.PostRepository;
-import ca.georgebrown.postservice.service.PostServiceImpl;
-import jakarta.servlet.http.HttpServletResponse;
+import ca.georgebrown.postservice.service.PostService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import ca.georgebrown.postservice.dto.post.PostRequest;
+import ca.georgebrown.postservice.service.PostService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doReturn;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.hamcrest.CoreMatchers.containsString;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import ca.georgebrown.postservice.dto.post.PostRequest;
+import ca.georgebrown.postservice.service.PostService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.web.servlet.MockMvc;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.hamcrest.CoreMatchers.containsString;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import ca.georgebrown.postservice.dto.post.PostRequest;
+import ca.georgebrown.postservice.service.PostServiceImpl;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.hamcrest.CoreMatchers.containsString;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 @SpringBootTest
-class PostServiceApplicationTests {
+@AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
+public class PostServiceApplicationTests {
 
 	@Autowired
-	private PostServiceImpl postService;
+	private MockMvc mockMvc;
 
-//	TODO:
-//		NOTE: need new way of testing since parameter changed mb lol
+	@Autowired
+	private PostService postService;
+
+
+	@Autowired
+	private ObjectMapper objectMapper;
+
+	@BeforeEach
+	public void setup() {
+		MockitoAnnotations.openMocks(this);
+	}
 	@Test
-	void CreatePost() {
-//		PostRequest postRequest = new PostRequest("Test Title", "Test Content");
-//		String userId = "testUserId";
-//
-//		Map<String, Object> postIdMap = postService.createPost(postRequest, );
-//
-//		assertEquals(1, postService.getAllPosts().size()); // Assuming that getAllPosts() returns the list of all posts
-//		assertTrue(postIdMap.containsKey("postId"));
+	public void testCreatePost() throws Exception {
+		Map<String, Object> requestBody = new HashMap<>();
+		requestBody.put("title", "Test Title");
+		requestBody.put("content", "Test Content");
+		String jsonBody = objectMapper.writeValueAsString(requestBody);
+
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		mockRequest.addHeader("Content-Type", "application/json");
+
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/posts/create")
+						.content(jsonBody)
+						.contentType(MediaType.APPLICATION_JSON)
+						.requestAttr("httpServletRequest", mockRequest))
+				.andExpect(MockMvcResultMatchers.status().isCreated());
+	}
+
+
+	@Test
+	public void testGetUserPosts() throws Exception {
+		Long userId = 123L;
+
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/posts/user/{userId}", userId)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				// Add more assertions based on the expected structure of the response
+				.andExpect(MockMvcResultMatchers.jsonPath("$").isArray());
+	}
+
+
+
+
+	@Test
+	public void testUpdatePost() throws Exception {
+		String postId = "123";
+		PostRequest postRequest = new PostRequest();
+		postRequest.setTitle("Updated Title");
+		postRequest.setContent("Updated Content");
+
+		// Configure the behavior of the mock
+		when(postService.updatePost(eq(postId), any(PostRequest.class))).thenReturn(true);
+
+		mockMvc.perform(put("/api/posts/update/{postId}", postId)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(asJsonString(postRequest)))
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("Post with id " + postId + " successfully updated")));
 	}
 
 	@Test
-	void getPostById() {
+	void testDeletePost() {
+		// Given
+		String postId = "1";
 
-		PostResponse postResponse = postService.getPostById("testPostId");
-
-
-		assertEquals("Expected Title", postResponse.getTitle());
-		assertEquals("Expected Content", postResponse.getContent());
+		// When
+		postService.deletePost(postId);
 	}
 
-	@Test
-	void updatePost() {
-		// Create a test post
-//		PostRequest postRequest = new PostRequest("Test Title", "Test Content");
-//		String userId = "testUserId";
-//		HashMap<String, String> postIdMap = postService.createPost(userId, postRequest);
-//
-//		// Retrieve the post ID from the created post
-//		String postId = postIdMap.get("postId");
-//
-//		// Update the post
-//		PostRequest updatedPostRequest = new PostRequest("Updated Title", "Updated Content");
-//		postService.updatePost(postId, updatedPostRequest);
-//
-//		// Retrieve the updated post
-//		String updatedTitle = postService.getPostById(postId).getTitle();
-//		String updatedContent = postService.getPostById(postId).getContent();
-//
-//		// Assert that the post has been updated
-//		assertEquals("Updated Title", updatedTitle);
-//		assertEquals("Updated Content", updatedContent);
+	private String asJsonString(Object obj) {
+		try {
+			return new ObjectMapper().writeValueAsString(obj);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

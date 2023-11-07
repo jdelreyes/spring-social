@@ -6,11 +6,9 @@ import ca.georgebrown.commentservice.model.Comment;
 import ca.georgebrown.commentservice.repository.CommentRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -19,10 +17,10 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 @Slf4j
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
-    private final MongoTemplate mongoTemplate;
 
     @Override
     public Map<String, Object> createComment(CommentRequest commentRequest, HttpServletRequest httpServletRequest) {
@@ -30,13 +28,12 @@ public class CommentServiceImpl implements CommentService {
         if (!(Boolean) stringObjectMap.get("status"))
             return stringObjectMap;
 
-        Comment comment = Comment.builder()
-                .content(commentRequest.getContent())
-                .postId(commentRequest.getPostId())
-                .userId((String) stringObjectMap.get("userId"))
-                .build();
+        Comment comment = new Comment();
+        comment.setContent(commentRequest.getContent());
+        comment.setPostId(commentRequest.getPostId());
+        comment.setUserId((Long) stringObjectMap.get("userId"));
 
-        String commentId = commentRepository.save(comment).getId();
+        Long commentId = commentRepository.save(comment).getId();
 
         return new HashMap<String, Object>() {{
             put("commentId", commentId);
@@ -45,16 +42,16 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentResponse getCommentById(String commentId) {
-        Comment comment = this.queryComment("id", commentId);
+    public CommentResponse getCommentById(Long commentId) {
+        Comment comment = commentRepository.getCommentById(commentId);
 
         assert comment != null;
         return mapToCommentResponse(comment);
     }
 
     @Override
-    public boolean updateComment(String commentId, CommentRequest commentRequest) {
-        Comment comment = this.queryComment("id", commentId);
+    public boolean updateComment(Long commentId, CommentRequest commentRequest) {
+        Comment comment = commentRepository.getCommentById(commentId);
 
         if (comment != null) {
             comment.setContent(commentRequest.getContent());
@@ -68,54 +65,42 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void deleteComment(String commentId) {
+    public void deleteComment(Long commentId) {
         commentRepository.deleteById(commentId);
     }
 
     @Override
-    public List<CommentResponse> getUserComments(String userId) {
-        List<Comment> commentList = this.queryComments("userId", userId);
+    public List<CommentResponse> getUserComments(Long userId) {
+        List<Comment> commentList = commentRepository.getCommentsByUserId(userId);
         return commentList.stream().map(this::mapToCommentResponse).toList();
     }
 
     @Override
     public List<CommentResponse> getPostComments(String postId) {
-        List<Comment> commentList = this.queryComments("postId", postId);
+        List<Comment> commentList = commentRepository.getCommentsByPostId(postId);
         return commentList.stream().map(this::mapToCommentResponse).toList();
     }
 
     @Override
-    public List<CommentResponse> getAllComments() {
+    public List<CommentResponse> getComments() {
         return commentRepository.findAll().stream().map(this::mapToCommentResponse).toList();
     }
 
-    private Comment queryComment(String key, Object value) {
-        Query query =new Query();
-        query.addCriteria(Criteria.where(key).is(value));
-        return mongoTemplate.findOne(query, Comment.class);
-    }
-
-    private List<Comment> queryComments(String key, Object value) {
-        Query query =new Query();
-        query.addCriteria(Criteria.where(key).is(value));
-        return mongoTemplate.find(query, Comment.class);
-    }
-
     private Map<String, Object> validateUserIdFromCookie(HttpServletRequest httpServletRequest) {
-        String userId = getUserIdFromCookie(httpServletRequest);
+        Long userId = getUserIdFromCookie(httpServletRequest);
         if (userId == null)
             return new HashMap<String, Object>(){{put("status", false);put("message", "no logged in user");}};
         return new HashMap<String, Object>(){{put("status", true);put("userId", userId);}};
     }
 
-    private String getUserIdFromCookie(HttpServletRequest httpServletRequest) {
+    private Long getUserIdFromCookie(HttpServletRequest httpServletRequest) {
         Cookie[] cookies = httpServletRequest.getCookies();
 
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("remember-me".equals(cookie.getName())) {
                     // userId value;
-                    return cookie.getValue();
+                    return Long.parseLong(cookie.getValue());
                 }
             }
         }

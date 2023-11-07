@@ -44,7 +44,7 @@ public class PostServiceImpl implements PostService {
         Post post = Post.builder()
                 .title(postRequest.getTitle())
                 .content(postRequest.getContent())
-                .userId((String) stringObjectMap.get("userId"))
+                .userId((Long) stringObjectMap.get("userId"))
                 .build();
 
         String postId = postRepository.save(post).getId();
@@ -83,20 +83,20 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostResponse> getAllPosts() {
+    public List<PostResponse> getPosts() {
         List<Post> postList = postRepository.findAll();
         return postList.stream().map(this::mapToPostResponse).toList();
     }
 
     @Override
-    public List<PostResponse> getUserPosts(String userId) {
+    public List<PostResponse> getUserPosts(Long userId) {
         List<Post> postList = queryPosts("userId", userId);
         return postList.stream().map(this::mapToPostResponse).toList();
     }
 
     @Override
     public PostWithComments getPostWithComments(String postId) {
-        String commentServiceUrl = "http://127.0.0.1:8082/api/comment/" + postId + "/all";
+        String commentServiceUrl = "http://127.0.0.1:8082/api/comments/post/" + postId;
 
         ResponseEntity<List<CommentResponse>> responseEntity = restTemplate.exchange(
                 commentServiceUrl,
@@ -115,13 +115,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostWithComments> getUserWithPostsWithComments(String userId) {
+    public List<PostWithComments> getPostsWithCommentsByUserId(Long userId) {
         // getting list of post with user id
         List<Post> postList = this.queryPosts("userId", userId);
         List<PostWithComments> postWithCommentsList = new ArrayList<>();
 
         for (Post post : postList) {
-            String commentServiceUrl = "http://127.0.0.1:8082/api/comment/" + post.getId() + "/all";
+            String commentServiceUrl = "http://127.0.0.1:8082/api/comments/post/" + post.getId();
 
             ResponseEntity<List<CommentResponse>> responseEntity = restTemplate.exchange(
                     commentServiceUrl,
@@ -140,7 +140,7 @@ public class PostServiceImpl implements PostService {
         return postWithCommentsList;
     }
 
-    private Post queryPost(String key, Object value) {
+    public Post queryPost(String key, Object value) {
         Query query = new Query();
         query.addCriteria(Criteria.where(key).is(value));
         return mongoTemplate.findOne(query, Post.class);
@@ -153,20 +153,20 @@ public class PostServiceImpl implements PostService {
     }
 
     private Map<String, Object> validateUserIdFromCookie(HttpServletRequest httpServletRequest) {
-        String userId = getUserIdFromCookie(httpServletRequest);
+        Long userId = getUserIdFromCookie(httpServletRequest);
         if (userId == null)
             return new HashMap<String, Object>(){{put("status", false);put("message", "no logged in user");}};
         return new HashMap<String, Object>(){{put("status", true);put("userId", userId);}};
     }
 
-    private String getUserIdFromCookie(HttpServletRequest httpServletRequest) {
+    private Long getUserIdFromCookie(HttpServletRequest httpServletRequest) {
         Cookie[] cookies = httpServletRequest.getCookies();
 
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("remember-me".equals(cookie.getName())) {
                     // userId value;
-                    return cookie.getValue();
+                    return Long.parseLong(cookie.getValue());
                 }
             }
         }

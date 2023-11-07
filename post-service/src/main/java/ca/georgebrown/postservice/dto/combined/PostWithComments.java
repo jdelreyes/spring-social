@@ -13,7 +13,7 @@ public class PostWithComments {
     private String title;
     private String content;
     private LocalDateTime dateTimePosted;
-    private String userId;
+    private Long userId;
     private List<CommentResponse> comments;
 
     public PostWithComments(PostResponse postResponse, List<CommentResponse> commentResponses) {

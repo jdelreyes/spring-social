@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class CommentResponse {
-    private String id;
+    private Long id;
     private String content;
     private LocalDateTime dateTimeCommented;
     //    foreign keys
     private String postId;
-    private String userId;
+    private Long userId;
 }

@@ -18,14 +18,14 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserServiceImpl userService;
 
     // CREATE
-    @PostMapping({"/signup"})
+    @PostMapping("/signup")
     public ResponseEntity<Map<String, Object>> signUp(@RequestBody UserRequest userRequest){
         Map<String, Object> userHashMap = userService.signUp(userRequest);
 
@@ -45,31 +45,32 @@ public class UserController {
         return new ResponseEntity<>(userHashMap, HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping({"/{userNameOrId}/details"})
+    @PostMapping({"/logout"})
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<UserResponse> getUserByUserNameOrId(@PathVariable String userNameOrId) {
-        UserResponse userResponse;
-        userResponse = userService.getUserByUserName(userNameOrId);
-        if (userResponse!=null)
-            return new ResponseEntity<>(userResponse, HttpStatus.OK);
+    Map<String, Object> logout(HttpServletResponse httpServletResponse){
+        return userService.logout(httpServletResponse);
+    }
 
-        userResponse = userService.getUserById(userNameOrId);
+    @GetMapping({"/{userId}/details"})
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long userId) {
+        UserResponse userResponse = userService.getUserById(userId);
         if (userResponse!=null)
             return new ResponseEntity<>(userResponse, HttpStatus.OK);
 
         return new ResponseEntity<>(userResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping({"/all"})
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<UserResponse> getAllUsers() {
-        return userService.getAllUsers();
+    public List<UserResponse> getUsers() {
+        return userService.getUsers();
     }
 
 
     // UPDATE
     @PutMapping({"/update/{userId}"})
-    public ResponseEntity<?> updateUser(@PathVariable("userId") String userId, @RequestBody UserRequest userRequest) {
+    public ResponseEntity<?> updateUser(@PathVariable("userId") Long userId, @RequestBody UserRequest userRequest) {
         boolean isUserUpdated = userService.updateUser(userId,userRequest);
         if (!isUserUpdated) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
@@ -78,13 +79,13 @@ public class UserController {
 
     // DELETE
     @DeleteMapping({"/delete/{userId}"})
-    public ResponseEntity<?> deleteUser(@PathVariable("userId") String userId) {
+    public ResponseEntity<?> deleteUser(@PathVariable("userId") Long userId) {
         userService.deleteUser(userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping({"/{userId}/posts"})
-    public ResponseEntity<UserWithPosts> getUserPosts(@PathVariable String userId) {
+    public ResponseEntity<UserWithPosts> getUserPosts(@PathVariable Long userId) {
         UserWithPosts userWithPosts =  userService.getUserWithPosts(userId);
 
         if (userWithPosts == null) {
@@ -95,7 +96,7 @@ public class UserController {
     }
 
     @GetMapping({"/{userId}/comments"})
-    public ResponseEntity<UserWithComments> getUserComments(@PathVariable String userId) {
+    public ResponseEntity<UserWithComments> getUserComments(@PathVariable Long userId) {
         UserWithComments userWithComments =  userService.getUserWithComments(userId);
         if (userWithComments == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -104,10 +105,10 @@ public class UserController {
     }
 
     @GetMapping({"/{userId}/posts/comments"})
-    public ResponseEntity<UserWithPostsWithComments> getUserWithPostsWithComments(@PathVariable String userId) {
+    public ResponseEntity<UserWithPostsWithComments> getUserWithPostsWithComments(@PathVariable Long userId) {
         UserWithPostsWithComments userWithPostsWithComments = userService.getUserWithPostsWithComments(userId);
         if (userWithPostsWithComments == null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(userWithComments, HttpStatus.OK)
+        return new ResponseEntity<>(userWithPostsWithComments, HttpStatus.OK);
     }
 }

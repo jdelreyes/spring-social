@@ -6,7 +6,7 @@
 # BUILD stage
 # --------------
 # base image
-FROM gradle:8-jdk17-alpine AS builder
+FROM gradle:8-jdk17 AS builder
 
 LABEL authors="jeromedelosreyes"
 
@@ -22,13 +22,13 @@ RUN gradle build -x test
 # --------------
 # Package Stage
 # --------------
-FROM openjdk:17-alpine
+FROM openjdk:17
 
 RUN mkdir /app
 
 COPY --from=builder /home/gradle/src/build/libs/*.jar /app/post-service.jar
 
-ENV MONGO_DB_postNAME=rootadmin \
+ENV MONGO_DB_USERNAME=rootadmin \
     MONGO_DB_PWD=password
 
 EXPOSE 8081

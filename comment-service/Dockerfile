@@ -6,7 +6,7 @@
 # BUILD stage
 # --------------
 # base image
-FROM gradle:8-jdk17-alpine AS builder
+FROM gradle:8-jdk17 AS builder
 
 LABEL authors="jeromedelosreyes"
 
@@ -22,14 +22,14 @@ RUN gradle build -x test
 # --------------
 # Package Stage
 # --------------
-FROM openjdk:17-alpine
+FROM openjdk:17
 
 RUN mkdir /app
 
 COPY --from=builder /home/gradle/src/build/libs/*.jar /app/comment-service.jar
 
-ENV MONGO_DB_USERNAME=rootadmin \
-    MONGO_DB_PWD=password
+ENV SPRING_DATASOURCE_USERNAME=rootadmin
+ENV SPRING_DATASOURCE_PASSWORD=password
 
 EXPOSE 8082
 

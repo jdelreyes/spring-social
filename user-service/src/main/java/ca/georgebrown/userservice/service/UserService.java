@@ -14,12 +14,11 @@ public interface UserService {
     Map<String, Object> signUp(UserRequest userRequest);
     Map<String, Object> login(String userName, String password, HttpServletResponse response);
     Map<String, Object> logout(HttpServletResponse httpServletResponse);
-    boolean updateUser(String userId, UserRequest userRequest);
-    void deleteUser(String userId);
-    UserResponse getUserById(String userId);
-    UserResponse getUserByUserName(String userName);
-    List<UserResponse> getAllUsers();
-    UserWithPosts getUserWithPosts(String userId);
-    UserWithPostsWithComments getUserWithPostsWithComments(String userId);
-    UserWithComments getUserWithComments(String userId);
+    boolean updateUser(Long userId, UserRequest userRequest);
+    void deleteUser(Long userId);
+    UserResponse getUserById(Long userId);
+    List<UserResponse> getUsers();
+    UserWithPosts getUserWithPosts(Long userId);
+    UserWithPostsWithComments getUserWithPostsWithComments(Long userId);
+    UserWithComments getUserWithComments(Long userId);
 }

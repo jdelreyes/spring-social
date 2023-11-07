@@ -17,5 +17,5 @@ public class PostResponse {
     public String title;
     public String content;
     public LocalDateTime dateTimePosted;
-    public String userId;
+    public Long userId;
 }

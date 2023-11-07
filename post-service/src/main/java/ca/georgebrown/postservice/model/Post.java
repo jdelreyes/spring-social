@@ -13,12 +13,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document(value = "post")
+@Document(value = "posts")
 public class Post {
     @Id
     private String id;
     private String title;
     private String content;
+    @Builder.Default
     private LocalDateTime dateTimePosted = LocalDateTime.now();
-    private String userId;
+    private Long userId;
 }

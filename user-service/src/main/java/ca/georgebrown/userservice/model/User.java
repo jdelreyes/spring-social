@@ -1,23 +1,20 @@
 package ca.georgebrown.userservice.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Document(value = "user")
+@Entity(name = "users")
+@Getter
+@Setter
+@Table
 public class User {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private String id;
-//    unique
+    private Long id;
+//    todo: make unique
     private String userName;
     private LocalDateTime dateTimeJoined = LocalDateTime.now();
     private String email;

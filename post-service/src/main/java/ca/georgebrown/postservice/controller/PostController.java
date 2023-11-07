@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/post")
+@RequestMapping("/api/posts")
 @RequiredArgsConstructor
 public class PostController {
     private final PostServiceImpl postService;
@@ -26,16 +26,15 @@ public class PostController {
         return postService.createPost(postRequest, httpServletRequest);
     }
 
-    @PutMapping({"/update/{postId}"})
+    @PutMapping("/update/{postId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<?> updatePost(@PathVariable("postId") String postId,
-                                        @RequestBody PostRequest postRequest) {
+    public ResponseEntity<?> updatePost(@PathVariable("postId") String postId, @RequestBody PostRequest postRequest) {
         boolean isPostUpdated = postService.updatePost(postId, postRequest);
-        if (!isPostUpdated) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        if (!isPostUpdated) {
+            return ResponseEntity.badRequest().body("Failed to update post with id: " + postId);
+        }
+        return ResponseEntity.noContent().build();
     }
-
     @DeleteMapping({"/delete/{postId}"})
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePost(@PathVariable("postId") String postId) {
@@ -47,28 +46,28 @@ public class PostController {
     public PostResponse getPost(@PathVariable("postId") String postId) {
         return postService.getPostById(postId);
     }
-
-    @GetMapping({"/all"})
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<PostResponse> getAllPosts() {
-        return postService.getAllPosts();
+    public List<PostResponse> getPosts() {
+        return postService.getPosts();
     }
 
-    @GetMapping({"/{userId}/all"})
+
+    @GetMapping({"/user/{userId}"})
     @ResponseStatus(HttpStatus.OK)
-    public List<PostResponse> getUserPosts(@PathVariable("userId") String userId) {
+    public List<PostResponse> getUserPosts(@PathVariable("userId") Long userId) {
         return postService.getUserPosts(userId);
     }
 
-    @GetMapping("/{postId}/all/comments")
+    @GetMapping("/{postId}/comments")
     @ResponseStatus(HttpStatus.OK)
-    public PostWithComments getPostComments(@PathVariable String postId) {
+    public PostWithComments getPostWithComments(@PathVariable String postId) {
         return postService.getPostWithComments(postId);
     }
 
-    @GetMapping("/{userId}/all/posts/comments")
+    @GetMapping("/user/{userId}/posts/comments")
     @ResponseStatus(HttpStatus.OK)
-    public List<PostWithComments> getUserPostsWithComments(@PathVariable String userId) {
-        return postService.getUserWithPostsWithComments(userId);
+    public List<PostWithComments> getPostsWithCommentsByUserId(@PathVariable Long userId) {
+        return postService.getPostsWithCommentsByUserId(userId);
     }
 }

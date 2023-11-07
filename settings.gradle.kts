@@ -1,3 +1,3 @@
-rootProject.name = "GBC_SpringSocial-GreenGang"
+rootProject.name = "spring-social"
 
 include("user-service", "post-service", "friendship-service", "comment-service")

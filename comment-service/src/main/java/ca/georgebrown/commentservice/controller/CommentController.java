@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/comment")
+@RequestMapping("/api/comments")
 @RequiredArgsConstructor
 public class CommentController {
     private final CommentServiceImpl commentService;
@@ -25,36 +25,38 @@ public class CommentController {
 
     @GetMapping("/{commentId}/details")
     @ResponseStatus(HttpStatus.OK)
-    public CommentResponse getCommentById(@PathVariable String commentId) {
+    public CommentResponse getCommentById(@PathVariable Long commentId) {
         return commentService.getCommentById(commentId);
     }
 
+    // tweak it a bit - done
     @PutMapping("/update/{commentId}")
-    public ResponseEntity<?> updateComment(@PathVariable String commentId, CommentRequest commentRequest) {
+    public ResponseEntity<String> updateComment(@PathVariable Long commentId, @RequestBody CommentRequest commentRequest) {
         boolean isCommentUpdated = commentService.updateComment(commentId, commentRequest);
-        if (!isCommentUpdated)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        if (!isCommentUpdated) {
+            return new ResponseEntity<>("Comment not found", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>("Comment updated successfully", HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/delete/{commentId}")
-    public void deleteComment(@PathVariable String commentId){
+    public void deleteComment(@PathVariable Long commentId){
         commentService.deleteComment(commentId);
     }
 
-    @GetMapping("/all")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<CommentResponse> getAllComments() {
-        return commentService.getAllComments();
+    public List<CommentResponse> getComments() {
+        return commentService.getComments();
     }
 
-    @GetMapping("/{userId}/all")
+    @GetMapping("/user/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    List<CommentResponse> getUserComments(@PathVariable String userId) {
+    List<CommentResponse> getUserComments(@PathVariable Long userId) {
         return commentService.getUserComments(userId);
     }
 
-    @GetMapping("/{postId}/all")
+    @GetMapping("/post/{postId}")
     @ResponseStatus(HttpStatus.OK)
     List<CommentResponse> getPostComments(@PathVariable String postId) {
         return commentService.getPostComments(postId);
