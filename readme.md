@@ -15,9 +15,9 @@ docker-compose -p spring-social -f docker-compose.yml up -d
 # network
 docker network create spring-social
 # database
-docker run -d --name user-service --network=spring-social -p 5432:5432 -e POSTGRES_USER=rootadmin -e POSTGRES_PASSWORD=password -e POSTGRES_DB=user-service --restart unless-stopped postgres:latest -d postgres
+docker run -d --name user-service --network=spring-social -p 5432:5432 -e POSTGRES_USER=rootadmin -e POSTGRES_PASSWORD=password -e POSTGRES_DB=user-service --restart unless-stopped postgres:latest
 docker run -d --name post-service --network=spring-social -p 27016:27017 -e MONGO_INITDB_ROOT_USERNAME=rootadmin -e MONGO_INITDB_ROOT_PASSWORD=password --restart unless-stopped mongo:latest
-docker run -d --name comment-service --network=spring-social -p 5433:5432 -e POSTGRES_USER=rootadmin -e POSTGRES_PASSWORD=password -e POSTGRES_DB=comment-service --restart unless-stopped postgres:latest -d postgres
+docker run -d --name comment-service --network=spring-social -p 5433:5432 -e POSTGRES_USER=rootadmin -e POSTGRES_PASSWORD=password -e POSTGRES_DB=comment-service --restart unless-stopped postgres:latest
 docker run -d --name friendship-service --network=spring-social -p 27014:27017 -e MONGO_INITDB_ROOT_USERNAME=rootadmin -e MONGO_INITDB_ROOT_PASSWORD=password --restart unless-stopped mongo:latest 
 ```
 
