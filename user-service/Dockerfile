@@ -2,7 +2,7 @@
 # BUILD stage
 # --------------
 # base image
-FROM gradle:8-jdk17 AS builder
+FROM gradle:8-jdk17-alpine AS builder
 
 LABEL authors="jeromedelosreyes"
 
@@ -18,7 +18,7 @@ RUN gradle build -x test
 # --------------
 # Package Stage
 # --------------
-FROM openjdk:17
+FROM openjdk:17-alpine
 
 RUN mkdir /app
 

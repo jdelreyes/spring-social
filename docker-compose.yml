@@ -34,7 +34,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: user-service
     volumes:
-      - ./data/postgres/users:/var/lib/postgres
+      - ./data/postgres/users:/var/lib/postgresql/data
       - ./init/postgres/docker-entrypoint-initdb.d/user-service-init.sql:/docker-entrypoint-initdb.d/init.sql
     container_name: postgresql-user-service
     restart: unless-stopped
@@ -100,7 +100,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: comment-service
     volumes:
-      - ./data/postgres/comments:/var/lib/postgres
+      - ./data/postgres/comments:/var/lib/postgresql/data
       - ./init/postgres/docker-entrypoint-initdb.d/comment-service-init.sql:/docker-entrypoint-initdb.d/init.sql
     container_name: postgresql-comment-service
     restart: unless-stopped
