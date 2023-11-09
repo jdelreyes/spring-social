@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -32,8 +33,10 @@ import java.util.Map;
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final MongoTemplate mongoTemplate;
-    @Autowired
     private RestTemplate restTemplate;
+
+    @Value("${comment.service.url}")
+    private String commentServiceUri;
 
     @Override
     public Map<String, Object> createPost(PostRequest postRequest, HttpServletRequest httpServletRequest) {
