@@ -4,7 +4,7 @@
 - [x] Microservice architecture
 - [x] Testing and Containerization
 - [x] Relational Database Modeling
-- [x] Inter-Service Communication (Locally)
+- [x] Inter-Service Communication
 
 ## Deliverables
 - [x] Git repository
