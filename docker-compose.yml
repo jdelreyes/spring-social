@@ -25,22 +25,6 @@ services:
     networks:
       - spring-social
 
-  postgresql-user-service:
-    image: postgres:latest
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: rootadmin
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: user-service
-    volumes:
-      - ./data/postgres/users:/var/lib/postgresql/data
-      - ./init/postgres/docker-entrypoint-initdb.d/user-service-init.sql:/docker-entrypoint-initdb.d/init.sql
-    container_name: postgresql-user-service
-    restart: unless-stopped
-    networks:
-      - spring-social
-
   post-service:
     image: post-service
     ports:
@@ -55,22 +39,6 @@ services:
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
       - mongodb-post-service
-    networks:
-      - spring-social
-
-  mongodb-post-service:
-    image: mongo:latest
-    ports:
-      - "27016:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=rootadmin
-      - MONGO_INITDB_ROOT_PASSWORD=password
-    volumes:
-      - ./data/mongo/posts:/data/db
-      - ./init/mongo/docker-entrypoint-initdb.d/post-service-init.js:/docker-entrypoint-initdb.d/post-service-init.js:ro
-    container_name: mongodb-post-service
-    restart: unless-stopped
-    command: mongod --auth
     networks:
       - spring-social
 
@@ -91,22 +59,6 @@ services:
     networks:
       - spring-social
 
-  postgresql-comment-service:
-    image: postgres:latest
-    ports:
-      - "5433:5432"
-    environment:
-      POSTGRES_USER: rootadmin
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: comment-service
-    volumes:
-      - ./data/postgres/comments:/var/lib/postgresql/data
-      - ./init/postgres/docker-entrypoint-initdb.d/comment-service-init.sql:/docker-entrypoint-initdb.d/init.sql
-    container_name: postgresql-comment-service
-    restart: unless-stopped
-    networks:
-      - spring-social
-
   friendship-service:
     image: friendship-service
     ports:
@@ -121,6 +73,67 @@ services:
       # property available provided by spring
     depends_on:
       - mongodb-friendship-service
+    networks:
+      - spring-social
+
+  discovery-service:
+    image: discovery-service
+    ports:
+      - "8761:8761"
+    build:
+      context: ./discovery-service
+      dockerfile: ./Dockerfile
+    container_name: discovery-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    networks:
+      - spring-social
+
+  postgresql-user-service:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: rootadmin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: user-service
+    volumes:
+      - ./data/postgres/users:/var/lib/postgresql/data
+      - ./init/postgres/docker-entrypoint-initdb.d/user-service-init.sql:/docker-entrypoint-initdb.d/init.sql
+    container_name: postgresql-user-service
+    restart: unless-stopped
+    networks:
+      - spring-social
+
+  mongodb-post-service:
+    image: mongo:latest
+    ports:
+      - "27016:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=rootadmin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - ./data/mongo/posts:/data/db
+      - ./init/mongo/docker-entrypoint-initdb.d/post-service-init.js:/docker-entrypoint-initdb.d/post-service-init.js:ro
+    container_name: mongodb-post-service
+    restart: unless-stopped
+    command: mongod --auth
+    networks:
+      - spring-social
+
+  postgresql-comment-service:
+    image: postgres:latest
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: rootadmin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: comment-service
+    volumes:
+      - ./data/postgres/comments:/var/lib/postgresql/data
+      - ./init/postgres/docker-entrypoint-initdb.d/comment-service-init.sql:/docker-entrypoint-initdb.d/init.sql
+    container_name: postgresql-comment-service
+    restart: unless-stopped
     networks:
       - spring-social
 
