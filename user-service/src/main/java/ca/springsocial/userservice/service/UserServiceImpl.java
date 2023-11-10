@@ -38,7 +38,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final WebClient webClient;
-    private final RestTemplate restTemplate;
 
     @Value("${comment.service.url}")
     private String commentServiceUri;
