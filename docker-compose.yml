@@ -22,6 +22,7 @@ services:
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
       - postgresql-user-service
+      - discovery-service
     networks:
       - spring-social
 
@@ -39,6 +40,7 @@ services:
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
       - mongodb-post-service
+      - discovery-service
     networks:
       - spring-social
 
@@ -56,6 +58,7 @@ services:
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
       - postgresql-comment-service
+      - discovery-service
     networks:
       - spring-social
 
@@ -73,6 +76,7 @@ services:
       # property available provided by spring
     depends_on:
       - mongodb-friendship-service
+      - discovery-service
     networks:
       - spring-social
 

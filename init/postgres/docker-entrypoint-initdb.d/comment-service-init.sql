@@ -1,3 +1,5 @@
-CREATE DATABASE "comment-service";
+CREATE
+DATABASE "comment-service";
 
-GRANT ALL PRIVILEGES ON DATABASE "comment-service" TO "rootadmin"
+GRANT ALL PRIVILEGES ON DATABASE
+"comment-service" TO "rootadmin"

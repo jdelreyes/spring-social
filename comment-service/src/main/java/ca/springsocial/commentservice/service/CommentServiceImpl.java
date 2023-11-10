@@ -89,8 +89,14 @@ public class CommentServiceImpl implements CommentService {
     private Map<String, Object> validateUserIdFromCookie(HttpServletRequest httpServletRequest) {
         Long userId = getUserIdFromCookie(httpServletRequest);
         if (userId == null)
-            return new HashMap<String, Object>(){{put("status", false);put("message", "no logged in user");}};
-        return new HashMap<String, Object>(){{put("status", true);put("userId", userId);}};
+            return new HashMap<String, Object>() {{
+                put("status", false);
+                put("message", "no logged in user");
+            }};
+        return new HashMap<String, Object>() {{
+            put("status", true);
+            put("userId", userId);
+        }};
     }
 
     private Long getUserIdFromCookie(HttpServletRequest httpServletRequest) {
