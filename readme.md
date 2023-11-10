@@ -32,6 +32,8 @@ Comment Service: `8082:8082`
 
 Friendship Service `8083:8083`
 
+Discovery Service `8761:8761`
+
 ## MongoDB port
 Post Service: `27016:27017`
 
