@@ -19,7 +19,6 @@ import java.util.Map;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
-
     private final UserServiceImpl userService;
 
     // CREATE

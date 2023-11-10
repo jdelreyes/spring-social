@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
             return userHashMap;
         }
 
-        if (userRepository.getUserByUserName(userRequest.getUserName()) != null) {
+        if (userRepository.findUserByUserName(userRequest.getUserName()) != null) {
             userHashMap.put("status", false);
             userHashMap.put("message", "userName already in use");
             return userHashMap;
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> login(String userName, String password, HttpServletResponse response) {
         Map<String, Object> userHashMap = new HashMap<>();
-        User user = userRepository.getUserByUserName(userName);
+        User user = userRepository.findUserByUserName(userName);
 
         if (user == null) {
             userHashMap.put("status", false);
@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean updateUser(Long userId, UserRequest userRequest) {
-        User user = userRepository.getUserById(userId);
+        User user = userRepository.findUserById(userId);
 
         if (user != null) {
             user.setUserName(userRequest.getUserName());
@@ -127,7 +127,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse getUserById(Long userId) {
-        User user = userRepository.getUserById(userId);
+        User user = userRepository.findUserById(userId);
 
         if (user != null)
             return mapToUserResponse(user);
@@ -150,7 +150,7 @@ public class UserServiceImpl implements UserService {
 //                block to make this synchronous
                 .block();
 
-        User user = userRepository.getUserById(userId);
+        User user = userRepository.findUserById(userId);
         if (user == null) return null;
 
         UserResponse userResponse = mapToUserResponse(user);
@@ -169,7 +169,7 @@ public class UserServiceImpl implements UserService {
 //                block to make this synchronous
                 .block();
 
-        User user = userRepository.getUserById(userId);
+        User user = userRepository.findUserById(userId);
         if (user == null) return null;
 
         UserResponse userResponse = mapToUserResponse(user);
@@ -187,7 +187,7 @@ public class UserServiceImpl implements UserService {
 //                block to make this synchronous
                 .block();
 
-        User user = userRepository.getUserById(userId);
+        User user = userRepository.findUserById(userId);
         if (user == null) return null;
 
         UserResponse userResponse = mapToUserResponse(user);
