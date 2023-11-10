@@ -24,7 +24,7 @@ public class UserController {
 
     // CREATE
     @PostMapping("/signup")
-    public ResponseEntity<Map<String, Object>> signUp(@RequestBody UserRequest userRequest){
+    public ResponseEntity<Map<String, Object>> signUp(@RequestBody UserRequest userRequest) {
         Map<String, Object> userHashMap = userService.signUp(userRequest);
 
         if ((Boolean) userHashMap.get("status"))
@@ -45,7 +45,7 @@ public class UserController {
 
     @PostMapping({"/logout"})
     @ResponseStatus(HttpStatus.OK)
-    Map<String, Object> logout(HttpServletResponse httpServletResponse){
+    Map<String, Object> logout(HttpServletResponse httpServletResponse) {
         return userService.logout(httpServletResponse);
     }
 
@@ -53,7 +53,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long userId) {
         UserResponse userResponse = userService.getUserById(userId);
-        if (userResponse!=null)
+        if (userResponse != null)
             return new ResponseEntity<>(userResponse, HttpStatus.OK);
 
         return new ResponseEntity<>(userResponse, HttpStatus.BAD_REQUEST);
@@ -69,7 +69,7 @@ public class UserController {
     // UPDATE
     @PutMapping({"/update/{userId}"})
     public ResponseEntity<?> updateUser(@PathVariable("userId") Long userId, @RequestBody UserRequest userRequest) {
-        boolean isUserUpdated = userService.updateUser(userId,userRequest);
+        boolean isUserUpdated = userService.updateUser(userId, userRequest);
         if (!isUserUpdated) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -84,7 +84,7 @@ public class UserController {
 
     @GetMapping({"/{userId}/posts"})
     public ResponseEntity<UserWithPosts> getUserPosts(@PathVariable Long userId) {
-        UserWithPosts userWithPosts =  userService.getUserWithPosts(userId);
+        UserWithPosts userWithPosts = userService.getUserWithPosts(userId);
 
         if (userWithPosts == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -95,7 +95,7 @@ public class UserController {
 
     @GetMapping({"/{userId}/comments"})
     public ResponseEntity<UserWithComments> getUserComments(@PathVariable Long userId) {
-        UserWithComments userWithComments =  userService.getUserWithComments(userId);
+        UserWithComments userWithComments = userService.getUserWithComments(userId);
         if (userWithComments == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

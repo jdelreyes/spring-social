@@ -10,16 +10,11 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
@@ -117,7 +112,7 @@ public class PostServiceImpl implements PostService {
         return new PostWithComments(postResponse, commentResponseList);
     }
 
-//    fixme: can put comments in a list in comment service instead of requesting multiple times
+    //    fixme: can put comments in a list in comment service instead of requesting multiple times
     @Override
     public List<PostWithComments> getPostsWithCommentsByUserId(Long userId) {
         // getting list of post with user id
@@ -157,8 +152,14 @@ public class PostServiceImpl implements PostService {
     private Map<String, Object> validateUserIdFromCookie(HttpServletRequest httpServletRequest) {
         Long userId = getUserIdFromCookie(httpServletRequest);
         if (userId == null)
-            return new HashMap<String, Object>(){{put("status", false);put("message", "no logged in user");}};
-        return new HashMap<String, Object>(){{put("status", true);put("userId", userId);}};
+            return new HashMap<String, Object>() {{
+                put("status", false);
+                put("message", "no logged in user");
+            }};
+        return new HashMap<String, Object>() {{
+            put("status", true);
+            put("userId", userId);
+        }};
     }
 
     private Long getUserIdFromCookie(HttpServletRequest httpServletRequest) {

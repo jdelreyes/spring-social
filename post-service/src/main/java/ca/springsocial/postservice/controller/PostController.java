@@ -34,6 +34,7 @@ public class PostController {
         }
         return ResponseEntity.noContent().build();
     }
+
     @DeleteMapping({"/delete/{postId}"})
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePost(@PathVariable("postId") String postId) {
@@ -45,6 +46,7 @@ public class PostController {
     public PostResponse getPost(@PathVariable("postId") String postId) {
         return postService.getPostById(postId);
     }
+
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<PostResponse> getPosts() {

@@ -14,7 +14,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
-//    todo: make unique
+    //    todo: make unique
     private String userName;
     private LocalDateTime dateTimeJoined = LocalDateTime.now();
     private String email;

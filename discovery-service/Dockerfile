@@ -21,12 +21,12 @@ FROM openjdk:17-alpine
 # for RUN commands, the command only applies to the image
 RUN mkdir /app
 
-COPY --from=builder /home/gradle/src/build/libs/*.jar /app/discover-service.jar
+COPY --from=builder /home/gradle/src/build/libs/*.jar /app/discovery-service.jar
 
 # EXPOSE the port where the application will be listening on
 # EXPOSE does not make the ports of  the container accessible to the host
 EXPOSE 8761
 
 # Execute the following 1 command after the container starts
-# CMD ["java", "-jar", "app/product-service.jar"]
-ENTRYPOINT ["java", "-jar", "/app/discover-service.jar"]
+# CMD ["java", "-jar", "app/discovery-service.jar"]
+ENTRYPOINT ["java", "-jar", "/app/discovery-service.jar"]
