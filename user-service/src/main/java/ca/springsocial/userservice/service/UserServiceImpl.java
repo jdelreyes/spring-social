@@ -146,20 +146,18 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserWithPosts getUserWithPosts(Long userId) {
-        String postServiceUrl = "http://localhost:8084/api/posts/user/" + userId.toString();
-
-        ResponseEntity<List<PostResponse>> responseEntity = restTemplate.exchange(
-                postServiceUrl,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<PostResponse>>() {
-                }
-        );
+        List<PostResponse> postResponseList = webClient
+                .get()
+                .uri(postServiceUri + "/user/" + userId)
+                .retrieve()
+                .bodyToFlux(PostResponse.class)
+                .collectList()
+//                block to make this synchronous
+                .block();
 
         User user = userRepository.getUserById(userId);
         if (user == null) return null;
 
-        List<PostResponse> postResponseList = responseEntity.getBody();
         UserResponse userResponse = mapToUserResponse(user);
 
         return new UserWithPosts(userResponse, postResponseList);
@@ -167,22 +165,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserWithPostsWithComments getUserWithPostsWithComments(Long userId) {
-        String postWithCommentsServiceUrl = "http://127.0.0.1:8084/api/posts/" + userId + "/posts/comments";
-
-        ResponseEntity<List<PostWithComments>> responseEntity = restTemplate.exchange(
-                postWithCommentsServiceUrl,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<PostWithComments>>() {
-                }
-        );
+        List<PostWithComments> postWithCommentsList = webClient
+                .get()
+                .uri(postServiceUri + "/user/" + userId + "/posts/comments")
+                .retrieve()
+                .bodyToFlux(PostWithComments.class)
+                .collectList()
+//                block to make this synchronous
+                .block();
 
         User user = userRepository.getUserById(userId);
         if (user == null) return null;
 
-        List<PostWithComments> postWithCommentsList = responseEntity.getBody();
         UserResponse userResponse = mapToUserResponse(user);
-
         return new UserWithPostsWithComments(userResponse, postWithCommentsList);
     }
 
