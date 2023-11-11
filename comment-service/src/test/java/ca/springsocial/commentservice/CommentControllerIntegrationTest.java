@@ -35,10 +35,8 @@ public class CommentControllerIntegrationTest {
 
     @Mock
     private CommentRepository commentRepository;
-
     @InjectMocks
     private CommentServiceImpl commentServiceImpl;
-
     @Mock
     private HttpServletRequest httpServletRequest;
 

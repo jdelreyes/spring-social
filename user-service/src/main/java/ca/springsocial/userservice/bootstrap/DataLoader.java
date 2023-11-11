@@ -21,33 +21,36 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
 //        we can seed the database while booting up
         if (userRepository.findUserByUserName("John Doe") == null) {
-            User widgets = new User();
-            widgets.setUserName("John Doe");
-            widgets.setEmail("johndoe@email.com");
-            widgets.setPassword(bCryptPasswordEncoder.encode("password"));
-            widgets.setBio("I love dogs <3");
-            widgets.setDateTimeJoined(LocalDateTime.now());
-            userRepository.save(widgets);
+            User widget = new User();
+            widget.setId(1L);
+            widget.setUserName("John Doe");
+            widget.setEmail("johndoe@email.com");
+            widget.setPassword(bCryptPasswordEncoder.encode("password"));
+            widget.setBio("I love dogs <3");
+            widget.setDateTimeJoined(LocalDateTime.now());
+            userRepository.save(widget);
         }
 
         if (userRepository.findUserByUserName("Jane Smith") == null) {
-            User widgets = new User();
-            widgets.setUserName("Jane Smith");
-            widgets.setEmail("janesmith@email.com");
-            widgets.setPassword(bCryptPasswordEncoder.encode("password"));
-            widgets.setBio("Nature enthusiast and book lover");
-            widgets.setDateTimeJoined(LocalDateTime.now());
-            userRepository.save(widgets);
+            User widget = new User();
+            widget.setId(2L);
+            widget.setUserName("Jane Smith");
+            widget.setEmail("janesmith@email.com");
+            widget.setPassword(bCryptPasswordEncoder.encode("password"));
+            widget.setBio("Nature enthusiast and book lover");
+            widget.setDateTimeJoined(LocalDateTime.now());
+            userRepository.save(widget);
         }
 
         if (userRepository.findUserByUserName("Bob Johnson") == null) {
-            User widgets = new User();
-            widgets.setUserName("Bob Johnson");
-            widgets.setEmail("bobjohnson@email.com");
-            widgets.setPassword(bCryptPasswordEncoder.encode("password"));
-            widgets.setBio("Passionate about technology and coding");
-            widgets.setDateTimeJoined(LocalDateTime.now());
-            userRepository.save(widgets);
+            User widget = new User();
+            widget.setId(3L);
+            widget.setUserName("Bob Johnson");
+            widget.setEmail("bobjohnson@email.com");
+            widget.setPassword(bCryptPasswordEncoder.encode("password"));
+            widget.setBio("Passionate about technology and coding");
+            widget.setDateTimeJoined(LocalDateTime.now());
+            userRepository.save(widget);
         }
     }
 }
