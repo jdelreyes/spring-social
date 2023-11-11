@@ -10,6 +10,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -29,7 +30,7 @@ import java.util.Map;
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final MongoTemplate mongoTemplate;
-    private WebClient webClient;
+    private final WebClient webClient;
 
     @Value("${comment.service.url}")
     private String commentServiceUri;
@@ -113,6 +114,7 @@ public class PostServiceImpl implements PostService {
     }
 
     //    fixme: can put comments in a list in comment service instead of requesting multiple times
+    // fixme: does not work
     @Override
     public List<PostWithComments> getPostsWithCommentsByUserId(Long userId) {
         // getting list of post with user id
