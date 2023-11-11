@@ -140,6 +140,7 @@ public class UserServiceImpl implements UserService {
         return users.stream().map(this::mapToUserResponse).toList();
     }
 
+    @Override
     public UserWithPosts getUserWithPosts(Long userId) {
         List<PostResponse> postResponseList = webClient
                 .get()
