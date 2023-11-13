@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$/comment-service" />
             <option value="$PROJECT_DIR$/discovery-service" />
             <option value="$PROJECT_DIR$/friendship-service" />
+            <option value="$PROJECT_DIR$/notification-service" />
             <option value="$PROJECT_DIR$/post-service" />
             <option value="$PROJECT_DIR$/user-service" />
           </set>
