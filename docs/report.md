@@ -39,7 +39,7 @@ Post Service: `27016:27017`
 
 Friendship Service `27014:27017`
 
-## PostgresSQL Port
+## PostgreSQL Port
 
 User Service: `5432:5432`
 

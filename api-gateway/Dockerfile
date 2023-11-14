@@ -25,7 +25,7 @@ COPY --from=builder /home/gradle/src/build/libs/*.jar /app/api-gateway.jar
 
 # EXPOSE the port where the application will be listening on
 # EXPOSE does not make the ports of  the container accessible to the host
-EXPOSE 8761
+EXPOSE 8181
 
 # Execute the following 1 command after the container starts
 # CMD ["java", "-jar", "app/api-gateway.jar"]
