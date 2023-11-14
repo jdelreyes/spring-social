@@ -25,6 +25,21 @@ services:
     networks:
       - spring-social
 
+  api-gateway:
+    image: api-gateway
+    ports:
+      - "8181:8181"
+    build:
+      context: ./api-gateway
+      dockerfile: ./Dockerfile
+    container_name: api-gateway
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - discovery-service
+    networks:
+      - spring-social
+
   postgresql-user-service:
     image: postgres:latest
     ports:
