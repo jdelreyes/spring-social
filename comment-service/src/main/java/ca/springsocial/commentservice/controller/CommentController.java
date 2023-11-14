@@ -18,18 +18,18 @@ import java.util.Map;
 public class CommentController {
     private final CommentServiceImpl commentService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<Map<String, Object>> createComment(@RequestBody CommentRequest commentRequest, HttpServletRequest httpServletRequest) {
         return new ResponseEntity<>(commentService.createComment(commentRequest, httpServletRequest), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{commentId}/details")
+    @GetMapping("{commentId}")
     @ResponseStatus(HttpStatus.OK)
     public CommentResponse getCommentById(@PathVariable Long commentId) {
         return commentService.getCommentById(commentId);
     }
 
-    @PutMapping("/update/{commentId}")
+    @PutMapping("/{commentId}")
     public ResponseEntity<?> updateComment(@PathVariable Long commentId, @RequestBody CommentRequest commentRequest) {
         boolean isCommentUpdated = commentService.updateComment(commentId, commentRequest);
         if (!isCommentUpdated) {
@@ -38,7 +38,7 @@ public class CommentController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("/delete/{commentId}")
+    @DeleteMapping("/{commentId}")
     public void deleteComment(@PathVariable Long commentId) {
         commentService.deleteComment(commentId);
     }
@@ -49,15 +49,15 @@ public class CommentController {
         return commentService.getComments();
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<CommentResponse> getUserComments(@PathVariable Long userId) {
+    public List<CommentResponse> getUserComments(@RequestParam(name="user") Long userId) {
         return commentService.getUserComments(userId);
     }
 
-    @GetMapping("/post/{postId}")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<CommentResponse> getPostComments(@PathVariable String postId) {
+    public List<CommentResponse> getPostComments(@RequestParam(name="post") String postId) {
         return commentService.getPostComments(postId);
     }
 }
