@@ -21,89 +21,90 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @TestPropertySource(properties = {"management.server.port=0"})
 public class FriendshipServiceIntegrationTest {
 
-	@LocalServerPort
-	private int port;
+    @LocalServerPort
+    private int port;
 
-	@Autowired
-	private TestRestTemplate restTemplate;
+    @Autowired
+    private TestRestTemplate restTemplate;
 
-	// FRIEND REQUEST
-	@Test
-	void sendFriendRequestTest() {
-		// "SENDING" ENDPOINT
-		String url = "http://localhost:" + port + "/api/friendships/send";
+    // FRIEND REQUEST
+    @Test
+    void sendFriendRequestTest() {
+        // "SENDING" ENDPOINT
+        String url = "http://localhost:" + port + "/api/friendships/send";
 
-		FriendshipRequest friendshipRequest = FriendshipRequest.builder()
-				.recipientUserId(123L)
-				.build();
+        FriendshipRequest friendshipRequest = FriendshipRequest.builder()
+                .recipientUserId(123L)
+                .build();
 
-		// Send the POST request
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<FriendshipRequest> entity = new HttpEntity<>(friendshipRequest, headers);
-		ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
+        // Send the POST request
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<FriendshipRequest> entity = new HttpEntity<>(friendshipRequest, headers);
+        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
 
-		// Assertions
-		assertEquals(HttpStatus.CREATED, response.getStatusCode());
-	}
+        // Assertions
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+    }
 
-	// ACCEPT
-	@Test
-	void acceptFriendRequestTest() {
-		// "ACCEPT" ENDPOINT
-		String url = "http://localhost:" + port + "/api/friendships/accept";
-
-
-		FriendshipRequest friendshipRequest = FriendshipRequest.builder()
-				.recipientUserId(Long.valueOf("12345"))
-				.build();
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<FriendshipRequest> entity = new HttpEntity<>(friendshipRequest, headers);
-		ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.PUT, entity, Map.class);
-
-		// Assertions
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-	}
-
-	@Test
-	void rejectFriendRequestTest() {
-		// "REJECT" ENDPOINT
-		String url = "http://localhost:" + port + "/api/friendships/reject";
+    // ACCEPT
+    @Test
+    void acceptFriendRequestTest() {
+        // "ACCEPT" ENDPOINT
+        String url = "http://localhost:" + port + "/api/friendships/accept";
 
 
-		FriendshipRequest friendshipRequest = FriendshipRequest.builder()
-				.recipientUserId(Long.valueOf("12345"))
-				.build();
+        FriendshipRequest friendshipRequest = FriendshipRequest.builder()
+                .recipientUserId(Long.valueOf("12345"))
+                .build();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<FriendshipRequest> entity = new HttpEntity<>(friendshipRequest, headers);
+        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.PUT, entity, Map.class);
 
-		// Send the PUT request
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<FriendshipRequest> entity = new HttpEntity<>(friendshipRequest, headers);
-		ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.PUT, entity, Map.class);
+        // Assertions
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
 
-		// Assertions
-		assertEquals(HttpStatus.OK, response.getStatusCode());
+    @Test
+    void rejectFriendRequestTest() {
+        // "REJECT" ENDPOINT
+        String url = "http://localhost:" + port + "/api/friendships/reject";
 
-	}
 
-	@Test
-	void getPendingFriendListTest() {
-		Long userId = 123L;
-		String url = "http://localhost:" + port + "/api/friendships/" + userId + "/pending/list";
+        FriendshipRequest friendshipRequest = FriendshipRequest.builder()
+                .recipientUserId(Long.valueOf("12345"))
+                .build();
 
-		// Send the GET request
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<String> entity = new HttpEntity<>(null, headers);
-		ResponseEntity<List<FriendshipResponse>> response = restTemplate.exchange(url, HttpMethod.GET, entity, new ParameterizedTypeReference<List<FriendshipResponse>>() {});
+        // Send the PUT request
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<FriendshipRequest> entity = new HttpEntity<>(friendshipRequest, headers);
+        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.PUT, entity, Map.class);
 
-		// Assertions
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		List<FriendshipResponse> friendshipResponses = response.getBody();
-		assertNotNull(friendshipResponses);
+        // Assertions
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
-	}
+    }
+
+    @Test
+    void getPendingFriendListTest() {
+        Long userId = 123L;
+        String url = "http://localhost:" + port + "/api/friendships/" + userId + "/pending/list";
+
+        // Send the GET request
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+        ResponseEntity<List<FriendshipResponse>> response = restTemplate.exchange(url, HttpMethod.GET, entity, new ParameterizedTypeReference<List<FriendshipResponse>>() {
+        });
+
+        // Assertions
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        List<FriendshipResponse> friendshipResponses = response.getBody();
+        assertNotNull(friendshipResponses);
+
+    }
 
 
 }

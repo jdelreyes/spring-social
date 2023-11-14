@@ -22,6 +22,74 @@ services:
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
       - postgresql-user-service
+      - discovery-service
+    networks:
+      - spring-social
+
+  post-service:
+    image: post-service
+    ports:
+      - "8084:8084"
+    #    builds app
+    build:
+      context: ./post-service
+      dockerfile: ./Dockerfile
+    container_name: post-service
+    environment:
+      # property available provided by spring
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - mongodb-post-service
+      - discovery-service
+    networks:
+      - spring-social
+
+  comment-service:
+    image: comment-service
+    ports:
+      - "8082:8082"
+    #    builds app
+    build:
+      context: ./comment-service
+      dockerfile: ./Dockerfile
+    container_name: comment-service
+    environment:
+      # property available provided by spring
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - postgresql-comment-service
+      - discovery-service
+    networks:
+      - spring-social
+
+  friendship-service:
+    image: friendship-service
+    ports:
+      - "8083:8083"
+    #    builds app
+    build:
+      context: ./friendship-service
+      dockerfile: ./Dockerfile
+    container_name: friendship-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      # property available provided by spring
+    depends_on:
+      - mongodb-friendship-service
+      - discovery-service
+    networks:
+      - spring-social
+
+  discovery-service:
+    image: discovery-service
+    ports:
+      - "8761:8761"
+    build:
+      context: ./discovery-service
+      dockerfile: ./Dockerfile
+    container_name: discovery-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
     networks:
       - spring-social
 
@@ -56,23 +124,6 @@ services:
     networks:
       - spring-social
 
-  post-service:
-    image: post-service
-    ports:
-      - "8084:8084"
-    #    builds app
-    build:
-      context: ./post-service
-      dockerfile: ./Dockerfile
-    container_name: post-service
-    environment:
-      # property available provided by spring
-      SPRING_PROFILES_ACTIVE: docker
-    depends_on:
-      - mongodb-post-service
-    networks:
-      - spring-social
-
   mongodb-post-service:
     image: mongo:latest
     ports:
@@ -89,23 +140,6 @@ services:
     networks:
       - spring-social
 
-  comment-service:
-    image: comment-service
-    ports:
-      - "8082:8082"
-    #    builds app
-    build:
-      context: ./comment-service
-      dockerfile: ./Dockerfile
-    container_name: comment-service
-    environment:
-      # property available provided by spring
-      SPRING_PROFILES_ACTIVE: docker
-    depends_on:
-      - postgresql-comment-service
-    networks:
-      - spring-social
-
   postgresql-comment-service:
     image: postgres:latest
     ports:
@@ -119,23 +153,6 @@ services:
       - ./init/postgres/docker-entrypoint-initdb.d/comment-service-init.sql:/docker-entrypoint-initdb.d/init.sql
     container_name: postgresql-comment-service
     restart: unless-stopped
-    networks:
-      - spring-social
-
-  friendship-service:
-    image: friendship-service
-    ports:
-      - "8083:8083"
-    #    builds app
-    build:
-      context: ./friendship-service
-      dockerfile: ./Dockerfile
-    container_name: friendship-service
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      # property available provided by spring
-    depends_on:
-      - mongodb-friendship-service
     networks:
       - spring-social
 

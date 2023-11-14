@@ -17,7 +17,8 @@ public class Comment {
     private Long id;
     private String content;
     private LocalDateTime dateTimeCommented = LocalDateTime.now();
-//    foreign keys
     private String postId;
     private Long userId;
+
+
 }

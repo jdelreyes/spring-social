@@ -11,14 +11,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,8 +30,10 @@ import java.util.Map;
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final MongoTemplate mongoTemplate;
-    @Autowired
-    private RestTemplate restTemplate;
+    private final WebClient webClient;
+
+    @Value("${comment.service.url}")
+    private String commentServiceUri;
 
     @Override
     public Map<String, Object> createPost(PostRequest postRequest, HttpServletRequest httpServletRequest) {
@@ -96,24 +96,25 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostWithComments getPostWithComments(String postId) {
-        String commentServiceUrl = "http://127.0.0.1:8082/api/comments/post/" + postId;
-
-        ResponseEntity<List<CommentResponse>> responseEntity = restTemplate.exchange(
-                commentServiceUrl,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<CommentResponse>>() {}
-        );
+        List<CommentResponse> commentResponseList = webClient
+                .get()
+                .uri(commentServiceUri + "/post/" + postId)
+                .retrieve()
+                .bodyToFlux(CommentResponse.class)
+                .collectList()
+//                block to make this synchronous
+                .block();
 
         Post post = this.queryPost("id", postId);
         if (post == null) return null;
 
-        List<CommentResponse> commentResponseList = responseEntity.getBody();
         PostResponse postResponse = mapToPostResponse(post);
 
         return new PostWithComments(postResponse, commentResponseList);
     }
 
+    //    fixme: can put comments in a list in comment service instead of requesting multiple times
+    // fixme: does not work
     @Override
     public List<PostWithComments> getPostsWithCommentsByUserId(Long userId) {
         // getting list of post with user id
@@ -121,20 +122,18 @@ public class PostServiceImpl implements PostService {
         List<PostWithComments> postWithCommentsList = new ArrayList<>();
 
         for (Post post : postList) {
-            String commentServiceUrl = "http://127.0.0.1:8082/api/comments/post/" + post.getId();
+            List<CommentResponse> commentResponseList = webClient
+                    .get()
+                    .uri(commentServiceUri + "/post/" + post.getId())
+                    .retrieve()
+                    .bodyToFlux(CommentResponse.class)
+                    .collectList()
+//                block to make this synchronous
+                    .block();
 
-            ResponseEntity<List<CommentResponse>> responseEntity = restTemplate.exchange(
-                    commentServiceUrl,
-                    HttpMethod.GET,
-                    null,
-                    new ParameterizedTypeReference<List<CommentResponse>>() {
-                    }
-            );
             PostResponse postResponse = mapToPostResponse(post);
 
-            assert false;
-            postWithCommentsList.add(new PostWithComments(postResponse, responseEntity.getBody()));
-
+            postWithCommentsList.add(new PostWithComments(postResponse, commentResponseList));
         }
 
         return postWithCommentsList;
@@ -155,8 +154,14 @@ public class PostServiceImpl implements PostService {
     private Map<String, Object> validateUserIdFromCookie(HttpServletRequest httpServletRequest) {
         Long userId = getUserIdFromCookie(httpServletRequest);
         if (userId == null)
-            return new HashMap<String, Object>(){{put("status", false);put("message", "no logged in user");}};
-        return new HashMap<String, Object>(){{put("status", true);put("userId", userId);}};
+            return new HashMap<String, Object>() {{
+                put("status", false);
+                put("message", "no logged in user");
+            }};
+        return new HashMap<String, Object>() {{
+            put("status", true);
+            put("userId", userId);
+        }};
     }
 
     private Long getUserIdFromCookie(HttpServletRequest httpServletRequest) {

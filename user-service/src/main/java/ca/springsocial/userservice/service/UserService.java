@@ -12,13 +12,22 @@ import java.util.Map;
 
 public interface UserService {
     Map<String, Object> signUp(UserRequest userRequest);
+
     Map<String, Object> login(String userName, String password, HttpServletResponse response);
+
     Map<String, Object> logout(HttpServletResponse httpServletResponse);
+
     boolean updateUser(Long userId, UserRequest userRequest);
+
     void deleteUser(Long userId);
+
     UserResponse getUserById(Long userId);
+
     List<UserResponse> getUsers();
+
     UserWithPosts getUserWithPosts(Long userId);
+
     UserWithPostsWithComments getUserWithPostsWithComments(Long userId);
+
     UserWithComments getUserWithComments(Long userId);
 }

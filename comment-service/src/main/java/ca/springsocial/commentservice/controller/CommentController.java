@@ -29,18 +29,17 @@ public class CommentController {
         return commentService.getCommentById(commentId);
     }
 
-    // tweak it a bit - done
     @PutMapping("/update/{commentId}")
-    public ResponseEntity<String> updateComment(@PathVariable Long commentId, @RequestBody CommentRequest commentRequest) {
+    public ResponseEntity<?> updateComment(@PathVariable Long commentId, @RequestBody CommentRequest commentRequest) {
         boolean isCommentUpdated = commentService.updateComment(commentId, commentRequest);
         if (!isCommentUpdated) {
-            return new ResponseEntity<>("Comment not found", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>("Comment updated successfully", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/delete/{commentId}")
-    public void deleteComment(@PathVariable Long commentId){
+    public void deleteComment(@PathVariable Long commentId) {
         commentService.deleteComment(commentId);
     }
 
@@ -52,13 +51,13 @@ public class CommentController {
 
     @GetMapping("/user/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    List<CommentResponse> getUserComments(@PathVariable Long userId) {
+    public List<CommentResponse> getUserComments(@PathVariable Long userId) {
         return commentService.getUserComments(userId);
     }
 
     @GetMapping("/post/{postId}")
     @ResponseStatus(HttpStatus.OK)
-    List<CommentResponse> getPostComments(@PathVariable String postId) {
+    public List<CommentResponse> getPostComments(@PathVariable String postId) {
         return commentService.getPostComments(postId);
     }
 }

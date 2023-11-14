@@ -2,10 +2,10 @@ package ca.springsocial.userservice.service;
 
 import ca.springsocial.userservice.dto.combined.PostWithComments;
 import ca.springsocial.userservice.dto.combined.UserWithComments;
+import ca.springsocial.userservice.dto.combined.UserWithPosts;
 import ca.springsocial.userservice.dto.combined.UserWithPostsWithComments;
 import ca.springsocial.userservice.dto.comment.CommentResponse;
 import ca.springsocial.userservice.dto.post.PostResponse;
-import ca.springsocial.userservice.dto.combined.UserWithPosts;
 import ca.springsocial.userservice.dto.user.UserRequest;
 import ca.springsocial.userservice.dto.user.UserResponse;
 import ca.springsocial.userservice.model.User;
@@ -16,13 +16,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,10 +32,13 @@ import java.util.regex.Pattern;
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    @Autowired
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    @Autowired
-    private RestTemplate restTemplate;
+    private final WebClient webClient;
+
+    @Value("${comment.service.url}")
+    private String commentServiceUri;
+    @Value("${post.service.url}")
+    private String postServiceUri;
 
     @Override
     public Map<String, Object> signUp(UserRequest userRequest) {
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
             return userHashMap;
         }
 
-        if (userRepository.getUserByUserName(userRequest.getUserName()) != null) {
+        if (userRepository.findUserByUserName(userRequest.getUserName()) != null) {
             userHashMap.put("status", false);
             userHashMap.put("message", "userName already in use");
             return userHashMap;
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> login(String userName, String password, HttpServletResponse response) {
         Map<String, Object> userHashMap = new HashMap<>();
-        User user = userRepository.getUserByUserName(userName);
+        User user = userRepository.findUserByUserName(userName);
 
         if (user == null) {
             userHashMap.put("status", false);
@@ -94,15 +94,19 @@ public class UserServiceImpl implements UserService {
         userHashMap.put("message", "successfully logged in");
         return userHashMap;
     }
+
     @Override
     public Map<String, Object> logout(HttpServletResponse httpServletResponse) {
         this.removeCookie(httpServletResponse);
-        return new HashMap<String, Object>(){{put("message", "successfully logout");put("status", true);}};
+        return new HashMap<String, Object>() {{
+            put("message", "successfully logout");
+            put("status", true);
+        }};
     }
 
     @Override
     public boolean updateUser(Long userId, UserRequest userRequest) {
-        User user = userRepository.getUserById(userId);
+        User user = userRepository.findUserById(userId);
 
         if (user != null) {
             user.setUserName(userRequest.getUserName());
@@ -123,7 +127,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse getUserById(Long userId) {
-        User user = userRepository.getUserById(userId);
+        User user = userRepository.findUserById(userId);
 
         if (user != null)
             return mapToUserResponse(user);
@@ -136,63 +140,60 @@ public class UserServiceImpl implements UserService {
         return users.stream().map(this::mapToUserResponse).toList();
     }
 
+    @Override
     public UserWithPosts getUserWithPosts(Long userId) {
-        String postServiceUrl = "http://localhost:8084/api/posts/user/" + userId.toString();
+        List<PostResponse> postResponseList = webClient
+                .get()
+                .uri(postServiceUri + "/user/" + userId)
+                .retrieve()
+                .bodyToFlux(PostResponse.class)
+                .collectList()
+//                block to make this synchronous
+                .block();
 
-        ResponseEntity<List<PostResponse>> responseEntity = restTemplate.exchange(
-                postServiceUrl,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<PostResponse>>() {}
-        );
-
-        User user = userRepository.getUserById(userId);
+        User user = userRepository.findUserById(userId);
         if (user == null) return null;
 
-        List<PostResponse> postResponseList = responseEntity.getBody();
         UserResponse userResponse = mapToUserResponse(user);
 
         return new UserWithPosts(userResponse, postResponseList);
     }
-//    todo
+
     @Override
     public UserWithPostsWithComments getUserWithPostsWithComments(Long userId) {
-        String postWithCommentsServiceUrl = "http://127.0.0.1:8084/api/posts/" + userId + "/posts/comments";
+        List<PostWithComments> postWithCommentsList = webClient
+                .get()
+                .uri(postServiceUri + "/user/" + userId + "/posts/comments")
+                .retrieve()
+                .bodyToFlux(PostWithComments.class)
+                .collectList()
+//                block to make this synchronous
+                .block();
 
-        ResponseEntity<List<PostWithComments>> responseEntity = restTemplate.exchange(
-                postWithCommentsServiceUrl,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<PostWithComments>>() {}
-        );
-
-        User user = userRepository.getUserById(userId);
+        User user = userRepository.findUserById(userId);
         if (user == null) return null;
 
-        List<PostWithComments> postWithCommentsList = responseEntity.getBody();
         UserResponse userResponse = mapToUserResponse(user);
-
         return new UserWithPostsWithComments(userResponse, postWithCommentsList);
     }
-//    todo
+
     @Override
     public UserWithComments getUserWithComments(Long userId) {
-        String commentServiceUrl = "http://127.0.0.1:8082/api/comments/user/" + userId;
+        List<CommentResponse> commentResponseList = webClient
+                .get()
+                .uri(commentServiceUri + "/user/" + userId)
+                .retrieve()
+                .bodyToFlux(CommentResponse.class)
+                .collectList()
+//                block to make this synchronous
+                .block();
 
-        ResponseEntity<List<CommentResponse>> responseEntity = restTemplate.exchange(
-                commentServiceUrl,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<CommentResponse>>() {}
-        );
-
-        User user = userRepository.getUserById(userId);
+        User user = userRepository.findUserById(userId);
         if (user == null) return null;
 
-        List<CommentResponse> commentResponses = responseEntity.getBody();
         UserResponse userResponse = mapToUserResponse(user);
 
-        return new UserWithComments(userResponse, commentResponses);
+        return new UserWithComments(userResponse, commentResponseList);
     }
 
     private boolean isEmailAddress(String email) {
@@ -225,8 +226,14 @@ public class UserServiceImpl implements UserService {
     private Map<String, Object> validateUserIdFromCookie(HttpServletRequest httpServletRequest) {
         Long userId = getUserIdFromCookie(httpServletRequest);
         if (userId == null)
-            return new HashMap<String, Object>(){{put("status", false);put("message", "no logged in user");}};
-        return new HashMap<String, Object>(){{put("status", true);put("userId", userId);}};
+            return new HashMap<String, Object>() {{
+                put("status", false);
+                put("message", "no logged in user");
+            }};
+        return new HashMap<String, Object>() {{
+            put("status", true);
+            put("userId", userId);
+        }};
     }
 
     private Long getUserIdFromCookie(HttpServletRequest httpServletRequest) {
