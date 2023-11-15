@@ -12,7 +12,7 @@ public interface CommentService {
 
     CommentResponse getCommentById(Long commentId);
 
-    boolean updateComment(Long commentId, CommentRequest commentRequest);
+    CommentResponse updateComment(Long commentId, CommentRequest commentRequest);
 
     void deleteComment(Long commentId);
 
@@ -21,4 +21,6 @@ public interface CommentService {
     List<CommentResponse> getUserComments(Long userId);
 
     List<CommentResponse> getPostComments(String postId);
+
+    List<CommentResponse> getCommentsByUserIdAndPostId(Long userId, String postId);
 }

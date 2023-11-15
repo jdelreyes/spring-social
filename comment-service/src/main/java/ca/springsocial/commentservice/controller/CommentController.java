@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/comments")
@@ -23,7 +24,7 @@ public class CommentController {
         return new ResponseEntity<>(commentService.createComment(commentRequest, httpServletRequest), HttpStatus.CREATED);
     }
 
-    @GetMapping("{commentId}")
+    @GetMapping("/{commentId}")
     @ResponseStatus(HttpStatus.OK)
     public CommentResponse getCommentById(@PathVariable Long commentId) {
         return commentService.getCommentById(commentId);
@@ -31,11 +32,11 @@ public class CommentController {
 
     @PutMapping("/{commentId}")
     public ResponseEntity<?> updateComment(@PathVariable Long commentId, @RequestBody CommentRequest commentRequest) {
-        boolean isCommentUpdated = commentService.updateComment(commentId, commentRequest);
-        if (!isCommentUpdated) {
+        CommentResponse commentResponse = commentService.updateComment(commentId, commentRequest);
+        if (commentResponse == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(commentResponse, HttpStatus.OK);
     }
 
     @DeleteMapping("/{commentId}")
@@ -45,19 +46,12 @@ public class CommentController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<CommentResponse> getComments() {
+    public List<CommentResponse> getComments(@RequestParam(name = "user") Optional<Long> userId,
+                                             @RequestParam(name = "post") Optional<String> postId) {
+        if (userId.isPresent() && postId.isPresent())
+            return commentService.getCommentsByUserIdAndPostId(userId.get(), postId.get());
+        if (userId.isPresent()) return commentService.getUserComments(userId.get());
+        if (postId.isPresent()) return commentService.getPostComments(postId.get());
         return commentService.getComments();
-    }
-
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<CommentResponse> getUserComments(@RequestParam(name="user") Long userId) {
-        return commentService.getUserComments(userId);
-    }
-
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<CommentResponse> getPostComments(@RequestParam(name="post") String postId) {
-        return commentService.getPostComments(postId);
     }
 }
