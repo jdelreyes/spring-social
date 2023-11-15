@@ -20,18 +20,16 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-
+// test
     implementation("org.testcontainers:testcontainers-bom:1.18.1")
-
+// lombok
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
-
+//jpa postgresql
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.postgresql:postgresql")
-
-    // https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5
+//    eureka
     implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
-
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:4.0.3")
 }
 

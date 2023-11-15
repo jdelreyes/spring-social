@@ -21,14 +21,14 @@ An API-based social media where users can post, comment and send friend requests
 
 ### Docker
 1. Navigate to the folder repository (`spring-social`)
-2. ```shell
+2. Initialize services and database
+   ```shell
    docker-compose -p spring-social -f docker-compose.yml up -d
    ```
 ### IntelliJ IDEA (or any IDE of your choosing)
-1. ```shell
-   # network
+1. Initialize database
+   ```shell
    docker network create spring-social
-   # database
    docker run -d --name user-service --network=spring-social -p 5432:5432 -e POSTGRES_USER=rootadmin -e POSTGRES_PASSWORD=password -e POSTGRES_DB=user-service --restart unless-stopped postgres:latest
    docker run -d --name post-service --network=spring-social -p 27016:27017 -e MONGO_INITDB_ROOT_USERNAME=rootadmin -e MONGO_INITDB_ROOT_PASSWORD=password --restart unless-stopped mongo:latest
    docker run -d --name comment-service --network=spring-social -p 5433:5432 -e POSTGRES_USER=rootadmin -e POSTGRES_PASSWORD=password -e POSTGRES_DB=comment-service --restart unless-stopped postgres:latest
@@ -63,12 +63,10 @@ An API-based social media where users can post, comment and send friend requests
 ### Comments `/api/comments`
 
 * `GET /{commentId}` - Retrieves a comment
-* `GET` - Retrieves comments
+* `GET ?user={userId}&post={postId}` - Retrieves comments
 * `POST` - Creates a comment
 * `PUT /{commentId}` - Updates a comment
 * `DELETE /{commentId}` - Removes a comment
-* `GET ?user={userId}` - Retrieves comments by userId
-* `GET ?post={postId}` - Retrieves comments by postId
 
 ### Friendship `/api/friendships`
 
