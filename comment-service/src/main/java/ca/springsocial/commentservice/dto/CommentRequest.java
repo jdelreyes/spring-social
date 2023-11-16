@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class CommentRequest {
+    private String postId;
     private String content;
 }
