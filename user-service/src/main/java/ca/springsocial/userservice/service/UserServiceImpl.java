@@ -17,6 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -142,6 +143,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserWithPosts getUserWithPosts(Long userId) {
+        User user = userRepository.findUserById(userId);
+        if (user == null) return null;
+
         List<PostResponse> postResponseList = webClient
                 .get()
                 .uri(postServiceUri + "/user/" + userId)
@@ -150,9 +154,6 @@ public class UserServiceImpl implements UserService {
                 .collectList()
 //                block to make this synchronous
                 .block();
-
-        User user = userRepository.findUserById(userId);
-        if (user == null) return null;
 
         UserResponse userResponse = mapToUserResponse(user);
 
@@ -181,7 +182,7 @@ public class UserServiceImpl implements UserService {
     public UserWithComments getUserWithComments(Long userId) {
         List<CommentResponse> commentResponseList = webClient
                 .get()
-                .uri(commentServiceUri + "/user/" + userId)
+                .uri(commentServiceUri + "?userId={userId}", userId)
                 .retrieve()
                 .bodyToFlux(CommentResponse.class)
                 .collectList()
