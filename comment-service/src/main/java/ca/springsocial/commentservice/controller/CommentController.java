@@ -46,8 +46,8 @@ public class CommentController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<CommentResponse> getComments(@RequestParam(name = "user") Optional<Long> userId,
-                                             @RequestParam(name = "post") Optional<String> postId) {
+    public List<CommentResponse> getComments(@RequestParam(name = "userId") Optional<Long> userId,
+                                             @RequestParam(name = "postId") Optional<String> postId) {
         if (userId.isPresent() && postId.isPresent())
             return commentService.getCommentsByUserIdAndPostId(userId.get(), postId.get());
         if (userId.isPresent()) return commentService.getUserComments(userId.get());

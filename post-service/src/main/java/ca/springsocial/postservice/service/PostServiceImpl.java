@@ -98,7 +98,7 @@ public class PostServiceImpl implements PostService {
     public PostWithComments getPostWithComments(String postId) {
         List<CommentResponse> commentResponseList = webClient
                 .get()
-                .uri(commentServiceUri + "/post/" + postId)
+                .uri(commentServiceUri + "?postId=" + postId)
                 .retrieve()
                 .bodyToFlux(CommentResponse.class)
                 .collectList()

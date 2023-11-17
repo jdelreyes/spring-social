@@ -50,6 +50,8 @@ An API-based social media where users can post, comment and send friend requests
 * `POST` - Creates a user
 * `PUT /{userId}` - Updates a user
 * `DELETE /{userId}` - Removes a user
+* `GET /{userId}/posts` - Gets a user with their posts
+* `GET /{userId}/comments` - Gets a user with their comments
 
 ### Posts `/api/posts`
 
@@ -63,7 +65,7 @@ An API-based social media where users can post, comment and send friend requests
 ### Comments `/api/comments`
 
 * `GET /{commentId}` - Retrieves a comment
-* `GET ?user={userId}&post={postId}` - Retrieves comments
+* `GET ?userId={userId}&postId={postId}` - Retrieves comments
 * `POST` - Creates a comment
 * `PUT /{commentId}` - Updates a comment
 * `DELETE /{commentId}` - Removes a comment

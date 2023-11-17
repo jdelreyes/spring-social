@@ -48,14 +48,14 @@ public class UserController {
         return userService.logout(httpServletResponse);
     }
 
-    @GetMapping({"/{userId}/details"})
+    @GetMapping({"/{userId}"})
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long userId) {
         UserResponse userResponse = userService.getUserById(userId);
         if (userResponse != null)
             return new ResponseEntity<>(userResponse, HttpStatus.OK);
 
-        return new ResponseEntity<>(userResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping
@@ -65,8 +65,7 @@ public class UserController {
     }
 
 
-    // UPDATE
-    @PutMapping({"/update/{userId}"})
+    @PutMapping({"/{userId}"})
     public ResponseEntity<?> updateUser(@PathVariable("userId") Long userId, @RequestBody UserRequest userRequest) {
         boolean isUserUpdated = userService.updateUser(userId, userRequest);
         if (!isUserUpdated) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -74,8 +73,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // DELETE
-    @DeleteMapping({"/delete/{userId}"})
+    @DeleteMapping({"/{userId}"})
     public ResponseEntity<?> deleteUser(@PathVariable("userId") Long userId) {
         userService.deleteUser(userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
