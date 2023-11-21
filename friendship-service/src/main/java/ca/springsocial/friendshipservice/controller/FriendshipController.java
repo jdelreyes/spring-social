@@ -42,19 +42,19 @@ public class FriendshipController {
         return new ResponseEntity<>(stringObjectMap, HttpStatus.OK);
     }
 
-    @GetMapping("/{userId}/pending/list")
+    @GetMapping("/user/{userId}/pending-list")
     @ResponseStatus(HttpStatus.OK)
     List<FriendshipResponse> getPendingFriendList(@PathVariable Long userId) {
         return friendshipService.getPendingFriendList(userId);
     }
 
-    @GetMapping("/{userId}/accepted/list")
+    @GetMapping("/user/{userId}/accepted-list")
     @ResponseStatus(HttpStatus.OK)
     List<FriendshipResponse> getAcceptedFriendList(@PathVariable Long userId) {
         return friendshipService.getAcceptedFriendList(userId);
     }
 
-    @GetMapping("/{userId}/rejected/list")
+    @GetMapping("/user/{userId}/rejected-list")
     @ResponseStatus(HttpStatus.OK)
     List<FriendshipResponse> getRejectedFriendRequest(@PathVariable Long userId) {
         return friendshipService.getRejectedFriendList(userId);
