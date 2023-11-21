@@ -4,6 +4,7 @@ import ca.springsocial.userservice.model.User;
 import ca.springsocial.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,9 @@ import java.time.LocalDateTime;
 // stereotype
 @Component
 @RequiredArgsConstructor
+// links to ca.springsocial.userservice.UserServiceApplicationTest
+// allows us to disable bootstrap when the web app is starting
+@Profile("!test")
 public class DataLoader implements CommandLineRunner {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;

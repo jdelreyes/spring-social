@@ -30,18 +30,18 @@ public class PostController {
     public ResponseEntity<?> updatePost(@PathVariable("postId") String postId, @RequestBody PostRequest postRequest) {
         boolean isPostUpdated = postService.updatePost(postId, postRequest);
         if (!isPostUpdated) {
-            return ResponseEntity.badRequest().body("Failed to update post with id: " + postId);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return ResponseEntity.noContent().build();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping({"/delete/{postId}"})
+    @DeleteMapping({"/{postId}"})
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePost(@PathVariable("postId") String postId) {
         postService.deletePost(postId);
     }
 
-    @GetMapping({"/{postId}/details"})
+    @GetMapping({"/{postId}"})
     @ResponseStatus(HttpStatus.OK)
     public PostResponse getPost(@PathVariable("postId") String postId) {
         return postService.getPostById(postId);
@@ -53,7 +53,7 @@ public class PostController {
         return postService.getPosts();
     }
 
-
+//todo
     @GetMapping({"/user/{userId}"})
     @ResponseStatus(HttpStatus.OK)
     public List<PostResponse> getUserPosts(@PathVariable("userId") Long userId) {
@@ -66,7 +66,7 @@ public class PostController {
         return postService.getPostWithComments(postId);
     }
 
-    @GetMapping({"/user/{userId}/posts/comments"})
+    @GetMapping({"/user/{userId}/comments"})
     @ResponseStatus(HttpStatus.OK)
     public List<PostWithComments> getPostsWithCommentsByUserId(@PathVariable("userId") Long userId) {
         return postService.getPostsWithCommentsByUserId(userId);
