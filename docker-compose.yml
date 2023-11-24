@@ -1,8 +1,8 @@
 # NOTES:
 # cannot have conflicting container names
 
-# COMMANDS:
 # docker-compose -p spring-social -f docker-compose.yml up -d
+# COMMANDS:
 
 version: '3.8'
 
@@ -11,7 +11,7 @@ services:
   user-service:
     image: user-service
     ports:
-      - "8080:8080"
+      - "8081:8081"
     #    builds app
     build:
       context: ./user-service

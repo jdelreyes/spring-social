@@ -1,10 +1,12 @@
 package ca.springsocial.userservice;
 
+import ca.springsocial.userservice.dto.post.PostResponse;
 import ca.springsocial.userservice.dto.user.UserRequest;
 import ca.springsocial.userservice.dto.user.UserResponse;
 import ca.springsocial.userservice.model.User;
 import ca.springsocial.userservice.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -18,6 +20,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -105,9 +111,16 @@ class UserServiceApplicationTests extends AbstractContainerBaseTest {
     @Test
     @Order(5)
     void getUserWithPosts() throws Exception {
+        List<PostResponse> postResponseList = getPostResponseList();
 
+        mockWebServer.enqueue(new MockResponse()
+                .setBody(objectMapper.writeValueAsString(List.of(postResponseList)))
+                .addHeader("Content-Type", "application/json"));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/users?userId=" + userId))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
-
+// todo
     @Test
     @Order(6)
     void deleteUser() throws Exception {
@@ -119,7 +132,24 @@ class UserServiceApplicationTests extends AbstractContainerBaseTest {
         assertEquals(deletedUser, null);
     }
 
-    public UserRequest getUserRequest() {
+    private List<PostResponse> getPostResponseList() {
+        List<PostResponse> postResponseList = new ArrayList<>();
+
+        for (int i = 0; i < 3; i++) {
+            PostResponse postResponse = PostResponse.builder()
+                    .id("postId" + i)
+                    .title("title" + i)
+                    .content("content" + i)
+                    .dateTimePosted(LocalDateTime.now())
+                    .userId(userId)
+                    .build();
+            postResponseList.add(postResponse);
+        }
+
+        return postResponseList;
+    }
+
+    private UserRequest getUserRequest() {
         return UserRequest.builder()
                 .userName("uniqueUserName")
                 .email("user@domain.ca")
@@ -128,7 +158,7 @@ class UserServiceApplicationTests extends AbstractContainerBaseTest {
                 .build();
     }
 
-    public UserRequest getUserLoginRequest() {
+    private UserRequest getUserLoginRequest() {
         return UserRequest.builder()
                 .userName("updatedUserName")
                 .password("password")
