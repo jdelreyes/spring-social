@@ -27,7 +27,7 @@ COPY --from=builder /home/gradle/src/build/libs/*.jar /app/user-service.jar
 ENV SPRING_DATASOURCE_USERNAME=rootadmin
 ENV SPRING_DATASOURCE_PASSWORD=password
 
-EXPOSE 8080
+EXPOSE 8081
 
 # runs the application
 ENTRYPOINT ["java", "-jar", "/app/user-service.jar"]

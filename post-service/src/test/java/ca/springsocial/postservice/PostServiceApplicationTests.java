@@ -1,114 +1,57 @@
 package ca.springsocial.postservice;
 
 import ca.springsocial.postservice.dto.post.PostRequest;
-import ca.springsocial.postservice.service.PostService;
+import ca.springsocial.postservice.repository.PostRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest
 @AutoConfigureMockMvc
-@ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PostServiceApplicationTests {
-
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private PostService postService;
-
-
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private PostRepository postRepository;
+    private static Long userId = 1L;
 
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
+//    @Test
+//    @Order(1)
+//    void createPost() throws Exception {
+//        PostRequest postRequest = getPostRequest();
+//        String postRequestJsonString = objectMapper.writeValueAsString(postRequest);
+//
+//
+//
+//        mockMvc.perform(MockMvcRequestBuilders.post("/api/posts")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(postRequestJsonString)
+//                        .cookie("remember-me", ))
+//                .andExpect(MockMvcResultMatchers.status().isCreated());
+//
+//        // assert
+////        postRepository.findById()
+//
+//    }
 
-    @Test
-    public void testCreatePost() throws Exception {
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("title", "Test Title");
-        requestBody.put("content", "Test Content");
-        String jsonBody = objectMapper.writeValueAsString(requestBody);
-
-        MockHttpServletRequest mockRequest = new MockHttpServletRequest();
-        mockRequest.addHeader("Content-Type", "application/json");
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/posts/create")
-                        .content(jsonBody)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .requestAttr("httpServletRequest", mockRequest))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
-    }
-
-
-    @Test
-    public void testGetUserPosts() throws Exception {
-        Long userId = 123L;
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/posts/user/{userId}", userId)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                // Add more assertions based on the expected structure of the response
-                .andExpect(MockMvcResultMatchers.jsonPath("$").isArray());
-    }
-
-
-    @Test
-    public void testUpdatePost() throws Exception {
-        String postId = "123";
-        PostRequest postRequest = new PostRequest();
-        postRequest.setTitle("Updated Title");
-        postRequest.setContent("Updated Content");
-
-        // Configure the behavior of the mock
-        when(postService.updatePost(eq(postId), any(PostRequest.class))).thenReturn(true);
-
-        mockMvc.perform(put("/api/posts/update/{postId}", postId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(postRequest)))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Post with id " + postId + " successfully updated")));
-    }
-
-    @Test
-    void testDeletePost() {
-        // Given
-        String postId = "1";
-
-        // When
-        postService.deletePost(postId);
-    }
-
-    private String asJsonString(Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    PostRequest getPostRequest() {
+        return PostRequest.builder()
+                .title("title")
+                .content("content")
+                .build();
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -19,14 +20,14 @@ import java.util.Map;
 public class PostController {
     private final PostServiceImpl postService;
 
-    @PostMapping({"/create"})
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Map<String, Object> createPost(@RequestBody PostRequest postRequest, HttpServletRequest httpServletRequest) {
         return postService.createPost(postRequest, httpServletRequest);
     }
 
-    @PutMapping({"/update/{postId}"})
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping("/{postId}")
     public ResponseEntity<?> updatePost(@PathVariable("postId") String postId, @RequestBody PostRequest postRequest) {
         boolean isPostUpdated = postService.updatePost(postId, postRequest);
         if (!isPostUpdated) {
@@ -49,15 +50,10 @@ public class PostController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<PostResponse> getPosts() {
+    public List<PostResponse> getPosts(@RequestParam("userId") Optional<Long> userId) {
+        if (userId.isPresent())
+            return postService.getUserPosts(userId.get());
         return postService.getPosts();
-    }
-
-//todo
-    @GetMapping({"/user/{userId}"})
-    @ResponseStatus(HttpStatus.OK)
-    public List<PostResponse> getUserPosts(@PathVariable("userId") Long userId) {
-        return postService.getUserPosts(userId);
     }
 
     @GetMapping({"/{postId}/comments"})

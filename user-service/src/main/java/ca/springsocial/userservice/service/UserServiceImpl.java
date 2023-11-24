@@ -148,7 +148,7 @@ public class UserServiceImpl implements UserService {
 
         List<PostResponse> postResponseList = webClient
                 .get()
-                .uri(postServiceUri + "/user/" + userId)
+                .uri(postServiceUri + "?userId=" + userId)
                 .retrieve()
                 .bodyToFlux(PostResponse.class)
                 .collectList()

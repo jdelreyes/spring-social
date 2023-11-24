@@ -195,11 +195,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/api/users/{userId}/posts/comments",
+							"raw": "localhost:8081/api/users/{userId}/posts/comments",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "8081",
 							"path": [
 								"api",
 								"users",
@@ -238,11 +238,11 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/api/users/logout",
+							"raw": "localhost:8081/api/users/logout",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "8081",
 							"path": [
 								"api",
 								"users",

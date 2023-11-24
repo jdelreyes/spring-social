@@ -23,7 +23,7 @@ PostgresSQL. Each microservice responds to client request through exposed ports.
 
 ## Microservice Port
 
-User Service: `8080:8080`
+User Service: `8081:8081`
 
 Post Service: `8084:8084`
 
