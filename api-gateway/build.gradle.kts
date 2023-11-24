@@ -21,6 +21,9 @@ dependencies {
 	implementation("org.springframework.cloud:spring-cloud-starter-gateway:4.0.8")
 	implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
 	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:4.0.3")
+	//	keycloak
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server:3.1.5")
+	implementation("org.springframework.boot:spring-boot-starter-security:3.1.5")
 }
 
 tasks.withType<Test> {

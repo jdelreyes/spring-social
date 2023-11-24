@@ -80,19 +80,6 @@ services:
     networks:
       - spring-social
 
-  discovery-service:
-    image: discovery-service
-    ports:
-      - "8761:8761"
-    build:
-      context: ./discovery-service
-      dockerfile: ./Dockerfile
-    container_name: discovery-service
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-    networks:
-      - spring-social
-
   api-gateway:
     image: api-gateway
     ports:
@@ -105,6 +92,40 @@ services:
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
       - discovery-service
+      - keycloak
+    networks:
+      - spring-social
+
+  keycloak:
+    image: jboss/keycloak
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_VENDOR=postgres
+      - DB_ADDR=postgresql-keycloak
+      - DB_DATABASE=postgresql-keycloak
+      - DB_USER=keycloak
+      - DB_PASSWORD=password
+      - DB_SCHEMA=public
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=password
+    container_name: keycloak
+    depends_on:
+      - postgresql-keycloak
+    networks:
+      - spring-social
+
+  discovery-service:
+    image: discovery-service
+    ports:
+      - "8761:8761"
+    build:
+      context: ./discovery-service
+      dockerfile: ./Dockerfile
+    container_name: discovery-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
     networks:
       - spring-social
 
@@ -169,6 +190,21 @@ services:
     container_name: mongodb-friendship-service
     restart: unless-stopped
     command: mongod --auth
+    networks:
+      - spring-social
+
+  postgresql-keycloak:
+    image: postgres:latest
+    restart: unless-stopped
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_USER=keycloak
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgresql-keycloak
+    volumes:
+      - ./data/postgres/keycloak:/var/lib/postgresql/data
+    container_name: postgresql-keycloak
     networks:
       - spring-social
 
