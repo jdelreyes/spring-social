@@ -104,7 +104,7 @@ services:
     environment:
       - DB_VENDOR=postgres
       - DB_ADDR=postgresql-keycloak
-      - DB_DATABASE=postgresql-keycloak
+      - DB_DATABASE=keycloak
       - DB_USER=keycloak
       - DB_PASSWORD=password
       - DB_SCHEMA=public
@@ -199,9 +199,9 @@ services:
     ports:
       - "5434:5432"
     environment:
-      - POSTGRES_USER=keycloak
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=postgresql-keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: keycloak
     volumes:
       - ./data/postgres/keycloak:/var/lib/postgresql/data
     container_name: postgresql-keycloak

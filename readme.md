@@ -19,29 +19,22 @@ An API-based social media where users can post, comment and send friend requests
 
 ## Running
 
-### Docker
-1. Navigate to the folder repository (`spring-social`)
-2. Initialize services and database
+1. Navigate to the folder repository
+   ```shell
+   cd spring-social
+   ```
+2. Docker componse micro services and databases
    ```shell
    docker-compose -p spring-social -f docker-compose.yml up -d
    ```
-### IntelliJ IDEA (or any IDE of your choosing)
-1. Initialize database
-   ```shell
-   docker network create spring-social
-   docker run -d --name user-service --network=spring-social -p 5432:5432 -e POSTGRES_USER=rootadmin -e POSTGRES_PASSWORD=password -e POSTGRES_DB=user-service --restart unless-stopped postgres:latest
-   docker run -d --name post-service --network=spring-social -p 27016:27017 -e MONGO_INITDB_ROOT_USERNAME=rootadmin -e MONGO_INITDB_ROOT_PASSWORD=password --restart unless-stopped mongo:latest
-   docker run -d --name comment-service --network=spring-social -p 5433:5432 -e POSTGRES_USER=rootadmin -e POSTGRES_PASSWORD=password -e POSTGRES_DB=comment-service --restart unless-stopped postgres:latest
-   docker run -d --name friendship-service --network=spring-social -p 27014:27017 -e MONGO_INITDB_ROOT_USERNAME=rootadmin -e MONGO_INITDB_ROOT_PASSWORD=password --restart unless-stopped mongo:latest
-   ```
-2. Run each service in IntelliJ IDEA
-
-## Testing
+   
+## Demonstrating
 1. Open Postman
 2. Locate Postman collection using relative path `./postman/spring-social.postman_collection.json`
 3. Drag and drop Postman collection to the Postman Desktop
 
 ## REST API Endpoints
+Request to these endpoints are passed through an API gateway which is authenticated and authorized with `Keycloak`
 
 ### Users `/api/users`
 
