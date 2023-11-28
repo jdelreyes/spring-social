@@ -97,20 +97,23 @@ services:
       - spring-social
 
   keycloak:
-    image: jboss/keycloak
+    image: jboss/keycloak:latest
     restart: unless-stopped
     ports:
       - "8080:8080"
     environment:
-      - DB_VENDOR=postgres
-      - DB_ADDR=postgresql-keycloak
-      - DB_DATABASE=keycloak
-      - DB_USER=keycloak
-      - DB_PASSWORD=password
-      - DB_SCHEMA=public
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=password
+      JBOSS_LOG_MANAGER_ROOT_LOGGER: DEBUG
+      DB_VENDOR: postgres
+      DB_ADDR: postgresql-keycloak
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: password
+      KEYCLOAK_IMPORT: /opt/jboss/keycloak/realms/spring-social-realm.json
     container_name: keycloak
+    volumes:
+      - ./realms/:/opt/jboss/keycloak/realms
     depends_on:
       - postgresql-keycloak
     networks:
@@ -202,6 +205,7 @@ services:
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: password
       POSTGRES_DB: keycloak
+      PGDATA: /data/postgres
     volumes:
       - ./data/postgres/keycloak:/var/lib/postgresql/data
     container_name: postgresql-keycloak
