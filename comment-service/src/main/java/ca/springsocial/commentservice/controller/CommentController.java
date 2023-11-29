@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/comments")
@@ -18,46 +19,39 @@ import java.util.Map;
 public class CommentController {
     private final CommentServiceImpl commentService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<Map<String, Object>> createComment(@RequestBody CommentRequest commentRequest, HttpServletRequest httpServletRequest) {
         return new ResponseEntity<>(commentService.createComment(commentRequest, httpServletRequest), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{commentId}/details")
+    @GetMapping("/{commentId}")
     @ResponseStatus(HttpStatus.OK)
     public CommentResponse getCommentById(@PathVariable Long commentId) {
         return commentService.getCommentById(commentId);
     }
 
-    @PutMapping("/update/{commentId}")
+    @PutMapping("/{commentId}")
     public ResponseEntity<?> updateComment(@PathVariable Long commentId, @RequestBody CommentRequest commentRequest) {
-        boolean isCommentUpdated = commentService.updateComment(commentId, commentRequest);
-        if (!isCommentUpdated) {
+        CommentResponse commentResponse = commentService.updateComment(commentId, commentRequest);
+        if (commentResponse == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(commentResponse, HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{commentId}")
+    @DeleteMapping("/{commentId}")
     public void deleteComment(@PathVariable Long commentId) {
         commentService.deleteComment(commentId);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<CommentResponse> getComments() {
+    public List<CommentResponse> getComments(@RequestParam(name = "userId") Optional<Long> userId,
+                                             @RequestParam(name = "postId") Optional<String> postId) {
+        if (userId.isPresent() && postId.isPresent())
+            return commentService.getCommentsByUserIdAndPostId(userId.get(), postId.get());
+        if (userId.isPresent()) return commentService.getUserComments(userId.get());
+        if (postId.isPresent()) return commentService.getPostComments(postId.get());
         return commentService.getComments();
-    }
-
-    @GetMapping("/user/{userId}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<CommentResponse> getUserComments(@PathVariable Long userId) {
-        return commentService.getUserComments(userId);
-    }
-
-    @GetMapping("/post/{postId}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<CommentResponse> getPostComments(@PathVariable String postId) {
-        return commentService.getPostComments(postId);
     }
 }

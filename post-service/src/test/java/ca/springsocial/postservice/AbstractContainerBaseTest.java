@@ -14,9 +14,6 @@ public abstract class AbstractContainerBaseTest {
 
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry dynamicPropertyRegistry) {
-
-        // NOTE: Is this "spring.data.mongodb.uri" or "spring.data.mongo.uri" ?? :D
-        // yea
         dynamicPropertyRegistry.add("spring.data.mongodb.uri",
                 MONGO_DB_CONTAINER::getReplicaSetUrl);
     }

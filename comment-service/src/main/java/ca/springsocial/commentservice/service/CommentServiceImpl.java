@@ -50,18 +50,16 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public boolean updateComment(Long commentId, CommentRequest commentRequest) {
+    public CommentResponse updateComment(Long commentId, CommentRequest commentRequest) {
         Comment comment = commentRepository.findCommentById(commentId);
-
         if (comment != null) {
             comment.setContent(commentRequest.getContent());
+            Comment savedComment = commentRepository.save(comment);
 
-            commentRepository.save(comment);
-
-            return true;
+            return mapToCommentResponse(savedComment);
         }
 
-        return false;
+        return null;
     }
 
     @Override
@@ -78,6 +76,12 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<CommentResponse> getPostComments(String postId) {
         List<Comment> commentList = commentRepository.findCommentsByPostId(postId);
+        return commentList.stream().map(this::mapToCommentResponse).toList();
+    }
+
+    @Override
+    public List<CommentResponse> getCommentsByUserIdAndPostId(Long userId, String postId) {
+        List<Comment> commentList = commentRepository.findCommentsByUserIdAndPostId(userId, postId);
         return commentList.stream().map(this::mapToCommentResponse).toList();
     }
 

@@ -1,50 +1,74 @@
-# WEB APPLICATION DEVELOPMENT USING JAVA: Assignment
+# Spring Social
+An API-based social media where users can post, comment and send friend requests written using the Spring Boot framework.
 
-## Docker Compose
+## Architecture
+![architecture](./docs/assets/images/infrastructure.png)
 
-Running this command will let you run the application through `Docker`. Make sure `Docker` is running.
+## Installation
 
-```shell
-docker-compose -p spring-social -f docker-compose.yml up -d
-```
+1. Install [IntelliJ IDEA](https://www.jetbrains.com/idea/download) (*optional*)
+2. Install Docker Desktop
+   ([Windows](https://docs.docker.com/desktop/install/windows-install/),
+   [Mac](https://docs.docker.com/desktop/install/mac-install/),
+   [Linux](https://docs.docker.com/desktop/install/linux-install/))
+3. Install [Postman](https://www.postman.com/downloads/)
+4. Clone the repository
+   ```shell
+   git clone https://github.com/siomao/spring-social.git
+   ```
 
-## Docker Run
+## Running
 
-<details>
-<summary>Running these commands will let you run the application through your IDE.</summary>
+1. Navigate to the folder repository
+   ```shell
+   cd spring-social
+   ```
+2. Docker componse micro services and databases
+   ```shell
+   docker-compose -p spring-social -f docker-compose.yml up -d
+   ```
+   
+## Demonstrating
+1. Open Postman
+2. Locate Postman collection using relative path `./postman/spring-social.postman_collection.json`
+3. Drag and drop Postman collection to the Postman Desktop
 
-```shell
-# network
-docker network create spring-social
-# database
-docker run -d --name user-service --network=spring-social -p 5432:5432 -e POSTGRES_USER=rootadmin -e POSTGRES_PASSWORD=password -e POSTGRES_DB=user-service --restart unless-stopped postgres:latest
-docker run -d --name post-service --network=spring-social -p 27016:27017 -e MONGO_INITDB_ROOT_USERNAME=rootadmin -e MONGO_INITDB_ROOT_PASSWORD=password --restart unless-stopped mongo:latest
-docker run -d --name comment-service --network=spring-social -p 5433:5432 -e POSTGRES_USER=rootadmin -e POSTGRES_PASSWORD=password -e POSTGRES_DB=comment-service --restart unless-stopped postgres:latest
-docker run -d --name friendship-service --network=spring-social -p 27014:27017 -e MONGO_INITDB_ROOT_USERNAME=rootadmin -e MONGO_INITDB_ROOT_PASSWORD=password --restart unless-stopped mongo:latest 
-```
+## REST API Endpoints
+Request to these endpoints are passed through an API gateway which is authenticated and authorized with `Keycloak`
 
-</details>
+### Users `/api/users`
 
-## Microservice Port
+* `GET /{userId}` - Retrieves a user
+* `GET` - Retrieves users
+* `POST` - Creates a user
+* `PUT /{userId}` - Updates a user
+* `DELETE /{userId}` - Removes a user
+* `GET /{userId}/posts` - Gets a user with their posts
+* `GET /{userId}/comments` - Gets a user with their comments
+* `GET /{userId}/posts-with-comments` - Gets a user with their posts with comments
 
-User Service: `8080:8080`
+### Posts `/api/posts`
 
-Post Service: `8084:8084`
+* `GET /{postId}` - Retrieves a post
+* `GET` - Retrieves posts
+* `POST` - Creates a post
+* `PUT /{postId}` - Updates a post
+* `DELETE /{postId}` - Removes a post
+* `GET ?userId={userId}` - Retrieves posts
+* `GET /user/{userId}/comments` - Retrieves posts with by userId
 
-Comment Service: `8082:8082`
+### Comments `/api/comments`
 
-Friendship Service `8083:8083`
+* `GET /{commentId}` - Retrieves a comment
+* `GET ?userId={userId}&postId={postId}` - Retrieves comments
+* `POST` - Creates a comment
+* `PUT /{commentId}` - Updates a comment
+* `DELETE /{commentId}` - Removes a comment
 
-Discovery Service `8761:8761`
+### Friendship `/api/friendships`
 
-## MongoDB port
-
-Post Service: `27016:27017`
-
-Friendship Service `27014:27017`
-
-## PostgresSQL Port
-
-User Service: `5432:5432`
-
-Comment Service: `5433:5432`
+* `GET /{friendshipId}` - Retrieves a friendship
+* `GET` - Retrieves friendships
+* `POST` - Creates a friendship
+* `PUT /{friendshipId}` - Updates a friendship
+* `DELETE /{friendshipId}` - Removes a friendship

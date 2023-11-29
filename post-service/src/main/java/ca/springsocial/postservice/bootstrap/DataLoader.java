@@ -4,6 +4,7 @@ import ca.springsocial.postservice.model.Post;
 import ca.springsocial.postservice.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 // stereotype
 @Component
 @RequiredArgsConstructor
+@Profile("!test")
 public class DataLoader implements CommandLineRunner {
     //    repo
     private final MongoTemplate mongoTemplate;

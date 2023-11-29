@@ -1,8 +1,8 @@
 # NOTES:
 # cannot have conflicting container names
 
-# COMMANDS:
 # docker-compose -p spring-social -f docker-compose.yml up -d
+# COMMANDS:
 
 version: '3.8'
 
@@ -11,7 +11,7 @@ services:
   user-service:
     image: user-service
     ports:
-      - "8080:8080"
+      - "8081:8081"
     #    builds app
     build:
       context: ./user-service
@@ -80,19 +80,6 @@ services:
     networks:
       - spring-social
 
-  discovery-service:
-    image: discovery-service
-    ports:
-      - "8761:8761"
-    build:
-      context: ./discovery-service
-      dockerfile: ./Dockerfile
-    container_name: discovery-service
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-    networks:
-      - spring-social
-
   api-gateway:
     image: api-gateway
     ports:
@@ -106,8 +93,6 @@ services:
       LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: DEBUG
     depends_on:
       - discovery-service
-<<<<<<< Updated upstream
-=======
       - keycloak
     networks:
       - spring-social
@@ -120,13 +105,13 @@ services:
     environment:
       JBOSS_LOG_MANAGER_ROOT_LOGGER: DEBUG
       DB_VENDOR: postgres
-      DB_ADDR: postgres-keycloak
+      DB_ADDR: postgresql-keycloak
       DB_DATABASE: keycloak
       DB_USER: keycloak
       DB_PASSWORD: password
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: password
-      KEYCLOAK_IMPORT: /opt/jboss/keycloak/realms/spring-boot-microservices-realm.json
+      KEYCLOAK_IMPORT: /opt/jboss/keycloak/realms/spring-social-realm.json
     container_name: keycloak
     volumes:
       - ./realms/:/opt/jboss/keycloak/realms
@@ -146,7 +131,6 @@ services:
     container_name: discovery-service
     environment:
       SPRING_PROFILES_ACTIVE: docker
->>>>>>> Stashed changes
     networks:
       - spring-social
 
@@ -211,6 +195,22 @@ services:
     container_name: mongodb-friendship-service
     restart: unless-stopped
     command: mongod --auth
+    networks:
+      - spring-social
+
+  postgresql-keycloak:
+    image: postgres:latest
+    restart: unless-stopped
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: keycloak
+      PGDATA: /data/postgres
+    volumes:
+      - ./data/postgres/keycloak:/var/lib/postgresql/data
+    container_name: postgresql-keycloak
     networks:
       - spring-social
 
