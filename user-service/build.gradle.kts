@@ -32,8 +32,13 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.postgresql:postgresql")
 
+<<<<<<< Updated upstream
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webflux
     implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.5")
+=======
+    // webflux
+    implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.4")
+>>>>>>> Stashed changes
 
     // https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5
     implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")

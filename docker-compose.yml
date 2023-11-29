@@ -103,8 +103,50 @@ services:
     container_name: api-gateway
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: DEBUG
     depends_on:
       - discovery-service
+<<<<<<< Updated upstream
+=======
+      - keycloak
+    networks:
+      - spring-social
+
+  keycloak:
+    image: jboss/keycloak:latest
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      JBOSS_LOG_MANAGER_ROOT_LOGGER: DEBUG
+      DB_VENDOR: postgres
+      DB_ADDR: postgres-keycloak
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: password
+      KEYCLOAK_IMPORT: /opt/jboss/keycloak/realms/spring-boot-microservices-realm.json
+    container_name: keycloak
+    volumes:
+      - ./realms/:/opt/jboss/keycloak/realms
+    depends_on:
+      - postgresql-keycloak
+      - discovery-service
+    networks:
+      - spring-social
+
+  discovery-service:
+    image: discovery-service
+    ports:
+      - "8761:8761"
+    build:
+      context: ./discovery-service
+      dockerfile: ./Dockerfile
+    container_name: discovery-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+>>>>>>> Stashed changes
     networks:
       - spring-social
 
