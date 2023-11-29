@@ -90,6 +90,7 @@ services:
     container_name: api-gateway
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: DEBUG
     depends_on:
       - discovery-service
       - keycloak
@@ -116,6 +117,7 @@ services:
       - ./realms/:/opt/jboss/keycloak/realms
     depends_on:
       - postgresql-keycloak
+      - discovery-service
     networks:
       - spring-social
 

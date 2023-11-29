@@ -32,10 +32,8 @@ dependencies {
     // sql database
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.postgresql:postgresql")
-
     // webflux
-    implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.5")
-
+    implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.4")
     // eureka
     implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:4.0.3")
