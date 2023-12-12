@@ -1,7 +1,7 @@
 package ca.springsocial.friendshipservice;
 
-import ca.springsocial.friendshipservice.dto.FriendshipRequest;
-import ca.springsocial.friendshipservice.dto.FriendshipResponse;
+import ca.springsocial.friendshipservice.dto.friendship.FriendshipRequest;
+import ca.springsocial.friendshipservice.dto.friendship.FriendshipResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

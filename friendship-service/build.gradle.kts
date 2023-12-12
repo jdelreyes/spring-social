@@ -16,20 +16,26 @@ repositories {
 }
 
 dependencies {
+//    spring
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
+//    db
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+//    lombok
+    compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
+//    test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("org.testcontainers:testcontainers-bom:1.18.1")
     testImplementation("org.testcontainers:mongodb:1.18.1")
-
-    // https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5
+//    webflux - interservice communication
+    implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.4")
+//    eureka client for discovery
     implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
-
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:4.0.3")
+    //    resilience4j - fault taulerance interservice communication
+    implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j:3.0.3")
 }
 
 tasks.withType<Test> {

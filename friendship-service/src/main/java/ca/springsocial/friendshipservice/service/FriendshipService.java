@@ -1,7 +1,7 @@
 package ca.springsocial.friendshipservice.service;
 
-import ca.springsocial.friendshipservice.dto.FriendshipRequest;
-import ca.springsocial.friendshipservice.dto.FriendshipResponse;
+import ca.springsocial.friendshipservice.dto.friendship.FriendshipRequest;
+import ca.springsocial.friendshipservice.dto.friendship.FriendshipResponse;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;

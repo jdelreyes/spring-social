@@ -1,7 +1,7 @@
 package ca.springsocial.friendshipservice.controller;
 
-import ca.springsocial.friendshipservice.dto.FriendshipRequest;
-import ca.springsocial.friendshipservice.dto.FriendshipResponse;
+import ca.springsocial.friendshipservice.dto.friendship.FriendshipRequest;
+import ca.springsocial.friendshipservice.dto.friendship.FriendshipResponse;
 import ca.springsocial.friendshipservice.service.FriendshipServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

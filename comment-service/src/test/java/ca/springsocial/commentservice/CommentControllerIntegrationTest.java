@@ -1,6 +1,6 @@
 package ca.springsocial.commentservice.controller;
 
-import ca.springsocial.commentservice.dto.CommentRequest;
+import ca.springsocial.commentservice.dto.comment.CommentRequest;
 import ca.springsocial.commentservice.model.Comment;
 import ca.springsocial.commentservice.repository.CommentRepository;
 import ca.springsocial.commentservice.service.CommentServiceImpl;

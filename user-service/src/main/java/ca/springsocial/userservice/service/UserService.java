@@ -2,7 +2,6 @@ package ca.springsocial.userservice.service;
 
 import ca.springsocial.userservice.dto.combined.UserWithComments;
 import ca.springsocial.userservice.dto.combined.UserWithPosts;
-import ca.springsocial.userservice.dto.combined.UserWithPostsWithComments;
 import ca.springsocial.userservice.dto.user.UserRequest;
 import ca.springsocial.userservice.dto.user.UserResponse;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,8 +25,6 @@ public interface UserService {
     List<UserResponse> getUsers();
 
     UserWithPosts getUserWithPosts(Long userId);
-
-    UserWithPostsWithComments getUserWithPostsWithComments(Long userId);
 
     UserWithComments getUserWithComments(Long userId);
 }

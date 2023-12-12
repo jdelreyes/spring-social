@@ -1,4 +1,4 @@
-package ca.springsocial.friendshipservice.dto;
+package ca.springsocial.friendshipservice.dto.friendship;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

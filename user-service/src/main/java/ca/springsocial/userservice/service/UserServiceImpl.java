@@ -3,7 +3,6 @@ package ca.springsocial.userservice.service;
 import ca.springsocial.userservice.dto.combined.PostWithComments;
 import ca.springsocial.userservice.dto.combined.UserWithComments;
 import ca.springsocial.userservice.dto.combined.UserWithPosts;
-import ca.springsocial.userservice.dto.combined.UserWithPostsWithComments;
 import ca.springsocial.userservice.dto.comment.CommentResponse;
 import ca.springsocial.userservice.dto.post.PostResponse;
 import ca.springsocial.userservice.dto.user.UserRequest;
@@ -129,7 +128,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUserById(Long userId) {
         User user = userRepository.findUserById(userId);
-
         if (user != null)
             return mapToUserResponse(user);
         return null;
@@ -158,24 +156,6 @@ public class UserServiceImpl implements UserService {
         UserResponse userResponse = mapToUserResponse(user);
 
         return new UserWithPosts(userResponse, postResponseList);
-    }
-
-    @Override
-    public UserWithPostsWithComments getUserWithPostsWithComments(Long userId) {
-        List<PostWithComments> postWithCommentsList = webClient
-                .get()
-                .uri(postServiceUri + "/user/" + userId + "/posts/comments")
-                .retrieve()
-                .bodyToFlux(PostWithComments.class)
-                .collectList()
-//                block to make this synchronous
-                .block();
-
-        User user = userRepository.findUserById(userId);
-        if (user == null) return null;
-
-        UserResponse userResponse = mapToUserResponse(user);
-        return new UserWithPostsWithComments(userResponse, postWithCommentsList);
     }
 
     @Override
