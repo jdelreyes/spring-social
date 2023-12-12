@@ -81,36 +81,31 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @CircuitBreaker(name = "circuitBreakerService", fallbackMethod = "getUserPostsFallback")
-    @TimeLimiter(name = "circuitBreakerService")
-    @Retry(name = "circuitBreakerService")
+    @CircuitBreaker(name = "post", fallbackMethod = "getUserPostsFallback")
+    @TimeLimiter(name = "post")
+    @Retry(name = "post")
     @GetMapping({"/{userId}/posts"})
     public CompletableFuture<ResponseEntity<UserWithPosts>> getUserPosts(@PathVariable Long userId) {
-        UserWithPosts userWithPosts = userService.getUserWithPosts(userId);
-
-        if (userWithPosts == null) {
-            return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
-        }
-        return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(userWithPosts, HttpStatus.OK));
+        ResponseEntity<UserWithPosts> userWithPostsResponseEntity = userService.getUserWithPosts(userId);
+        return CompletableFuture.supplyAsync(() -> userWithPostsResponseEntity);
     }
 
-    public CompletableFuture<ResponseEntity<?>> getUserPostsFallback() {
+    public CompletableFuture<ResponseEntity<UserWithPosts>> getUserPostsFallback(Long userId,
+                                                                                 RuntimeException runtimeException) {
         return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
     }
 
-    @CircuitBreaker(name = "circuitBreakerService", fallbackMethod = "getUserCommentsFallback")
-    @TimeLimiter(name = "circuitBreakerService")
-    @Retry(name = "circuitBreakerService")
+    @CircuitBreaker(name = "comment", fallbackMethod = "getUserCommentsFallback")
+    @TimeLimiter(name = "comment")
+    @Retry(name = "comment")
     @GetMapping({"/{userId}/comments"})
     public CompletableFuture<ResponseEntity<UserWithComments>> getUserComments(@PathVariable Long userId) {
-        UserWithComments userWithComments = userService.getUserWithComments(userId);
-        if (userWithComments == null) {
-            return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
-        }
-        return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(userWithComments, HttpStatus.OK));
+        ResponseEntity<UserWithComments> userWithCommentsResponseEntity = userService.getUserWithComments(userId);
+        return CompletableFuture.supplyAsync(() -> userWithCommentsResponseEntity);
     }
 
-    public CompletableFuture<ResponseEntity<?>> getUserCommentsFallback() {
+    public CompletableFuture<ResponseEntity<UserWithComments>> getUserCommentsFallback(Long userId,
+                                                                                       RuntimeException runtimeException) {
         return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
     }
 }

@@ -26,7 +26,7 @@ dependencies {
 //    password hashing
     compileOnly("org.springframework.security:spring-security-core:6.1.4")
     implementation("org.springframework.security:spring-security-crypto:6.1.4")
-    // db
+    // db jpa
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.postgresql:postgresql")
     // webflux

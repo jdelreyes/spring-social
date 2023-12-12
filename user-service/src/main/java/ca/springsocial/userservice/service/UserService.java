@@ -5,6 +5,8 @@ import ca.springsocial.userservice.dto.combined.UserWithPosts;
 import ca.springsocial.userservice.dto.user.UserRequest;
 import ca.springsocial.userservice.dto.user.UserResponse;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.coyote.Response;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Map;
@@ -24,7 +26,7 @@ public interface UserService {
 
     List<UserResponse> getUsers();
 
-    UserWithPosts getUserWithPosts(Long userId);
+    ResponseEntity<UserWithPosts> getUserWithPosts(Long userId);
 
-    UserWithComments getUserWithComments(Long userId);
+    ResponseEntity<UserWithComments> getUserWithComments(Long userId);
 }
