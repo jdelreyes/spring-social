@@ -1,7 +1,8 @@
 package ca.springsocial.commentservice.service;
 
-import ca.springsocial.commentservice.dto.CommentRequest;
-import ca.springsocial.commentservice.dto.CommentResponse;
+import ca.springsocial.commentservice.dto.comment.CommentRequest;
+import ca.springsocial.commentservice.dto.comment.CommentResponse;
+import ca.springsocial.commentservice.dto.post.PostResponse;
 import ca.springsocial.commentservice.model.Comment;
 import ca.springsocial.commentservice.repository.CommentRepository;
 import jakarta.servlet.http.Cookie;
@@ -9,7 +10,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +26,11 @@ import java.util.Map;
 @Slf4j
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
+    private final WebClient webClient;
+
+    // todo: to check if post exists
+    @Value("${post.service.url}")
+    private String postServiceUri;
 
     @Override
     public Map<String, Object> createComment(CommentRequest commentRequest, HttpServletRequest httpServletRequest) {
@@ -28,25 +38,41 @@ public class CommentServiceImpl implements CommentService {
         if (!(Boolean) stringObjectMap.get("status"))
             return stringObjectMap;
 
-        Comment comment = new Comment();
-        comment.setContent(commentRequest.getContent());
-        comment.setPostId(commentRequest.getPostId());
-        comment.setUserId((Long) stringObjectMap.get("userId"));
+        PostResponse postResponse = webClient.get()
+                .uri(postServiceUri + "/" + commentRequest.getPostId())
+                .retrieve()
+                .bodyToMono(PostResponse.class)
+                .onErrorResume(WebClientResponseException.class, ex -> ex.getRawStatusCode() == 400
+                        ? Mono.empty()
+                        : Mono.error(ex))
+                .block();
 
-        Long commentId = commentRepository.save(comment).getId();
+        if (postResponse != null) {
+            Comment comment = new Comment();
+            comment.setContent(commentRequest.getContent());
+            comment.setPostId(postResponse.getId());
+            comment.setUserId((Long) stringObjectMap.get("userId"));
 
+            Long commentId = commentRepository.save(comment).getId();
+
+            return new HashMap<String, Object>() {{
+                put("commentId", commentId);
+                put("status", true);
+            }};
+        }
         return new HashMap<String, Object>() {{
-            put("commentId", commentId);
-            put("status", true);
+            put("message", "post does not exist");
+            put("status", false);
         }};
+
     }
 
     @Override
     public CommentResponse getCommentById(Long commentId) {
         Comment comment = commentRepository.findCommentById(commentId);
-
-        assert comment != null;
-        return mapToCommentResponse(comment);
+        if (comment != null)
+            return mapToCommentResponse(comment);
+        return null;
     }
 
     @Override

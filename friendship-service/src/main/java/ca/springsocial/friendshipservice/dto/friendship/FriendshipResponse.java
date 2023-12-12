@@ -1,4 +1,4 @@
-package ca.springsocial.friendshipservice.dto;
+package ca.springsocial.friendshipservice.dto.friendship;
 
 import ca.springsocial.friendshipservice.enums.FriendshipStatus;
 import lombok.AllArgsConstructor;

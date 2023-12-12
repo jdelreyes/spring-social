@@ -2,10 +2,12 @@ package ca.springsocial.userservice.controller;
 
 import ca.springsocial.userservice.dto.combined.UserWithComments;
 import ca.springsocial.userservice.dto.combined.UserWithPosts;
-import ca.springsocial.userservice.dto.combined.UserWithPostsWithComments;
 import ca.springsocial.userservice.dto.user.UserRequest;
 import ca.springsocial.userservice.dto.user.UserResponse;
 import ca.springsocial.userservice.service.UserServiceImpl;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/users")
@@ -54,7 +57,6 @@ public class UserController {
         UserResponse userResponse = userService.getUserById(userId);
         if (userResponse != null)
             return new ResponseEntity<>(userResponse, HttpStatus.OK);
-
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
@@ -79,31 +81,36 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @CircuitBreaker(name = "circuitBreakerService", fallbackMethod = "getUserPostsFallback")
+    @TimeLimiter(name = "circuitBreakerService")
+    @Retry(name = "circuitBreakerService")
     @GetMapping({"/{userId}/posts"})
-    public ResponseEntity<UserWithPosts> getUserPosts(@PathVariable Long userId) {
+    public CompletableFuture<ResponseEntity<UserWithPosts>> getUserPosts(@PathVariable Long userId) {
         UserWithPosts userWithPosts = userService.getUserWithPosts(userId);
 
         if (userWithPosts == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
         }
-
-        return new ResponseEntity<>(userWithPosts, HttpStatus.OK);
+        return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(userWithPosts, HttpStatus.OK));
     }
 
+    public CompletableFuture<ResponseEntity<?>> getUserPostsFallback() {
+        return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
+    }
+
+    @CircuitBreaker(name = "circuitBreakerService", fallbackMethod = "getUserCommentsFallback")
+    @TimeLimiter(name = "circuitBreakerService")
+    @Retry(name = "circuitBreakerService")
     @GetMapping({"/{userId}/comments"})
-    public ResponseEntity<UserWithComments> getUserComments(@PathVariable Long userId) {
+    public CompletableFuture<ResponseEntity<UserWithComments>> getUserComments(@PathVariable Long userId) {
         UserWithComments userWithComments = userService.getUserWithComments(userId);
         if (userWithComments == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
         }
-        return new ResponseEntity<>(userWithComments, HttpStatus.OK);
+        return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(userWithComments, HttpStatus.OK));
     }
 
-    @GetMapping({"/{userId}/posts/comments"})
-    public ResponseEntity<UserWithPostsWithComments> getUserWithPostsWithComments(@PathVariable Long userId) {
-        UserWithPostsWithComments userWithPostsWithComments = userService.getUserWithPostsWithComments(userId);
-        if (userWithPostsWithComments == null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(userWithPostsWithComments, HttpStatus.OK);
+    public CompletableFuture<ResponseEntity<?>> getUserCommentsFallback() {
+        return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
     }
 }

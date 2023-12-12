@@ -23,5 +23,4 @@ public interface PostService {
 
     PostWithComments getPostWithComments(String postId);
 
-    List<PostWithComments> getPostsWithCommentsByUserId(Long userId);
 }

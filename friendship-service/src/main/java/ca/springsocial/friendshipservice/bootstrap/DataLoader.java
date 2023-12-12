@@ -24,19 +24,19 @@ public class DataLoader implements CommandLineRunner {
         Friendship friendshipAccepted = Friendship.builder()
                 .requesterUserId(1L)
                 .recipientUserId(2L)
-                .status(FriendshipStatus.ACCEPTED)
+                .status(FriendshipStatus.accepted)
                 .build();
 
         Friendship friendshipPending = Friendship.builder()
                 .requesterUserId(2L)
                 .recipientUserId(3L)
-                .status(FriendshipStatus.PENDING)
+                .status(FriendshipStatus.pending)
                 .build();
 
         Friendship friendshipRejected = Friendship.builder()
                 .requesterUserId(3L)
                 .recipientUserId(1L)
-                .status(FriendshipStatus.REJECTED)
+                .status(FriendshipStatus.rejected)
                 .build();
 
         friendshipRepository.save(friendshipAccepted);

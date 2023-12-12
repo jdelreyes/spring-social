@@ -1,7 +1,7 @@
 package ca.springsocial.commentservice.controller;
 
-import ca.springsocial.commentservice.dto.CommentRequest;
-import ca.springsocial.commentservice.dto.CommentResponse;
+import ca.springsocial.commentservice.dto.comment.CommentRequest;
+import ca.springsocial.commentservice.dto.comment.CommentResponse;
 import ca.springsocial.commentservice.service.CommentServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -21,22 +21,26 @@ public class CommentController {
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> createComment(@RequestBody CommentRequest commentRequest, HttpServletRequest httpServletRequest) {
-        return new ResponseEntity<>(commentService.createComment(commentRequest, httpServletRequest), HttpStatus.CREATED);
+        Map<String, Object> stringObjectHashMap = commentService.createComment(commentRequest, httpServletRequest);
+        if ((Boolean) stringObjectHashMap.get("status"))
+            return new ResponseEntity<>(stringObjectHashMap, HttpStatus.CREATED);
+        return new ResponseEntity<>(stringObjectHashMap, HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/{commentId}")
-    @ResponseStatus(HttpStatus.OK)
-    public CommentResponse getCommentById(@PathVariable Long commentId) {
-        return commentService.getCommentById(commentId);
+    public ResponseEntity<CommentResponse> getCommentById(@PathVariable Long commentId) {
+        CommentResponse commentResponse = commentService.getCommentById(commentId);
+        if (commentResponse != null)
+            return new ResponseEntity<>(commentResponse, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping("/{commentId}")
     public ResponseEntity<?> updateComment(@PathVariable Long commentId, @RequestBody CommentRequest commentRequest) {
         CommentResponse commentResponse = commentService.updateComment(commentId, commentRequest);
-        if (commentResponse == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(commentResponse, HttpStatus.OK);
+        if (commentResponse != null)
+            return new ResponseEntity<>(commentResponse, HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @DeleteMapping("/{commentId}")

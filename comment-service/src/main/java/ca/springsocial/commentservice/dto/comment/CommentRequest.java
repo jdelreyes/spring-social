@@ -1,4 +1,4 @@
-package ca.springsocial.commentservice.dto;
+package ca.springsocial.commentservice.dto.comment;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

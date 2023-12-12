@@ -1,7 +1,7 @@
 package ca.springsocial.commentservice.service;
 
-import ca.springsocial.commentservice.dto.CommentRequest;
-import ca.springsocial.commentservice.dto.CommentResponse;
+import ca.springsocial.commentservice.dto.comment.CommentRequest;
+import ca.springsocial.commentservice.dto.comment.CommentResponse;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;

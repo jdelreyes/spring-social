@@ -26,12 +26,11 @@ public class PostController {
         return postService.createPost(postRequest, httpServletRequest);
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{postId}")
     public ResponseEntity<?> updatePost(@PathVariable("postId") String postId, @RequestBody PostRequest postRequest) {
         boolean isPostUpdated = postService.updatePost(postId, postRequest);
         if (!isPostUpdated) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -43,9 +42,12 @@ public class PostController {
     }
 
     @GetMapping({"/{postId}"})
-    @ResponseStatus(HttpStatus.OK)
-    public PostResponse getPost(@PathVariable("postId") String postId) {
-        return postService.getPostById(postId);
+    public ResponseEntity<PostResponse> getPostById(@PathVariable("postId") String postId) {
+        PostResponse postResponse = postService.getPostById(postId);
+        if (postResponse != null) {
+            return new ResponseEntity<>(postResponse, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping
@@ -60,11 +62,5 @@ public class PostController {
     @ResponseStatus(HttpStatus.OK)
     public PostWithComments getPostWithComments(@PathVariable("postId") String postId) {
         return postService.getPostWithComments(postId);
-    }
-
-    @GetMapping({"/user/{userId}/comments"})
-    @ResponseStatus(HttpStatus.OK)
-    public List<PostWithComments> getPostsWithCommentsByUserId(@PathVariable("userId") Long userId) {
-        return postService.getPostsWithCommentsByUserId(userId);
     }
 }

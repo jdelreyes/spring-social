@@ -10,7 +10,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -18,7 +17,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +77,9 @@ public class PostServiceImpl implements PostService {
 
     public PostResponse getPostById(String postId) {
         Post post = queryPost("id", postId);
-        return mapToPostResponse(post);
+        if (post != null)
+            return mapToPostResponse(post);
+        return null;
     }
 
     @Override
@@ -111,32 +111,6 @@ public class PostServiceImpl implements PostService {
         PostResponse postResponse = mapToPostResponse(post);
 
         return new PostWithComments(postResponse, commentResponseList);
-    }
-
-    //    fixme: can put comments in a list in comment service instead of requesting multiple times
-    // fixme: does not work
-    @Override
-    public List<PostWithComments> getPostsWithCommentsByUserId(Long userId) {
-        // getting list of post with user id
-        List<Post> postList = this.queryPosts("userId", userId);
-        List<PostWithComments> postWithCommentsList = new ArrayList<>();
-
-        for (Post post : postList) {
-            List<CommentResponse> commentResponseList = webClient
-                    .get()
-                    .uri(commentServiceUri + "/post/" + post.getId())
-                    .retrieve()
-                    .bodyToFlux(CommentResponse.class)
-                    .collectList()
-//                block to make this synchronous
-                    .block();
-
-            PostResponse postResponse = mapToPostResponse(post);
-
-            postWithCommentsList.add(new PostWithComments(postResponse, commentResponseList));
-        }
-
-        return postWithCommentsList;
     }
 
     public Post queryPost(String key, Object value) {
