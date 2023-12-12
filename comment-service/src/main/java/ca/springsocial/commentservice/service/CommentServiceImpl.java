@@ -33,13 +33,9 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final WebClient webClient;
 
-    // todo: to check if post exists
     @Value("${post.service.url}")
     private String postServiceUri;
 
-    @CircuitBreaker(name = "circuitBreakerService", fallbackMethod = "createCommentFallback")
-    @TimeLimiter(name = "circuitBreakerService")
-    @Retry(name = "circuitBreakerService")
     @Override
     public ResponseEntity<Map<String, Object>> createComment(CommentRequest commentRequest, HttpServletRequest httpServletRequest) {
         Map<String, Object> stringObjectMap = validateUserIdFromCookie(httpServletRequest);
@@ -73,14 +69,6 @@ public class CommentServiceImpl implements CommentService {
             put("message", "post does not exist");
             put("status", false);
         }}, HttpStatus.BAD_REQUEST);
-
-    }
-
-    public Map<String, Object> createCommentFallback(RuntimeException runtimeException) {
-        return new HashMap<String, Object>() {{
-            put("message", "cannot create comment");
-            put("status", false);
-        }};
     }
 
     @Override

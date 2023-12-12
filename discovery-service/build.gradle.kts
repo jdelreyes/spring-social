@@ -20,6 +20,11 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-server:4.0.3")
     implementation("org.springframework.boot:spring-boot-starter-security:3.1.4")
+    //	micrometer
+    implementation("io.micrometer:micrometer-observation:1.11.3")
+    implementation("io.micrometer:micrometer-tracing-bridge-brave:1.1.4")
+//	zipkin
+    implementation("io.zipkin.reporter2:zipkin-reporter-brave:2.16.4")
 }
 
 tasks.withType<Test> {

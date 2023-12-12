@@ -3,12 +3,13 @@ package ca.springsocial.friendshipservice.service;
 import ca.springsocial.friendshipservice.dto.friendship.FriendshipRequest;
 import ca.springsocial.friendshipservice.dto.friendship.FriendshipResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Map;
 
 public interface FriendshipService {
-    Map<String, Object> sendFriendRequest(FriendshipRequest friendshipRequest, HttpServletRequest httpServletRequest);
+    ResponseEntity<Map<String, Object>> sendFriendRequest(FriendshipRequest friendshipRequest, HttpServletRequest httpServletRequest);
 
     Map<String, Object> acceptFriendRequest(FriendshipRequest friendshipRequest, HttpServletRequest httpServletRequest);
 
