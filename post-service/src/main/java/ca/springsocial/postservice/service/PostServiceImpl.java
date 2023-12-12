@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -95,7 +97,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostWithComments getPostWithComments(String postId) {
+    public ResponseEntity<PostWithComments> getPostWithComments(String postId) {
         List<CommentResponse> commentResponseList = webClient
                 .get()
                 .uri(commentServiceUri + "?postId=" + postId)
@@ -106,14 +108,16 @@ public class PostServiceImpl implements PostService {
                 .block();
 
         Post post = this.queryPost("id", postId);
-        if (post == null) return null;
+        if (post == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         PostResponse postResponse = mapToPostResponse(post);
 
-        return new PostWithComments(postResponse, commentResponseList);
+        return new ResponseEntity<>(new PostWithComments(postResponse, commentResponseList), HttpStatus.OK);
     }
 
-    public Post queryPost(String key, Object value) {
+    //    helper methods
+    private Post queryPost(String key, Object value) {
         Query query = new Query();
         query.addCriteria(Criteria.where(key).is(value));
         return mongoTemplate.findOne(query, Post.class);

@@ -3,12 +3,13 @@ package ca.springsocial.commentservice.service;
 import ca.springsocial.commentservice.dto.comment.CommentRequest;
 import ca.springsocial.commentservice.dto.comment.CommentResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Map;
 
 public interface CommentService {
-    Map<String, Object> createComment(CommentRequest commentRequest, HttpServletRequest httpServletRequest);
+    ResponseEntity<Map<String, Object>> createComment(CommentRequest commentRequest, HttpServletRequest httpServletRequest);
 
     CommentResponse getCommentById(Long commentId);
 

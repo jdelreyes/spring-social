@@ -14,6 +14,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -39,10 +41,10 @@ public class CommentServiceImpl implements CommentService {
     @TimeLimiter(name = "circuitBreakerService")
     @Retry(name = "circuitBreakerService")
     @Override
-    public Map<String, Object> createComment(CommentRequest commentRequest, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<Map<String, Object>> createComment(CommentRequest commentRequest, HttpServletRequest httpServletRequest) {
         Map<String, Object> stringObjectMap = validateUserIdFromCookie(httpServletRequest);
         if (!(Boolean) stringObjectMap.get("status"))
-            return stringObjectMap;
+            return new ResponseEntity<>(stringObjectMap, HttpStatus.FORBIDDEN);
 
         PostResponse postResponse = webClient.get()
                 .uri(postServiceUri + "/" + commentRequest.getPostId())
@@ -61,15 +63,16 @@ public class CommentServiceImpl implements CommentService {
 
             Long commentId = commentRepository.save(comment).getId();
 
-            return new HashMap<String, Object>() {{
+            return new ResponseEntity<>(new HashMap<String, Object>() {{
                 put("commentId", commentId);
                 put("status", true);
-            }};
+            }}, HttpStatus.CREATED);
         }
-        return new HashMap<String, Object>() {{
+
+        return new ResponseEntity<>(new HashMap<String, Object>() {{
             put("message", "post does not exist");
             put("status", false);
-        }};
+        }}, HttpStatus.BAD_REQUEST);
 
     }
 

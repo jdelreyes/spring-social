@@ -3,6 +3,9 @@ package ca.springsocial.commentservice.controller;
 import ca.springsocial.commentservice.dto.comment.CommentRequest;
 import ca.springsocial.commentservice.dto.comment.CommentResponse;
 import ca.springsocial.commentservice.service.CommentServiceImpl;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/comments")
@@ -19,12 +23,13 @@ import java.util.Optional;
 public class CommentController {
     private final CommentServiceImpl commentService;
 
+    @CircuitBreaker(name = "circuitBreakerService", fallbackMethod = "createCommentFallback")
+    @TimeLimiter(name = "circuitBreakerService")
+    @Retry(name = "circuitBreakerService")
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createComment(@RequestBody CommentRequest commentRequest, HttpServletRequest httpServletRequest) {
-        Map<String, Object> stringObjectHashMap = commentService.createComment(commentRequest, httpServletRequest);
-        if ((Boolean) stringObjectHashMap.get("status"))
-            return new ResponseEntity<>(stringObjectHashMap, HttpStatus.CREATED);
-        return new ResponseEntity<>(stringObjectHashMap, HttpStatus.BAD_REQUEST);
+    public CompletableFuture<ResponseEntity<Map<String, Object>>> createComment(@RequestBody CommentRequest commentRequest, HttpServletRequest httpServletRequest) {
+        ResponseEntity<Map<String, Object>> mapResponseEntity = commentService.createComment(commentRequest, httpServletRequest);
+        return CompletableFuture.supplyAsync(() -> mapResponseEntity);
     }
 
     @GetMapping("/{commentId}")
@@ -58,4 +63,12 @@ public class CommentController {
         if (postId.isPresent()) return commentService.getPostComments(postId.get());
         return commentService.getComments();
     }
+
+    //    fallback
+    public CompletableFuture<ResponseEntity<Map<String, Object>>> createCommentFallback(CommentRequest commentRequest,
+                                                                                        HttpServletRequest httpServletRequest,
+                                                                                        RuntimeException runtimeException) {
+        return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
+    }
+
 }

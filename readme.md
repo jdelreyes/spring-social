@@ -1,7 +1,10 @@
 # Spring Social
-An API-based social media where users can post, comment and send friend requests written using the Spring Boot framework.
+
+An API-based social media where users can post, comment and send friend requests written using the Spring Boot
+framework.
 
 ## Architecture
+
 ![architecture](./docs/assets/images/infrastructure.png)
 
 ## Installation
@@ -23,52 +26,73 @@ An API-based social media where users can post, comment and send friend requests
    ```shell
    cd spring-social
    ```
-2. Docker componse micro services and databases
+2. Build microservices' and databases' docker images and running containers
    ```shell
    docker-compose -p spring-social -f docker-compose.yml up -d
    ```
-   
-## Demonstrating
+
+## Testing
+
 1. Open Postman
 2. Locate Postman collection using relative path `./postman/spring-social.postman_collection.json`
 3. Drag and drop Postman collection to the Postman Desktop
+4. Retrieve credentials to authenticate requests via API gateway with OAuth2.0 using `Keycloak`
+    1. Navigate to `Keycloak` at <http://localhost:8080/auth>
+    2. Retrieve `token_endpoint`
+       from [OpenID Endpoint Configuration](http://localhost:8080/auth/realms/spring-social-realm/.well-known/openid-configuration)
+    3. Under the [Clients](http://localhost:8080/auth/admin/master/console/#/realms/spring-social-realm/clients)
+       navigation item on the left-hand side, click on `spring-social-client` to retrieve
+       the `Client ID`
+    4. Under Credentials tab, retrieve `Client Secret`
+5. Authenticate requests using Postman Authorization Tab...
 
 ## REST API Endpoints
+
 Request to these endpoints are passed through an API gateway which is authenticated and authorized with `Keycloak`
 
-### Users `/api/users`
+### Users
 
-* `GET /{userId}` - Retrieves a user
-* `GET` - Retrieves users
-* `POST` - Creates a user
-* `PUT /{userId}` - Updates a user
-* `DELETE /{userId}` - Removes a user
-* `GET /{userId}/posts` - Gets a user with their posts
-* `GET /{userId}/comments` - Gets a user with their comments
-* `GET /{userId}/posts-with-comments` - Gets a user with their posts with comments
+| api endpoint                     | method | description                          |
+|----------------------------------|:------:|--------------------------------------|
+| `/api/users`                     |  GET   | Retrieves users                      |
+| `/api/users`                     |  POST  | Creates a user                       |
+| `/api/users/{{userId}}`          |  PUT   | Updates a user                       |
+| `/api/users/{{userId}}`          | DELETE | Deletes a user                       |
+| `/api/users/{{userId}}`          |  GET   | Retrieves a user                     |
+| `/api/users/{{userId}}/posts`    |  GET   | Retrieves a user with their posts    |
+| `/api/users/{{userId}}/comments` |  GET   | Retrieves a user with their comments |
 
-### Posts `/api/posts`
+### Posts
 
-* `GET /{postId}` - Retrieves a post
-* `GET` - Retrieves posts
-* `POST` - Creates a post
-* `PUT /{postId}` - Updates a post
-* `DELETE /{postId}` - Removes a post
-* `GET ?userId={userId}` - Retrieves posts
-* `GET /user/{userId}/comments` - Retrieves posts with by userId
+| api endpoint                     | method | description                          |
+|----------------------------------|:------:|--------------------------------------|
+| `/api/posts?userId={{userId}}`   |  GET   | Retrieves posts                      |
+| `/api/posts`                     |  POST  | Creates a post                       |
+| `/api/posts/{{postId}}`          |  PUT   | Updates a post                       |
+| `/api/posts/{{postId}}`          | DELETE | Deletes a post                       |
+| `/api/posts/{{postId}}`          |  GET   | Retrieves a post                     |
+| `/api/posts/{{postId}}/comments` |  GET   | Retrieves a post with their comments |
 
-### Comments `/api/comments`
+### Comments
 
-* `GET /{commentId}` - Retrieves a comment
-* `GET ?userId={userId}&postId={postId}` - Retrieves comments
-* `POST` - Creates a comment
-* `PUT /{commentId}` - Updates a comment
-* `DELETE /{commentId}` - Removes a comment
+| api endpoint                                        | method | description         |
+|-----------------------------------------------------|:------:|---------------------|
+| `/api/comments?userId={{userId}}&postId={{postId}}` |  GET   | Retrieves comments  |
+| `/api/comments`                                     |  POST  | Creates a comment   |
+| `/api/comments/{{commentId}}`                       |  PUT   | Updates a comment   |
+| `/api/comments/{{commentId}}`                       | DELETE | Deletes a comment   |
+| `/api/comments/{{commentId}}`                       |  GET   | Retrieves a comment |
 
 ### Friendship `/api/friendships`
 
-* `GET /{friendshipId}` - Retrieves a friendship
-* `GET` - Retrieves friendships
-* `POST` - Creates a friendship
-* `PUT /{friendshipId}` - Updates a friendship
-* `DELETE /{friendshipId}` - Removes a friendship
+| api endpoint                        | method | description            |
+|-------------------------------------|:------:|------------------------|
+| `/api/friendships`                  |  GET   | Retrieves friendships  |
+| `/api/friendships`                  |  POST  | Creates a friendship   |
+| `/api/friendships/{{friendshipId}}` |  PUT   | Updates a friendship   |
+| `/api/friendships/{{friendshipId}}` | DELETE | Deletes a friendship   |
+| `/api/friendships/{{friendshipId}}` |  GET   | Retrieves a friendship |
+
+## Authors
+* Jerome Delos Reyes
+* Jayden Nguyen
