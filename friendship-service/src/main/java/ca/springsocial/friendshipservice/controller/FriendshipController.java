@@ -3,6 +3,9 @@ package ca.springsocial.friendshipservice.controller;
 import ca.springsocial.friendshipservice.dto.friendship.FriendshipRequest;
 import ca.springsocial.friendshipservice.dto.friendship.FriendshipResponse;
 import ca.springsocial.friendshipservice.service.FriendshipServiceImpl;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/friendships")
@@ -18,12 +22,13 @@ import java.util.Map;
 public class FriendshipController {
     private final FriendshipServiceImpl friendshipService;
 
+    @CircuitBreaker(name = "circuitBreakerService", fallbackMethod = "sendFriendRequestFallback")
+    @TimeLimiter(name = "circuitBreakerService")
+    @Retry(name = "circuitBreakerService")
     @PostMapping("/send")
-    public ResponseEntity<Map<String, Object>> sendFriendRequest(@RequestBody FriendshipRequest friendshipRequest, HttpServletRequest httpServletRequest) {
-        Map<String, Object> stringObjectMap = friendshipService.sendFriendRequest(friendshipRequest, httpServletRequest);
-        if ((Boolean) stringObjectMap.get("status"))
-            return new ResponseEntity<>(stringObjectMap, HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(stringObjectMap, HttpStatus.CREATED);
+    public CompletableFuture<ResponseEntity<Map<String, Object>>> sendFriendRequest(@RequestBody FriendshipRequest friendshipRequest, HttpServletRequest httpServletRequest) {
+        ResponseEntity<Map<String, Object>> stringObjectMap = friendshipService.sendFriendRequest(friendshipRequest, httpServletRequest);
+        return CompletableFuture.supplyAsync(() -> stringObjectMap);
     }
 
     @PutMapping("/accept")
@@ -72,4 +77,10 @@ public class FriendshipController {
         return friendshipService.getFriendship(friendshipId);
     }
 
+    //    fallback
+    CompletableFuture<ResponseEntity<Map<String, Object>>> sendFriendRequestFallback(FriendshipRequest friendshipRequest,
+                                                                                     HttpServletRequest httpServletRequest,
+                                                                                     RuntimeException runtimeException) {
+        return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
+    }
 }
