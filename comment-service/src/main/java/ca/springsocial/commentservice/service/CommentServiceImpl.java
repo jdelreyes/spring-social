@@ -5,6 +5,9 @@ import ca.springsocial.commentservice.dto.comment.CommentResponse;
 import ca.springsocial.commentservice.dto.post.PostResponse;
 import ca.springsocial.commentservice.model.Comment;
 import ca.springsocial.commentservice.repository.CommentRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -32,6 +35,9 @@ public class CommentServiceImpl implements CommentService {
     @Value("${post.service.url}")
     private String postServiceUri;
 
+    @CircuitBreaker(name = "circuitBreakerService", fallbackMethod = "createCommentFallback")
+    @TimeLimiter(name = "circuitBreakerService")
+    @Retry(name = "circuitBreakerService")
     @Override
     public Map<String, Object> createComment(CommentRequest commentRequest, HttpServletRequest httpServletRequest) {
         Map<String, Object> stringObjectMap = validateUserIdFromCookie(httpServletRequest);
@@ -42,7 +48,7 @@ public class CommentServiceImpl implements CommentService {
                 .uri(postServiceUri + "/" + commentRequest.getPostId())
                 .retrieve()
                 .bodyToMono(PostResponse.class)
-                .onErrorResume(WebClientResponseException.class, ex -> ex.getRawStatusCode() == 400
+                .onErrorResume(WebClientResponseException.class, ex -> ex.getStatusCode().is4xxClientError()
                         ? Mono.empty()
                         : Mono.error(ex))
                 .block();
@@ -65,6 +71,13 @@ public class CommentServiceImpl implements CommentService {
             put("status", false);
         }};
 
+    }
+
+    public Map<String, Object> createCommentFallback(RuntimeException runtimeException) {
+        return new HashMap<String, Object>() {{
+            put("message", "cannot create comment");
+            put("status", false);
+        }};
     }
 
     @Override

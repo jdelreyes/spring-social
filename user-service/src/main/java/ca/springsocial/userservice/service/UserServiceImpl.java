@@ -1,6 +1,5 @@
 package ca.springsocial.userservice.service;
 
-import ca.springsocial.userservice.dto.combined.PostWithComments;
 import ca.springsocial.userservice.dto.combined.UserWithComments;
 import ca.springsocial.userservice.dto.combined.UserWithPosts;
 import ca.springsocial.userservice.dto.comment.CommentResponse;
@@ -16,7 +15,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -140,9 +140,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserWithPosts getUserWithPosts(Long userId) {
+    public ResponseEntity<UserWithPosts> getUserWithPosts(Long userId) {
         User user = userRepository.findUserById(userId);
-        if (user == null) return null;
+        if (user == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         List<PostResponse> postResponseList = webClient
                 .get()
@@ -155,14 +156,14 @@ public class UserServiceImpl implements UserService {
 
         UserResponse userResponse = mapToUserResponse(user);
 
-        return new UserWithPosts(userResponse, postResponseList);
+        return new ResponseEntity<>(new UserWithPosts(userResponse, postResponseList), HttpStatus.OK);
     }
 
     @Override
-    public UserWithComments getUserWithComments(Long userId) {
+    public ResponseEntity<UserWithComments> getUserWithComments(Long userId) {
         List<CommentResponse> commentResponseList = webClient
                 .get()
-                .uri(commentServiceUri + "?userId={userId}", userId)
+                .uri(commentServiceUri + "?userId=", userId)
                 .retrieve()
                 .bodyToFlux(CommentResponse.class)
                 .collectList()
@@ -170,11 +171,12 @@ public class UserServiceImpl implements UserService {
                 .block();
 
         User user = userRepository.findUserById(userId);
-        if (user == null) return null;
+        if (user == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         UserResponse userResponse = mapToUserResponse(user);
 
-        return new UserWithComments(userResponse, commentResponseList);
+        return new ResponseEntity<>(new UserWithComments(userResponse, commentResponseList), HttpStatus.OK);
     }
 
     private boolean isEmailAddress(String email) {
