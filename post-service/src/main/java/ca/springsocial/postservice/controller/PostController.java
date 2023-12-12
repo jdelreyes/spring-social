@@ -4,6 +4,9 @@ import ca.springsocial.postservice.dto.combined.PostWithComments;
 import ca.springsocial.postservice.dto.post.PostRequest;
 import ca.springsocial.postservice.dto.post.PostResponse;
 import ca.springsocial.postservice.service.PostServiceImpl;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -58,9 +62,18 @@ public class PostController {
         return postService.getPosts();
     }
 
+    @CircuitBreaker(name = "circuitBreakerService", fallbackMethod = "getPostCommentsFallback")
+    @TimeLimiter(name = "circuitBreakerService")
+    @Retry(name = "circuitBreakerService")
     @GetMapping({"/{postId}/comments"})
-    @ResponseStatus(HttpStatus.OK)
-    public PostWithComments getPostWithComments(@PathVariable("postId") String postId) {
-        return postService.getPostWithComments(postId);
+    public CompletableFuture<ResponseEntity<PostWithComments>> getPostComments(@PathVariable String postId) {
+        ResponseEntity<PostWithComments> postWithCommentsResponseEntity = postService.getPostWithComments(postId);
+        return CompletableFuture.supplyAsync(() -> postWithCommentsResponseEntity);
+    }
+
+    //    fallback methods
+    public CompletableFuture<ResponseEntity<PostWithComments>> getPostCommentsFallback(String postId,
+                                                                                           RuntimeException runtimeException) {
+        return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
     }
 }

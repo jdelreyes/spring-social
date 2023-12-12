@@ -7,6 +7,7 @@ import ca.springsocial.commentservice.service.CommentServiceImpl;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.annotation.Before;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,12 +18,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @AutoConfigureMockMvc
@@ -68,13 +70,11 @@ public class CommentControllerIntegrationTest {
         when(commentRepository.save(comment)).thenReturn(comment);
 
         // Execution
-        Map<String, Object> result = commentServiceImpl.createComment(commentRequest, httpServletRequest);
+        ResponseEntity<Map<String, Object>> result = commentServiceImpl.createComment(commentRequest, httpServletRequest);
 
         // Assertions
-        assertEquals(true, result.get("status"));
-        assertEquals(1L, result.get("commentId"));
-
-
+        Assertions.assertEquals(HttpStatus.CREATED, result.getStatusCode());
+        Assertions.assertEquals(1L, result.getBody().get("commentId"));
     }
 
     private Map<String, Object> validateUserIdFromCookie(HttpServletRequest httpServletRequest) {
