@@ -1,6 +1,7 @@
 package ca.springsocial.friendshipservice.service;
 
-import ca.springsocial.friendshipservice.dto.friendship.FriendshipRequest;
+import ca.springsocial.friendshipservice.dto.friendship.FriendshipRecipientRequest;
+import ca.springsocial.friendshipservice.dto.friendship.FriendshipRequesterRequest;
 import ca.springsocial.friendshipservice.dto.friendship.FriendshipResponse;
 import ca.springsocial.friendshipservice.dto.user.UserResponse;
 import ca.springsocial.friendshipservice.enums.FriendshipStatus;
@@ -35,77 +36,76 @@ public class FriendshipServiceImpl implements FriendshipService {
     public String userServiceUri;
 
     @Override
-    public ResponseEntity<Map<String, Object>> sendFriendRequest(FriendshipRequest friendshipRequest, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<Map<String, Object>> sendFriendRequest(FriendshipRecipientRequest friendshipRecipientRequest, HttpServletRequest httpServletRequest) {
         Map<String, Object> stringObjectMap = validateUserIdFromCookie(httpServletRequest);
         Long requesterUserId = (Long) stringObjectMap.get("userId");
+        Long recipientUserId = friendshipRecipientRequest.getRecipientUserId();
 
         if (!(Boolean) stringObjectMap.get("status"))
-            return new ResponseEntity<>(stringObjectMap, HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-        Long recipientUserId = friendshipRequest.getRecipientUserId();
-
-        Friendship friendship = friendshipRepository.findByRequesterUserIdAndRecipientUserId(recipientUserId,
-                requesterUserId);
-
-        if (friendship == null) {
-            // does not exist in document, making one
-            friendship = Friendship.builder()
+        if (userExists(recipientUserId)) {
+            Friendship friendship = Friendship.builder()
                     .requesterUserId(requesterUserId)
                     .recipientUserId(recipientUserId)
                     .status(FriendshipStatus.pending)
                     .build();
+
+            String id = friendshipRepository.save(friendship).getId();
+
+            return new ResponseEntity<>(new HashMap<String, Object>() {{
+                put("status", true);
+                put("id", id);
+            }}, HttpStatus.CREATED);
         }
-
-        String id = friendshipRepository.save(friendship).getId();
-
-        return new ResponseEntity<>(new HashMap<String, Object>() {{
-            put("status", true);
-            put("id", id);
-        }}, HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
     @Override
-    public Map<String, Object> acceptFriendRequest(FriendshipRequest friendshipRequest, HttpServletRequest httpServletRequest) {
+    public Map<String, Object> acceptFriendRequest(FriendshipRequesterRequest friendshipRequesterRequest, HttpServletRequest httpServletRequest) {
         Map<String, Object> stringObjectMap = validateUserIdFromCookie(httpServletRequest);
         if (!(Boolean) stringObjectMap.get("status"))
             return stringObjectMap;
 
-        Long recipientUserId = friendshipRequest.getRecipientUserId();
+        Long requesterId = friendshipRequesterRequest.getRequesterId();
+        Long recipientId = (Long) stringObjectMap.get("userId");
 
-        if (isFriendRequestPending(recipientUserId, (Long) stringObjectMap.get("userId")))
+        if (!isFriendRequestPending(recipientId, requesterId))
             return new HashMap<String, Object>() {{
                 put("status", false);
                 put("message", "no pending request");
             }};
 
-        Friendship friendship = friendshipRepository.findByRequesterUserIdAndRecipientUserId(recipientUserId,
-                (Long) stringObjectMap.get("userId"));
+        Friendship friendship = friendshipRepository.findFriendshipByRequesterUserIdAndRecipientUserId(requesterId,
+                recipientId);
+
 
         friendship.setStatus(FriendshipStatus.accepted);
         friendshipRepository.save(friendship);
 
         return new HashMap<String, Object>() {{
             put("status", true);
-            put("message", "successfully sent request");
+            put("message", "successfully accepted");
         }};
     }
 
     @Override
-    public Map<String, Object> rejectFriendRequest(FriendshipRequest friendshipRequest, HttpServletRequest httpServletRequest) {
+    public Map<String, Object> rejectFriendRequest(FriendshipRequesterRequest friendshipRequesterRequest, HttpServletRequest httpServletRequest) {
         Map<String, Object> stringObjectMap = validateUserIdFromCookie(httpServletRequest);
         if (!(Boolean) stringObjectMap.get("status"))
             return stringObjectMap;
 
-        Long recipientUserId = friendshipRequest.getRecipientUserId();
+        Long requesterId = friendshipRequesterRequest.getRequesterId();
+        Long recipientId = (Long) stringObjectMap.get("userId");
 
-        if (isFriendRequestPending(recipientUserId, (Long) stringObjectMap.get("userId")))
+        if (!isFriendRequestPending(recipientId, requesterId))
             return new HashMap<String, Object>() {{
                 put("status", false);
                 put("message", "no pending request");
             }};
 
-        Friendship friendship = friendshipRepository.findByRequesterUserIdAndRecipientUserId(recipientUserId,
-                (Long) stringObjectMap.get("userId"));
+        Friendship friendship = friendshipRepository.findFriendshipByRequesterUserIdAndRecipientUserId(requesterId,
+                recipientId);
 
         friendship.setStatus(FriendshipStatus.rejected);
         friendshipRepository.save(friendship);
@@ -144,7 +144,7 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     @Override
     public FriendshipResponse getFriendship(String friendshipId) {
-        return mapToFriendshipResponse(friendshipRepository.findById(friendshipId));
+        return mapToFriendshipResponse(friendshipRepository.findFriendshipById(friendshipId));
     }
 
     private Boolean userExists(Long userId) {
@@ -162,19 +162,19 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     //  helper functions
     private boolean isFriendRequestPending(Long recipientUserId, Long requesterId) {
-        Friendship friendship = friendshipRepository.findByRequesterUserIdAndRecipientUserId(requesterId,
+        Friendship friendship = friendshipRepository.findFriendshipByRequesterUserIdAndRecipientUserId(requesterId,
                 recipientUserId);
-        return friendship.getStatus() != FriendshipStatus.pending;
+        return friendship.getStatus() == FriendshipStatus.pending;
     }
 
     private boolean isFriendRequestAccepted(Long recipientUserId, Long requesterId) {
-        Friendship friendship = friendshipRepository.findByRequesterUserIdAndRecipientUserId(requesterId,
+        Friendship friendship = friendshipRepository.findFriendshipByRequesterUserIdAndRecipientUserId(requesterId,
                 recipientUserId);
         return friendship.getStatus() == FriendshipStatus.accepted;
     }
 
     private boolean isFriendRequestRejected(Long recipientUserId, Long requesterId) {
-        Friendship friendship = friendshipRepository.findByRequesterUserIdAndRecipientUserId(requesterId,
+        Friendship friendship = friendshipRepository.findFriendshipByRequesterUserIdAndRecipientUserId(requesterId,
                 recipientUserId);
         return friendship.getStatus() == FriendshipStatus.rejected;
     }

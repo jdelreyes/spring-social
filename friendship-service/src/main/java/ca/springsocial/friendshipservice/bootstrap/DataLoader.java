@@ -22,18 +22,21 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
 //        we can seed the database while booting up
         Friendship friendshipAccepted = Friendship.builder()
+                .id("657904a97da850294d2b9e7d")
                 .requesterUserId(1L)
                 .recipientUserId(2L)
                 .status(FriendshipStatus.accepted)
                 .build();
 
         Friendship friendshipPending = Friendship.builder()
+                .id("6579047e7da850294d2b9e7c")
                 .requesterUserId(2L)
                 .recipientUserId(3L)
                 .status(FriendshipStatus.pending)
                 .build();
 
         Friendship friendshipRejected = Friendship.builder()
+                .id("6579047e7da850294d2b9e7b")
                 .requesterUserId(3L)
                 .recipientUserId(1L)
                 .status(FriendshipStatus.rejected)
