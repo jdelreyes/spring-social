@@ -1,8 +1,8 @@
 # NOTES:
 # cannot have conflicting container names
 
+# docker-compose -p spring-social -f docker-compose.yml up -d
 # COMMANDS:
-# docker-compose -p spring-social-green-gang -f docker-compose.yml up -d
 
 version: '3.8'
 
@@ -11,7 +11,7 @@ services:
   user-service:
     image: user-service
     ports:
-      - "8080:8080"
+      - "8081:8081"
     #    builds app
     build:
       context: ./user-service
@@ -21,30 +21,15 @@ services:
       # property available provided by spring
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
-      - mongodb-user-service
-    networks:
-      - spring-social
-
-  mongodb-user-service:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=rootadmin
-      - MONGO_INITDB_ROOT_PASSWORD=password
-    volumes:
-      - ./data/mongo/users:/data/db
-      - ./init/mongo/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-    container_name: mongodb-user-service
-    restart: unless-stopped
-    command: mongod --auth
+      - postgresql-user-service
+      - discovery-service
     networks:
       - spring-social
 
   post-service:
     image: post-service
     ports:
-      - "8081:8081"
+      - "8084:8084"
     #    builds app
     build:
       context: ./post-service
@@ -55,22 +40,7 @@ services:
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
       - mongodb-post-service
-    networks:
-      - spring-social
-
-  mongodb-post-service:
-    image: mongo:latest
-    ports:
-      - "27016:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=rootadmin
-      - MONGO_INITDB_ROOT_PASSWORD=password
-    volumes:
-      - ./data/mongo/posts:/data/db
-      - ./init/mongo/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-    container_name: mongodb-post-service
-    restart: unless-stopped
-    command: mongod --auth
+      - discovery-service
     networks:
       - spring-social
 
@@ -87,23 +57,8 @@ services:
       # property available provided by spring
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
-      - mongodb-comment-service
-    networks:
-      - spring-social
-
-  mongodb-comment-service:
-    image: mongo:latest
-    ports:
-      - "27015:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=rootadmin
-      - MONGO_INITDB_ROOT_PASSWORD=password
-    volumes:
-      - ./data/mongo/comments:/data/db
-      - ./init/mongo/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-    container_name: mongodb-comment-service
-    restart: unless-stopped
-    command: mongod --auth
+      - postgresql-comment-service
+      - discovery-service
     networks:
       - spring-social
 
@@ -117,10 +72,113 @@ services:
       dockerfile: ./Dockerfile
     container_name: friendship-service
     environment:
-      # property available provided by spring
       SPRING_PROFILES_ACTIVE: docker
+      # property available provided by spring
     depends_on:
       - mongodb-friendship-service
+      - discovery-service
+    networks:
+      - spring-social
+
+  api-gateway:
+    image: api-gateway
+    ports:
+      - "8181:8181"
+    build:
+      context: ./api-gateway
+      dockerfile: ./Dockerfile
+    container_name: api-gateway
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: DEBUG
+    depends_on:
+      - discovery-service
+      - keycloak
+    networks:
+      - spring-social
+
+  keycloak:
+    image: jboss/keycloak:latest
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      JBOSS_LOG_MANAGER_ROOT_LOGGER: DEBUG
+      DB_VENDOR: postgres
+      DB_ADDR: postgresql-keycloak
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: password
+      KEYCLOAK_IMPORT: /opt/jboss/keycloak/realms/spring-social-realm.json
+    container_name: keycloak
+    volumes:
+      - ./realms/:/opt/jboss/keycloak/realms
+    depends_on:
+      - postgresql-keycloak
+      - discovery-service
+    networks:
+      - spring-social
+
+  discovery-service:
+    image: discovery-service
+    ports:
+      - "8761:8761"
+    build:
+      context: ./discovery-service
+      dockerfile: ./Dockerfile
+    container_name: discovery-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    networks:
+      - spring-social
+
+  postgresql-user-service:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: rootadmin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: user-service
+    volumes:
+      - ./data/postgres/users:/var/lib/postgresql/data
+      - ./init/postgres/docker-entrypoint-initdb.d/user-service-init.sql:/docker-entrypoint-initdb.d/init.sql
+    container_name: postgresql-user-service
+    restart: unless-stopped
+    networks:
+      - spring-social
+
+  mongodb-post-service:
+    image: mongo:latest
+    ports:
+      - "27016:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=rootadmin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - ./data/mongo/posts:/data/db
+      - ./init/mongo/docker-entrypoint-initdb.d/post-service-init.js:/docker-entrypoint-initdb.d/post-service-init.js:ro
+    container_name: mongodb-post-service
+    restart: unless-stopped
+    command: mongod --auth
+    networks:
+      - spring-social
+
+  postgresql-comment-service:
+    image: postgres:latest
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: rootadmin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: comment-service
+    volumes:
+      - ./data/postgres/comments:/var/lib/postgresql/data
+      - ./init/postgres/docker-entrypoint-initdb.d/comment-service-init.sql:/docker-entrypoint-initdb.d/init.sql
+    container_name: postgresql-comment-service
+    restart: unless-stopped
     networks:
       - spring-social
 
@@ -133,25 +191,26 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=password
     volumes:
       - ./data/mongo/friendships:/data/db
-      - ./init/mongo/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./init/mongo/docker-entrypoint-initdb.d/friendship-service-init.js:/docker-entrypoint-initdb.d/friendship-service-init.js:ro
     container_name: mongodb-friendship-service
     restart: unless-stopped
     command: mongod --auth
     networks:
       - spring-social
 
-  mongo-express-user-service:
-    image: mongo-express
-    ports:
-      - "8086:8086"
-    environment:
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=rootadmin
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
-      - ME_CONFIG_MONGODB_SERVER=mongodb-user-service
-    container_name: mongo-express-user-service
+  postgresql-keycloak:
+    image: postgres:latest
     restart: unless-stopped
-    depends_on:
-      - mongodb-user-service
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: keycloak
+      PGDATA: /data/postgres
+    volumes:
+      - ./data/postgres/keycloak:/var/lib/postgresql/data
+    container_name: postgresql-keycloak
     networks:
       - spring-social
 

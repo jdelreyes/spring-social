@@ -8,7 +8,7 @@
 # base image
 FROM gradle:8-jdk17-alpine AS builder
 
-LABEL authors="jeromedelosreyes"
+LABEL authors="Jerome Delos Reyes"
 
 # copy the application files, the host machine to the image filesystem
 COPY --chown=gradle:gradle . /home/gradle/src
@@ -28,10 +28,10 @@ RUN mkdir /app
 
 COPY --from=builder /home/gradle/src/build/libs/*.jar /app/post-service.jar
 
-ENV MONGO_DB_postNAME=rootadmin \
+ENV MONGO_DB_USERNAME=rootadmin \
     MONGO_DB_PWD=password
 
-EXPOSE 8081
+EXPOSE 8084
 
 # runs the application
 ENTRYPOINT ["java", "-jar", "/app/post-service.jar"]
