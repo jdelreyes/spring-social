@@ -97,6 +97,19 @@ services:
     networks:
       - spring-social
 
+  discovery-service:
+    image: discovery-service
+    ports:
+      - "8761:8761"
+    build:
+      context: ./discovery-service
+      dockerfile: ./Dockerfile
+    container_name: discovery-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    networks:
+      - spring-social
+
   keycloak:
     image: jboss/keycloak:latest
     restart: unless-stopped
@@ -121,16 +134,12 @@ services:
     networks:
       - spring-social
 
-  discovery-service:
-    image: discovery-service
+  zipkin:
+    image: openzipkin/zipkin:latest
     ports:
-      - "8761:8761"
-    build:
-      context: ./discovery-service
-      dockerfile: ./Dockerfile
-    container_name: discovery-service
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
+      - "9411:9411"
+    restart: unless-stopped
+    container_name: zipkin
     networks:
       - spring-social
 

@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface FriendshipRepository extends MongoRepository<Friendship, Long> {
     @Query("{'requesterUserId':  ?0, 'recipientUserId': ?1}")
-    Friendship findByRequesterUserIdAndRecipientUserId(Long requesterUserId, Long recipientUserId);
+    Friendship findFriendshipByRequesterUserIdAndRecipientUserId(Long requesterUserId, Long recipientUserId);
 
-    Friendship findById(String id);
+    Friendship findFriendshipById(String friendshipId);
 
     List<Friendship> findAllByRecipientUserIdOrRequesterUserIdAndStatus(Long recipientUserId, Long requesterUserId, FriendshipStatus friendshipStatus);
 }

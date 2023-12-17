@@ -1,6 +1,6 @@
 package ca.springsocial.friendshipservice;
 
-import ca.springsocial.friendshipservice.dto.friendship.FriendshipRequest;
+import ca.springsocial.friendshipservice.dto.friendship.FriendshipRequesterRequest;
 import ca.springsocial.friendshipservice.dto.friendship.FriendshipResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,14 +33,14 @@ public class FriendshipServiceIntegrationTest {
         // "SENDING" ENDPOINT
         String url = "http://localhost:" + port + "/api/friendships/send";
 
-        FriendshipRequest friendshipRequest = FriendshipRequest.builder()
+        FriendshipRequesterRequest friendshipRequesterRequest = FriendshipRequesterRequest.builder()
                 .recipientUserId(123L)
                 .build();
 
         // Send the POST request
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<FriendshipRequest> entity = new HttpEntity<>(friendshipRequest, headers);
+        HttpEntity<FriendshipRequesterRequest> entity = new HttpEntity<>(friendshipRequesterRequest, headers);
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
 
         // Assertions
@@ -54,12 +54,12 @@ public class FriendshipServiceIntegrationTest {
         String url = "http://localhost:" + port + "/api/friendships/accept";
 
 
-        FriendshipRequest friendshipRequest = FriendshipRequest.builder()
+        FriendshipRequesterRequest friendshipRequesterRequest = FriendshipRequesterRequest.builder()
                 .recipientUserId(Long.valueOf("12345"))
                 .build();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<FriendshipRequest> entity = new HttpEntity<>(friendshipRequest, headers);
+        HttpEntity<FriendshipRequesterRequest> entity = new HttpEntity<>(friendshipRequesterRequest, headers);
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.PUT, entity, Map.class);
 
         // Assertions
@@ -72,14 +72,14 @@ public class FriendshipServiceIntegrationTest {
         String url = "http://localhost:" + port + "/api/friendships/reject";
 
 
-        FriendshipRequest friendshipRequest = FriendshipRequest.builder()
+        FriendshipRequesterRequest friendshipRequesterRequest = FriendshipRequesterRequest.builder()
                 .recipientUserId(Long.valueOf("12345"))
                 .build();
 
         // Send the PUT request
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<FriendshipRequest> entity = new HttpEntity<>(friendshipRequest, headers);
+        HttpEntity<FriendshipRequesterRequest> entity = new HttpEntity<>(friendshipRequesterRequest, headers);
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.PUT, entity, Map.class);
 
         // Assertions
