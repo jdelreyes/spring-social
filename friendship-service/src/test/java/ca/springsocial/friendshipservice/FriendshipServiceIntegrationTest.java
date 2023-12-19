@@ -1,5 +1,6 @@
 package ca.springsocial.friendshipservice;
 
+import ca.springsocial.friendshipservice.dto.friendship.FriendshipRecipientRequest;
 import ca.springsocial.friendshipservice.dto.friendship.FriendshipRequesterRequest;
 import ca.springsocial.friendshipservice.dto.friendship.FriendshipResponse;
 import org.junit.jupiter.api.Test;
@@ -33,14 +34,14 @@ public class FriendshipServiceIntegrationTest {
         // "SENDING" ENDPOINT
         String url = "http://localhost:" + port + "/api/friendships/send";
 
-        FriendshipRequesterRequest friendshipRequesterRequest = FriendshipRequesterRequest.builder()
+        FriendshipRecipientRequest friendshipRequesterRequest = FriendshipRecipientRequest.builder()
                 .recipientUserId(123L)
                 .build();
 
         // Send the POST request
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<FriendshipRequesterRequest> entity = new HttpEntity<>(friendshipRequesterRequest, headers);
+        HttpEntity<FriendshipRecipientRequest> entity = new HttpEntity<>(friendshipRequesterRequest, headers);
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
 
         // Assertions
@@ -55,7 +56,7 @@ public class FriendshipServiceIntegrationTest {
 
 
         FriendshipRequesterRequest friendshipRequesterRequest = FriendshipRequesterRequest.builder()
-                .recipientUserId(Long.valueOf("12345"))
+                .requesterId(Long.valueOf("12345"))
                 .build();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -73,7 +74,7 @@ public class FriendshipServiceIntegrationTest {
 
 
         FriendshipRequesterRequest friendshipRequesterRequest = FriendshipRequesterRequest.builder()
-                .recipientUserId(Long.valueOf("12345"))
+                .requesterId(Long.valueOf("12345"))
                 .build();
 
         // Send the PUT request
