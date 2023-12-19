@@ -80,6 +80,24 @@ services:
     networks:
       - spring-social
 
+  notification-service:
+    image: notification-service
+    ports:
+      - "8085:8085"
+    #    builds app
+    build:
+      context: ./notification-service
+      dockerfile: ./Dockerfile
+    container_name: notification-service
+    environment:
+      #      property available provided by spring
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - discovery-service
+      - broker
+    networks:
+      - spring-social
+
   api-gateway:
     image: api-gateway
     ports:

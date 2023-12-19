@@ -2,7 +2,13 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/feed-service/ca.springsocial.spring-social.feed-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/feed-service/ca.springsocial.spring-social.feed-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/comment-service/spring-social.comment-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/comment-service/spring-social.comment-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/feed-service/spring-social.feed-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/feed-service/spring-social.feed-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/friendship-service/spring-social.friendship-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/friendship-service/spring-social.friendship-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/notification-service/spring-social.notification-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/notification-service/spring-social.notification-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/post-service/spring-social.post-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/post-service/spring-social.post-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/user-service/spring-social.user-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/user-service/spring-social.user-service.main.iml" />
     </modules>
   </component>
 </project>
