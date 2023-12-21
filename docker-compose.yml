@@ -207,6 +207,8 @@ services:
     networks:
       - spring-social
 
+#################### database ####################
+
   postgresql-user-service:
     image: postgres:latest
     ports:

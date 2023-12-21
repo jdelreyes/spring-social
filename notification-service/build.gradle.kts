@@ -22,6 +22,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-web")
 //    test
+    implementation("org.springframework.kafka:spring-kafka:3.1.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 //    lombok
     compileOnly("org.projectlombok:lombok")
@@ -36,7 +37,6 @@ dependencies {
     implementation("io.zipkin.reporter2:zipkin-reporter-brave:2.16.4")
     implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j:3.0.3")
 //    kafka
-    implementation("org.springframework.kafka:spring-kafka:3.1.0")
     testImplementation("org.springframework.kafka:spring-kafka-test:3.1.0")
 }
 

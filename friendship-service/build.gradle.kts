@@ -29,6 +29,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("org.testcontainers:testcontainers-bom:1.18.1")
     testImplementation("org.testcontainers:mongodb:1.18.1")
+    testImplementation("org.springframework.kafka:spring-kafka-test:3.1.0")
 //    webflux - interservice communication
     implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.4")
 //    eureka client for discovery
@@ -41,6 +42,8 @@ dependencies {
     implementation("io.micrometer:micrometer-tracing-bridge-brave:1.1.4")
 //	zipkin
     implementation("io.zipkin.reporter2:zipkin-reporter-brave:2.16.4")
+//    kafka
+    implementation("org.springframework.kafka:spring-kafka:3.1.0")
 }
 
 tasks.withType<Test> {
