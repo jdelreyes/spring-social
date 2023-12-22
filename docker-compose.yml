@@ -135,7 +135,7 @@ services:
       - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 200
+      ZOOKEEPER_TICK_TIME: 2000
     networks:
       - spring-social
 
@@ -153,7 +153,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker:29092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR:
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
     networks:
       - spring-social
 
@@ -163,14 +163,13 @@ services:
     ports:
       - "8282:8080"
     depends_on:
-      - zookeeper
       - broker
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: broker:29092
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
       KAFKA_CLUSTERS_0_JMXPORT: 9997
-      SERVER_SERVLET_CONTEXT_PATH: /kafkau
+      SERVER_SERVLET_CONTEXT_PATH: /kafkaui
     networks:
       - spring-social
 

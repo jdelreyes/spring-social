@@ -85,14 +85,18 @@ Request to these endpoints are passed through an API gateway which is authentica
 
 ### Friendship `/api/friendships`
 
-| api endpoint                        | method | description            |
-|-------------------------------------|:------:|------------------------|
-| `/api/friendships`                  |  GET   | Retrieves friendships  |
-| `/api/friendships`                  |  POST  | Creates a friendship   |
-| `/api/friendships/{{friendshipId}}` |  PUT   | Updates a friendship   |
-| `/api/friendships/{{friendshipId}}` | DELETE | Deletes a friendship   |
-| `/api/friendships/{{friendshipId}}` |  GET   | Retrieves a friendship |
+| api endpoint                                     | method | description                             |
+|--------------------------------------------------|:------:|-----------------------------------------|
+| `/api/friendships`                               |  GET   | Retrieves friendships                   |
+| `/api/friendships/{{friendshipId}}`              |  GET   | Retrieves a friendship                  |
+| `/api/friendships/send`                          |  POST  | Sends a friend request                  |
+| `/api/friendships/accept`                        |  PUT   | Accept a friend request                 |
+| `/api/friendships/reject`                        |  PUT   | Reject a friend request                 |
+| `/api/friendships/user/{{userId}}/accepted-list` |  GET   | Retrieves a user's friend list          |
+| `/api/friendships/user/{{userId}}/rejected-list` |  GET   | Retrieves a user's rejected friend list |
+| `/api/friendships/user/{{userId}}/pending-list`  |  GET   | Retrieves a user's pending friend list  |
 
 ## Authors
+
 * Jerome Delos Reyes
 * Jayden Nguyen
