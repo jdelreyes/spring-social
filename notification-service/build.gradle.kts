@@ -19,7 +19,7 @@ dependencies {
 //    spring
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-actuator:3.1.4")
     implementation("org.springframework.boot:spring-boot-starter-web")
 //    test
     implementation("org.springframework.kafka:spring-kafka:3.1.0")
@@ -31,7 +31,7 @@ dependencies {
 //    eureka
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:4.0.3")
 //	micrometer
-    implementation("io.micrometer:micrometer-observation:1.11.3")
+    implementation("io.micrometer:micrometer-observation:1.11.4")
     implementation("io.micrometer:micrometer-tracing-bridge-brave:1.1.4")
 //	zipkin
     implementation("io.zipkin.reporter2:zipkin-reporter-brave:2.16.4")

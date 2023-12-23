@@ -17,7 +17,7 @@ repositories {
 
 dependencies {
 //    spring
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-actuator:3.1.4")
     implementation("org.springframework.boot:spring-boot-starter-web")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 //    db
@@ -38,7 +38,7 @@ dependencies {
     //    resilience4j - fault taulerance interservice communication
     implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j:3.0.3")
     //	micrometer
-    implementation("io.micrometer:micrometer-observation:1.11.3")
+    implementation("io.micrometer:micrometer-observation:1.11.4")
     implementation("io.micrometer:micrometer-tracing-bridge-brave:1.1.4")
 //	zipkin
     implementation("io.zipkin.reporter2:zipkin-reporter-brave:2.16.4")

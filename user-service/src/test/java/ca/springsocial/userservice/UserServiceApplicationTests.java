@@ -117,7 +117,7 @@ class UserServiceApplicationTests extends AbstractContainerBaseTest {
                 .setBody(objectMapper.writeValueAsString(List.of(postResponseList)))
                 .addHeader("Content-Type", "application/json"));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/users?userId=" + userId))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/users/" + userId))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 // todo
@@ -164,7 +164,6 @@ class UserServiceApplicationTests extends AbstractContainerBaseTest {
                 .password("password")
                 .build();
     }
-
 
     private UserRequest getUpdatedUserRequest() {
         return UserRequest.builder()

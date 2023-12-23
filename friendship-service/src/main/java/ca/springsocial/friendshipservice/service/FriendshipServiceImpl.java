@@ -30,8 +30,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class FriendshipServiceImpl implements FriendshipService {
-//    kafka - event driven programming
-    // sends a string of user id of the user who requested
     private final KafkaTemplate<String, FriendRequestSentEvent> kafkaTemplate;
 //    database
     private final FriendshipRepository friendshipRepository;
@@ -59,6 +57,8 @@ public class FriendshipServiceImpl implements FriendshipService {
                     .build();
 
             String id = friendshipRepository.save(friendship).getId();
+
+            kafkaTemplate.send("notificationTopic", new FriendRequestSentEvent(requesterUserId));
 
             return new ResponseEntity<>(new HashMap<String, Object>() {{
                 put("status", true);
