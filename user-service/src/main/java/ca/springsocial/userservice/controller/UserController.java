@@ -24,48 +24,21 @@ import java.util.concurrent.CompletableFuture;
 public class UserController {
     private final UserServiceImpl userService;
 
-    // CREATE
-    @PostMapping("/signup")
-    public ResponseEntity<Map<String, Object>> signUp(@RequestBody UserRequest userRequest) {
-        Map<String, Object> userHashMap = userService.signUp(userRequest);
-
-        if ((Boolean) userHashMap.get("status"))
-            return new ResponseEntity<>(userHashMap, HttpStatus.CREATED);
-
-        return new ResponseEntity<>(userHashMap, HttpStatus.CONFLICT);
-    }
-
-    @PostMapping({"/login"})
-    public ResponseEntity<Map<String, Object>> login(@RequestBody UserRequest userRequest, HttpServletResponse response) {
-        Map<String, Object> userHashMap = userService.login(userRequest.getUserName(), userRequest.getPassword(), response);
-
-        if ((Boolean) userHashMap.get("status"))
-            return new ResponseEntity<>(userHashMap, HttpStatus.OK);
-
-        return new ResponseEntity<>(userHashMap, HttpStatus.BAD_REQUEST);
-    }
-
-    @PostMapping({"/logout"})
-    @ResponseStatus(HttpStatus.OK)
-    Map<String, Object> logout(HttpServletResponse httpServletResponse) {
-        return userService.logout(httpServletResponse);
-    }
-
-    @GetMapping({"/{userId}"})
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<UserResponse> getUserById(@PathVariable Long userId) {
-        UserResponse userResponse = userService.getUserById(userId);
-        if (userResponse != null)
-            return new ResponseEntity<>(userResponse, HttpStatus.OK);
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
-
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<UserResponse> getUsers() {
         return userService.getUsers();
     }
 
+    @PostMapping()
+    public ResponseEntity<Map<String, Object>> createUser(@RequestBody UserRequest userRequest) {
+        Map<String, Object> userHashMap = userService.createUser(userRequest);
+
+        if ((Boolean) userHashMap.get("status"))
+            return new ResponseEntity<>(userHashMap, HttpStatus.CREATED);
+
+        return new ResponseEntity<>(userHashMap, HttpStatus.CONFLICT);
+    }
 
     @PutMapping({"/{userId}"})
     public ResponseEntity<?> updateUser(@PathVariable("userId") Long userId, @RequestBody UserRequest userRequest) {
@@ -79,6 +52,15 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@PathVariable("userId") Long userId) {
         userService.deleteUser(userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping({"/{userId}"})
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long userId) {
+        UserResponse userResponse = userService.getUserById(userId);
+        if (userResponse != null)
+            return new ResponseEntity<>(userResponse, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @CircuitBreaker(name = "circuitBreakerService", fallbackMethod = "getUserPostsFallback")

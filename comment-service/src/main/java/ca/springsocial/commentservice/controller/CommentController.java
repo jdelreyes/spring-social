@@ -27,8 +27,8 @@ public class CommentController {
     @TimeLimiter(name = "circuitBreakerService")
     @Retry(name = "circuitBreakerService")
     @PostMapping
-    public CompletableFuture<ResponseEntity<Map<String, Object>>> createComment(@RequestBody CommentRequest commentRequest, HttpServletRequest httpServletRequest) {
-        ResponseEntity<Map<String, Object>> mapResponseEntity = commentService.createComment(commentRequest, httpServletRequest);
+    public CompletableFuture<ResponseEntity<?>> createComment(@RequestBody CommentRequest commentRequest, HttpServletRequest httpServletRequest) {
+        ResponseEntity<?> mapResponseEntity = commentService.createComment(commentRequest);
         return CompletableFuture.supplyAsync(() -> mapResponseEntity);
     }
 

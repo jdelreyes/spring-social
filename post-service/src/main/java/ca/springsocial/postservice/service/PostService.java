@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface PostService {
-    Map<String, Object> createPost(PostRequest postRequest, HttpServletRequest httpServletRequest);
+    Map<String, Object> createPost(PostRequest postRequest);
 
     boolean updatePost(String postId, PostRequest postRequest);
 

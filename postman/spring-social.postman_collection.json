@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "1a3d2f0b-a2a6-499e-a733-c951bdcf6e98",
+		"_postman_id": "b968ce12-cbdc-4ef1-9dbb-32f59c920191",
 		"name": "spring-social",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "29886944"
@@ -10,7 +10,61 @@
 			"name": "user",
 			"item": [
 				{
-					"name": "signup",
+					"name": "getUsers",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessTokenUrl",
+									"value": "http://keycloak:8080/auth/realms/spring-social-realm/protocol/openid-connect/token",
+									"type": "string"
+								},
+								{
+									"key": "clientSecret",
+									"value": "UuncPOvHW6g3D6quAjQXKjlzThZxxk3i",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "spring-social-client",
+									"type": "string"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "string"
+								},
+								{
+									"key": "tokenName",
+									"value": "spring-social-client",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8181/api/users",
+							"host": [
+								"localhost"
+							],
+							"port": "8181",
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createUser",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -39,61 +93,13 @@
 					"response": []
 				},
 				{
-					"name": "login",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"userName\": \"John Doe\",\n    \"password\": \"password\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8181/api/users/login",
-							"host": [
-								"localhost"
-							],
-							"port": "8181",
-							"path": [
-								"api",
-								"users",
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "getUsers",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "localhost:8181/api/users",
-							"host": [
-								"localhost"
-							],
-							"port": "8181",
-							"path": [
-								"api",
-								"users"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "updateUser",
 					"request": {
 						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"userName\": \"userName\",\n    \"dateTimeJoined\": \"2023-10-18T14:13:00.496727029\",\n    \"email\": \"email@email.com\",\n    \"bio\": \"bio\"\n}",
+							"raw": "{\n    \"userName\": \"userName\",\n    \"email\": \"email@email.com\",\n    \"password\": \"password\",\n    \"bio\": \"bio\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -101,7 +107,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8181/api/users/1",
+							"raw": "localhost:8181/api/users/{{userId}}",
 							"host": [
 								"localhost"
 							],
@@ -109,7 +115,28 @@
 							"path": [
 								"api",
 								"users",
-								"1"
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteUser",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8181/api/users/delete/{{userId}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8181",
+							"path": [
+								"api",
+								"users",
+								"delete",
+								"{{userId}}"
 							]
 						}
 					},
@@ -133,7 +160,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8181/api/users/2",
+							"raw": "localhost:8181/api/users/{{userId}}",
 							"host": [
 								"localhost"
 							],
@@ -141,28 +168,7 @@
 							"path": [
 								"api",
 								"users",
-								"2"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "deleteUser",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "localhost:8181/api/users/delete/1",
-							"host": [
-								"localhost"
-							],
-							"port": "8181",
-							"path": [
-								"api",
-								"users",
-								"delete",
-								"1"
+								"{{userId}}"
 							]
 						}
 					},
@@ -171,10 +177,60 @@
 				{
 					"name": "getUserWithComments",
 					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "clientSecret",
+									"value": "QTKuoCrxAr4GWHU67gAEuJD3ZIbPOz2s",
+									"type": "string"
+								},
+								{
+									"key": "refreshTokenUrl",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "accessTokenUrl",
+									"value": "http://keycloak:8080/auth/realms/spring-social-realm/protocol/openid-connect/token",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "spring-social-client",
+									"type": "string"
+								},
+								{
+									"key": "tokenName",
+									"value": "spring-cloud-client",
+									"type": "string"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "client_authentication",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8181/api/users/1/comments",
+							"raw": "localhost:8181/api/users/{{userId}}/comments",
 							"host": [
 								"localhost"
 							],
@@ -182,29 +238,7 @@
 							"path": [
 								"api",
 								"users",
-								"1",
-								"comments"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "getUserWithPostsWithComments",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "localhost:8081/api/users/{userId}/posts/comments",
-							"host": [
-								"localhost"
-							],
-							"port": "8081",
-							"path": [
-								"api",
-								"users",
-								"{userId}",
-								"posts",
+								"{{userId}}",
 								"comments"
 							]
 						}
@@ -217,7 +251,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8181/api/users/{userId}/posts",
+							"raw": "localhost:8181/api/users/{{userId}}/posts",
 							"host": [
 								"localhost"
 							],
@@ -225,28 +259,8 @@
 							"path": [
 								"api",
 								"users",
-								"{userId}",
+								"{{userId}}",
 								"posts"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "logout",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "localhost:8081/api/users/logout",
-							"host": [
-								"localhost"
-							],
-							"port": "8081",
-							"path": [
-								"api",
-								"users",
-								"logout"
 							]
 						}
 					},
@@ -283,7 +297,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"title\",\n    \"content\": \"content\"\n}",
+							"raw": "{\n    \"title\": \"title\",\n    \"content\": \"content\",\n    \"userId\": \"userId\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -319,7 +333,7 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8181/api/posts/{postId}",
+							"raw": "localhost:8181/api/posts/{{postId}}",
 							"host": [
 								"localhost"
 							],
@@ -327,7 +341,7 @@
 							"path": [
 								"api",
 								"posts",
-								"{postId}"
+								"{{postId}}"
 							]
 						}
 					},
@@ -339,7 +353,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:8181/api/posts/delete/{postId}",
+							"raw": "localhost:8181/api/posts/delete/{{postId}}",
 							"host": [
 								"localhost"
 							],
@@ -348,7 +362,7 @@
 								"api",
 								"posts",
 								"delete",
-								"{postId}"
+								"{{postId}}"
 							]
 						}
 					},
@@ -357,14 +371,54 @@
 				{
 					"name": "getUserPosts",
 					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "clientSecret",
+									"value": "Adyq4WQtlvzEtL8Og04JOomRmq4tqOrk",
+									"type": "string"
+								},
+								{
+									"key": "tokenName",
+									"value": "Token",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "spring-social-client",
+									"type": "string"
+								},
+								{
+									"key": "accessTokenUrl",
+									"value": "http://localhost:8080/auth/realms/spring-social-realm/protocol/openid-connect/token",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "client_authentication",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8084/api/posts?userId={userId}",
+							"raw": "localhost:8181/api/posts?userId={{userId}}",
 							"host": [
 								"localhost"
 							],
-							"port": "8084",
+							"port": "8181",
 							"path": [
 								"api",
 								"posts"
@@ -372,7 +426,7 @@
 							"query": [
 								{
 									"key": "userId",
-									"value": "{userId}"
+									"value": "{{userId}}"
 								}
 							]
 						}
@@ -385,7 +439,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8181/api/posts/{postId}/comments",
+							"raw": "localhost:8181/api/posts/{{postId}}/comments",
 							"host": [
 								"localhost"
 							],
@@ -393,30 +447,7 @@
 							"path": [
 								"api",
 								"posts",
-								"{postId}",
-								"comments"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "getUserPostsWithComments",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "localhost:8181/api/posts/user/{userId}/posts/comments",
-							"host": [
-								"localhost"
-							],
-							"port": "8181",
-							"path": [
-								"api",
-								"posts",
-								"user",
-								"{userId}",
-								"posts",
+								"{{postId}}",
 								"comments"
 							]
 						}
@@ -429,7 +460,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8181/api/posts/{postId}",
+							"raw": "localhost:8181/api/posts/{{postId}}",
 							"host": [
 								"localhost"
 							],
@@ -437,7 +468,7 @@
 							"path": [
 								"api",
 								"posts",
-								"{postId}"
+								"{{postId}}"
 							]
 						}
 					},
@@ -454,7 +485,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8181/api/comments?userId={userId}&postId={postId}",
+							"raw": "localhost:8181/api/comments?userId={{userId}}&postId={{postId}}",
 							"host": [
 								"localhost"
 							],
@@ -466,11 +497,11 @@
 							"query": [
 								{
 									"key": "userId",
-									"value": "{userId}"
+									"value": "{{userId}}"
 								},
 								{
 									"key": "postId",
-									"value": "{postId}"
+									"value": "{{postId}}"
 								}
 							]
 						}
@@ -484,7 +515,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"postId\": \"postId\",\n    \"content\": \"content\"\n}",
+							"raw": "{\n    \"postId\": \"postId\",\n    \"userId\": \"userId\",\n    \"content\": \"content\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -511,15 +542,15 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8082/api/comments/{commentId}",
+							"raw": "localhost:8181/api/comments/{{commentId}}",
 							"host": [
 								"localhost"
 							],
-							"port": "8082",
+							"port": "8181",
 							"path": [
 								"api",
 								"comments",
-								"{commentId}"
+								"{{commentId}}"
 							]
 						}
 					},
@@ -540,15 +571,15 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8081/api/comments/{commentId}",
+							"raw": "localhost:8181/api/comments/{{commentId}}",
 							"host": [
 								"localhost"
 							],
-							"port": "8081",
+							"port": "8181",
 							"path": [
 								"api",
 								"comments",
-								"{commentId}"
+								"{{commentId}}"
 							]
 						}
 					},
@@ -560,7 +591,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:8181/api/comments/{commentId}",
+							"raw": "localhost:8181/api/comments/{{commentId}}",
 							"host": [
 								"localhost"
 							],
@@ -568,7 +599,7 @@
 							"path": [
 								"api",
 								"comments",
-								"{commentId}"
+								"{{commentId}}"
 							]
 						}
 					},
@@ -582,11 +613,61 @@
 				{
 					"name": "sendFriendRequest",
 					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "clientSecret",
+									"value": "w4G5fdXQMO28KREunZZEIgjkeooxGOcA",
+									"type": "string"
+								},
+								{
+									"key": "refreshTokenUrl",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "accessTokenUrl",
+									"value": "http://keycloak:8080/auth/realms/spring-social-realm/protocol/openid-connect/token",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "spring-social-client",
+									"type": "string"
+								},
+								{
+									"key": "tokenName",
+									"value": "spring-cloud-client",
+									"type": "string"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "client_authentication",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"recipientUserId\": \"recipientUserId\"\n}",
+							"raw": "{\n    \"requesterUserId\": \"requesterUserId\",\n    \"recipientUserId\": \"recipientUserId\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -594,11 +675,11 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8083/api/friendships/send",
+							"raw": "localhost:8181/api/friendships/send",
 							"host": [
 								"localhost"
 							],
-							"port": "8083",
+							"port": "8181",
 							"path": [
 								"api",
 								"friendships",
@@ -611,11 +692,61 @@
 				{
 					"name": "acceptFriendRequest",
 					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "clientSecret",
+									"value": "QTKuoCrxAr4GWHU67gAEuJD3ZIbPOz2s",
+									"type": "string"
+								},
+								{
+									"key": "refreshTokenUrl",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "accessTokenUrl",
+									"value": "http://keycloak:8080/auth/realms/spring-social-realm/protocol/openid-connect/token",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "spring-social-client",
+									"type": "string"
+								},
+								{
+									"key": "tokenName",
+									"value": "spring-cloud-client",
+									"type": "string"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "string"
+								},
+								{
+									"key": "headerPrefix",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "client_authentication",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"recipientUserId\": \"recipientUserId\"\n}",
+							"raw": "{\n    \"requesterUserId\": \"requesterUserId\",\n    \"recipientUserId\": \"recipientUserId\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -623,11 +754,11 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8083/api/friendships/accept",
+							"raw": "localhost:8181/api/friendships/accept",
 							"host": [
 								"localhost"
 							],
-							"port": "8083",
+							"port": "8181",
 							"path": [
 								"api",
 								"friendships",
@@ -644,7 +775,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"recipientUserId\": \"recipientUserId\"\n}",
+							"raw": "{\n    \"requesterUserId\": \"requesterUserId\",\n    \"recipientUserId\": \"recipientUserId\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -652,11 +783,11 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8083/api/friendships/reject",
+							"raw": "localhost:8181/api/friendships/reject",
 							"host": [
 								"localhost"
 							],
-							"port": "8083",
+							"port": "8181",
 							"path": [
 								"api",
 								"friendships",
@@ -672,7 +803,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8083/api/friendships/{userId}/pending/list",
+							"raw": "localhost:8083/api/friendships/{{userId}}/pending-list",
 							"host": [
 								"localhost"
 							],
@@ -680,9 +811,8 @@
 							"path": [
 								"api",
 								"friendships",
-								"{userId}",
-								"pending",
-								"list"
+								"{{userId}}",
+								"pending-list"
 							]
 						}
 					},
@@ -694,15 +824,15 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8083/api/friendships/{userId}/accepted/list",
+							"raw": "localhost:8181/api/friendships/{{userId}}/accepted/list",
 							"host": [
 								"localhost"
 							],
-							"port": "8083",
+							"port": "8181",
 							"path": [
 								"api",
 								"friendships",
-								"{userId}",
+								"{{userId}}",
 								"accepted",
 								"list"
 							]
@@ -716,7 +846,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8083/api/friendships/{userId}/rejected/list",
+							"raw": "localhost:8083/api/friendships/{{userId}}/rejected-list",
 							"host": [
 								"localhost"
 							],
@@ -724,9 +854,8 @@
 							"path": [
 								"api",
 								"friendships",
-								"{userId}",
-								"rejected",
-								"list"
+								"{{userId}}",
+								"rejected-list"
 							]
 						}
 					},
@@ -738,11 +867,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8083/api/friendships",
+							"raw": "localhost:8181/api/friendships",
 							"host": [
 								"localhost"
 							],
-							"port": "8083",
+							"port": "8181",
 							"path": [
 								"api",
 								"friendships"
@@ -752,12 +881,12 @@
 					"response": []
 				},
 				{
-					"name": "getFriendship",
+					"name": "getFriendshipById",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8083/api/friendships/{friendshipId}/details",
+							"raw": "localhost:8083/api/friendships/{{friendshipId}}/details",
 							"host": [
 								"localhost"
 							],
@@ -765,7 +894,7 @@
 							"path": [
 								"api",
 								"friendships",
-								"{friendshipId}",
+								"{{friendshipId}}",
 								"details"
 							]
 						}

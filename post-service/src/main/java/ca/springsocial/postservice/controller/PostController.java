@@ -26,8 +26,8 @@ public class PostController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Map<String, Object> createPost(@RequestBody PostRequest postRequest, HttpServletRequest httpServletRequest) {
-        return postService.createPost(postRequest, httpServletRequest);
+    public Map<String, Object> createPost(@RequestBody PostRequest postRequest) {
+        return postService.createPost(postRequest);
     }
 
     @PutMapping("/{postId}")

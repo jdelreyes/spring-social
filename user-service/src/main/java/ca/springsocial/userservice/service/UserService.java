@@ -12,11 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface UserService {
-    Map<String, Object> signUp(UserRequest userRequest);
-
-    Map<String, Object> login(String userName, String password, HttpServletResponse response);
-
-    Map<String, Object> logout(HttpServletResponse httpServletResponse);
+    Map<String, Object> createUser(UserRequest userRequest);
 
     boolean updateUser(Long userId, UserRequest userRequest);
 

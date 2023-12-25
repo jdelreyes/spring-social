@@ -1,20 +1,18 @@
 package ca.springsocial.friendshipservice.service;
 
-import ca.springsocial.friendshipservice.dto.friendship.FriendshipRecipientRequest;
-import ca.springsocial.friendshipservice.dto.friendship.FriendshipRequesterRequest;
+import ca.springsocial.friendshipservice.dto.friendship.FriendshipRequest;
 import ca.springsocial.friendshipservice.dto.friendship.FriendshipResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Map;
 
 public interface FriendshipService {
-    ResponseEntity<Map<String, Object>> sendFriendRequest(FriendshipRecipientRequest friendshipRecipientRequest, HttpServletRequest httpServletRequest);
+    ResponseEntity<?> sendFriendRequest(FriendshipRequest friendshipRequest);
 
-    Map<String, Object> acceptFriendRequest(FriendshipRequesterRequest friendshipRequesterRequest, HttpServletRequest httpServletRequest);
+    Map<String, Object> acceptFriendRequest(FriendshipRequest friendshipRequest);
 
-    Map<String, Object> rejectFriendRequest(FriendshipRequesterRequest friendshipRequesterRequest, HttpServletRequest httpServletRequest);
+    Map<String, Object> rejectFriendRequest(FriendshipRequest friendshipRequest);
 
     List<FriendshipResponse> getPendingFriendList(Long userId);
 
@@ -24,5 +22,5 @@ public interface FriendshipService {
 
     List<FriendshipResponse> getFriendships();
 
-    FriendshipResponse getFriendship(String friendshipId);
+    FriendshipResponse getFriendshipById(String friendshipId);
 }

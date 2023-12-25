@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
     private String postServiceUri;
 
     @Override
-    public Map<String, Object> signUp(UserRequest userRequest) {
+    public Map<String, Object> createUser(UserRequest userRequest) {
         Map<String, Object> userHashMap = new HashMap<>();
 
         if (!isEmailAddress(userRequest.getEmail())) {
@@ -68,40 +68,6 @@ public class UserServiceImpl implements UserService {
         userHashMap.put("userId", userId);
 
         return userHashMap;
-    }
-
-    @Override
-    public Map<String, Object> login(String userName, String password, HttpServletResponse response) {
-        Map<String, Object> userHashMap = new HashMap<>();
-        User user = userRepository.findUserByUserName(userName);
-
-        if (user == null) {
-            userHashMap.put("status", false);
-            userHashMap.put("message", "username and/or password do not match");
-            return userHashMap;
-        }
-        if (!passwordMatches(password, user.getPassword())) {
-            userHashMap.put("status", false);
-            userHashMap.put("message", "username and/or password do not match");
-            return userHashMap;
-        }
-
-        setCookie(response, new HashMap<String, Long>() {{
-            put("userId", user.getId());
-        }});
-
-        userHashMap.put("status", true);
-        userHashMap.put("message", "successfully logged in");
-        return userHashMap;
-    }
-
-    @Override
-    public Map<String, Object> logout(HttpServletResponse httpServletResponse) {
-        this.removeCookie(httpServletResponse);
-        return new HashMap<String, Object>() {{
-            put("message", "successfully logout");
-            put("status", true);
-        }};
     }
 
     @Override

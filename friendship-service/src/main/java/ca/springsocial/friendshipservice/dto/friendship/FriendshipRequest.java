@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FriendshipRequesterRequest {
-    private Long requesterId;
+public class FriendshipRequest {
+    private Long recipientUserId;
+    private Long requesterUserId;
 }

@@ -36,15 +36,11 @@ public class PostServiceImpl implements PostService {
     private String commentServiceUri;
 
     @Override
-    public Map<String, Object> createPost(PostRequest postRequest, HttpServletRequest httpServletRequest) {
-        Map<String, Object> stringObjectMap = validateUserIdFromCookie(httpServletRequest);
-        if (!(Boolean) stringObjectMap.get("status"))
-            return stringObjectMap;
-
+    public Map<String, Object> createPost(PostRequest postRequest) {
         Post post = Post.builder()
                 .title(postRequest.getTitle())
                 .content(postRequest.getContent())
-                .userId((Long) stringObjectMap.get("userId"))
+                .userId(postRequest.getUserId())
                 .build();
 
         String postId = postRepository.save(post).getId();
@@ -65,7 +61,6 @@ public class PostServiceImpl implements PostService {
             post.setContent(postRequest.getContent());
 
             postRepository.save(post);
-
             return true;
         }
 

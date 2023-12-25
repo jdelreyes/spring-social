@@ -9,34 +9,36 @@ the Spring Boot framework.
 
 ## Installation
 
-1. Install [IntelliJ IDEA](https://www.jetbrains.com/idea/download) (*optional*)
-2. Install Docker Desktop
-   ([Windows](https://docs.docker.com/desktop/install/windows-install/),
-   [Mac](https://docs.docker.com/desktop/install/mac-install/),
-   [Linux](https://docs.docker.com/desktop/install/linux-install/))
-3. Install [Postman](https://www.postman.com/downloads/)
-4. Clone the repository
+1. Download and Install [IntelliJ IDEA](https://www.jetbrains.com/idea/download) (*optional*).
+2. Download and Install Docker Desktop on
+   [Windows](https://docs.docker.com/desktop/install/windows-install/),
+   [Mac](https://docs.docker.com/desktop/install/mac-install/), or
+   [Linux](https://docs.docker.com/desktop/install/linux-install/).
+3. Download and Install [Postman](https://www.postman.com/downloads/).
+4. Clone the repository.
    ```shell
-   git clone https://github.com/siomao/spring-social.git
+   git clone https://github.com/jdelreyes/spring-social.git
    ```
 
 ## Running
 
-1. Navigate to the folder repository
+1. Navigate to the folder repository.
    ```shell
    cd spring-social
    ```
-2. Build docker images and run them as docker containers
+2. Build docker images and run them as docker containers.
    ```shell
    docker-compose -p spring-social -f docker-compose.yml up -d
    ```
+3. Add keycloak hostname with a port value of 127.0.0.1 to your machine's host file so that authorization requests are
+   mapped to dockerized keycloak. Restart your machine if necessary.
 
 ## Testing
 
 1. Open Postman
-2. Locate Postman collection using relative path `./postman/spring-social.postman_collection.json`
-3. Drag and drop Postman collection to the Postman Desktop
-4. Retrieve credentials to authorize requests via API gateway with OAuth2.0 using `Keycloak`
+2. Locate Postman collection at `./postman/spring-social.postman_collection.json`
+3. Drag and drop the Postman collection to the Postman Desktop
+4. Retrieve credentials to authorize requests via API gateway with OAuth2.0 token using `Keycloak`
     1. Navigate to `Keycloak` at <http://localhost:8080/auth>
     2. Retrieve `token_endpoint`
        from [OpenID Endpoint Configuration](http://localhost:8080/auth/realms/spring-social-realm/.well-known/openid-configuration)
@@ -50,7 +52,7 @@ the Spring Boot framework.
 
 Request to these endpoints are passed through an API gateway which is authorized by `Keycloak`
 
-### User Service `/api/users`
+### User Service - `/api/users`
 
 | Endpoint               | Method | Description                          |
 |------------------------|:------:|--------------------------------------|
@@ -62,7 +64,7 @@ Request to these endpoints are passed through an API gateway which is authorized
 | `/{{userId}}/posts`    |  GET   | Retrieves a user with their posts    |
 | `/{{userId}}/comments` |  GET   | Retrieves a user with their comments |
 
-### Post Service `/api/posts`
+### Post Service - `/api/posts`
 
 | Api endpoint           | Method | Description                          |
 |------------------------|:------:|--------------------------------------|
@@ -73,7 +75,7 @@ Request to these endpoints are passed through an API gateway which is authorized
 | `/{{postId}}`          |  GET   | Retrieves a post                     |
 | `/{{postId}}/comments` |  GET   | Retrieves a post with their comments |
 
-### Comment Service `/api/comments`
+### Comment Service - `/api/comments`
 
 | Api endpoint                           | Method | Description         |
 |----------------------------------------|:------:|---------------------|
@@ -83,7 +85,7 @@ Request to these endpoints are passed through an API gateway which is authorized
 | `/{{commentId}}`                       | DELETE | Removes a comment   |
 | `/{{commentId}}`                       |  GET   | Retrieves a comment |
 
-### Friendship Service `/api/friendships`
+### Friendship Service - `/api/friendships`
 
 | Api endpoint                     | Method | Description                             |
 |----------------------------------|:------:|-----------------------------------------|
@@ -96,7 +98,7 @@ Request to these endpoints are passed through an API gateway which is authorized
 | `/user/{{userId}}/rejected-list` |  GET   | Retrieves a user's rejected friend list |
 | `/user/{{userId}}/pending-list`  |  GET   | Retrieves a user's pending friend list  |
 
-### Notification Service `/api/notifications`
+### Notification Service - `/api/notifications`
 
 ## Authors
 

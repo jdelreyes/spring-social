@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 
 public interface CommentService {
-    ResponseEntity<Map<String, Object>> createComment(CommentRequest commentRequest, HttpServletRequest httpServletRequest);
-
-    CommentResponse getCommentById(Long commentId);
+    ResponseEntity<?> createComment(CommentRequest commentRequest);
 
     CommentResponse updateComment(Long commentId, CommentRequest commentRequest);
 
     void deleteComment(Long commentId);
+
+    CommentResponse getCommentById(Long commentId);
 
     List<CommentResponse> getComments();
 

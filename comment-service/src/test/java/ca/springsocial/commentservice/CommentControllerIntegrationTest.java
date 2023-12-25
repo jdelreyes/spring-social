@@ -70,11 +70,10 @@ public class CommentControllerIntegrationTest {
         when(commentRepository.save(comment)).thenReturn(comment);
 
         // Execution
-        ResponseEntity<Map<String, Object>> result = commentServiceImpl.createComment(commentRequest, httpServletRequest);
+        ResponseEntity<?> result = commentServiceImpl.createComment(commentRequest);
 
         // Assertions
         Assertions.assertEquals(HttpStatus.CREATED, result.getStatusCode());
-        Assertions.assertEquals(1L, result.getBody().get("commentId"));
     }
 
     private Map<String, Object> validateUserIdFromCookie(HttpServletRequest httpServletRequest) {
