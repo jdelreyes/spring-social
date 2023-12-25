@@ -27,22 +27,31 @@ public class FriendshipController {
     @TimeLimiter(name = "circuitBreakerService")
     @Retry(name = "circuitBreakerService")
     @PostMapping("/send")
-    public CompletableFuture<ResponseEntity<Map<String, Object>>> sendFriendRequest(@RequestBody FriendshipRecipientRequest friendshipRecipientRequest, HttpServletRequest httpServletRequest) {
-        ResponseEntity<Map<String, Object>> stringObjectMap = friendshipService.sendFriendRequest(friendshipRecipientRequest, httpServletRequest);
+    public CompletableFuture<ResponseEntity<Map<String, Object>>> sendFriendRequest(@RequestBody
+                                                                                    FriendshipRecipientRequest friendshipRecipientRequest,
+                                                                                    HttpServletRequest httpServletRequest) {
+        ResponseEntity<Map<String, Object>> stringObjectMap =
+                friendshipService.sendFriendRequest(friendshipRecipientRequest, httpServletRequest);
         return CompletableFuture.supplyAsync(() -> stringObjectMap);
     }
 
     @PutMapping("/accept")
-    public ResponseEntity<Map<String, Object>> acceptFriendRequest(@RequestBody FriendshipRequesterRequest friendshipRequesterRequest, HttpServletRequest httpServletRequest) {
-        Map<String, Object> stringObjectMap = friendshipService.acceptFriendRequest(friendshipRequesterRequest, httpServletRequest);
+    public ResponseEntity<Map<String, Object>> acceptFriendRequest(@RequestBody
+                                                                   FriendshipRequesterRequest friendshipRequesterRequest,
+                                                                   HttpServletRequest httpServletRequest) {
+        Map<String, Object> stringObjectMap =
+                friendshipService.acceptFriendRequest(friendshipRequesterRequest, httpServletRequest);
         if ((Boolean) stringObjectMap.get("status"))
             return new ResponseEntity<>(stringObjectMap, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(stringObjectMap, HttpStatus.OK);
     }
 
     @PutMapping("/reject")
-    public ResponseEntity<Map<String, Object>> rejectFriendRequest(@RequestBody FriendshipRequesterRequest friendshipRequesterRequest, HttpServletRequest httpServletRequest) {
-        Map<String, Object> stringObjectMap = friendshipService.rejectFriendRequest(friendshipRequesterRequest, httpServletRequest);
+    public ResponseEntity<Map<String, Object>> rejectFriendRequest(@RequestBody
+                                                                   FriendshipRequesterRequest friendshipRequesterRequest,
+                                                                   HttpServletRequest httpServletRequest) {
+        Map<String, Object> stringObjectMap =
+                friendshipService.rejectFriendRequest(friendshipRequesterRequest, httpServletRequest);
         if ((Boolean) stringObjectMap.get("status"))
             return new ResponseEntity<>(stringObjectMap, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(stringObjectMap, HttpStatus.OK);
@@ -72,7 +81,7 @@ public class FriendshipController {
         return friendshipService.getFriendships();
     }
 
-    @GetMapping("{friendshipId}/details")
+    @GetMapping("{friendshipId}")
     @ResponseStatus(HttpStatus.OK)
     FriendshipResponse getFriendship(@PathVariable String friendshipId) {
         return friendshipService.getFriendship(friendshipId);

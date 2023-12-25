@@ -161,18 +161,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<UserWithComments> getUserWithComments(Long userId) {
+        User user = userRepository.findUserById(userId);
+        if (user == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
         List<CommentResponse> commentResponseList = webClient
                 .get()
-                .uri(commentServiceUri + "?userId=", userId)
+                .uri(commentServiceUri + "?userId=" + userId)
                 .retrieve()
                 .bodyToFlux(CommentResponse.class)
                 .collectList()
 //                block to make this synchronous
                 .block();
-
-        User user = userRepository.findUserById(userId);
-        if (user == null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         UserResponse userResponse = mapToUserResponse(user);
 

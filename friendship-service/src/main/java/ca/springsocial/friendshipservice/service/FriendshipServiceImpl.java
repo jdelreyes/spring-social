@@ -5,6 +5,7 @@ import ca.springsocial.friendshipservice.dto.friendship.FriendshipRequesterReque
 import ca.springsocial.friendshipservice.dto.friendship.FriendshipResponse;
 import ca.springsocial.friendshipservice.dto.user.UserResponse;
 import ca.springsocial.friendshipservice.enums.FriendshipStatus;
+import ca.springsocial.friendshipservice.events.FriendRequestSentEvent;
 import ca.springsocial.friendshipservice.model.Friendship;
 import ca.springsocial.friendshipservice.repository.FriendshipRepository;
 import jakarta.servlet.http.Cookie;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -28,8 +30,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class FriendshipServiceImpl implements FriendshipService {
+    private final KafkaTemplate<String, FriendRequestSentEvent> kafkaTemplate;
+//    database
     private final FriendshipRepository friendshipRepository;
     private final MongoTemplate mongoTemplate;
+//    interservice communicaton
     private final WebClient webClient;
 
     @Value("${user.service.url}")
@@ -52,6 +57,8 @@ public class FriendshipServiceImpl implements FriendshipService {
                     .build();
 
             String id = friendshipRepository.save(friendship).getId();
+
+            kafkaTemplate.send("notificationTopic", new FriendRequestSentEvent(requesterUserId));
 
             return new ResponseEntity<>(new HashMap<String, Object>() {{
                 put("status", true);

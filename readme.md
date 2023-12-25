@@ -1,7 +1,7 @@
 # Spring Social
 
-An API-based social media where users can post, comment and send friend requests written using the Spring Boot
-framework.
+An API-based social media where users can post, comment, send friend requests and, receive notifications written using
+the Spring Boot framework.
 
 ## Architecture
 
@@ -26,7 +26,7 @@ framework.
    ```shell
    cd spring-social
    ```
-2. Build microservices' and databases' docker images and running containers
+2. Build docker images and run them as docker containers
    ```shell
    docker-compose -p spring-social -f docker-compose.yml up -d
    ```
@@ -36,7 +36,7 @@ framework.
 1. Open Postman
 2. Locate Postman collection using relative path `./postman/spring-social.postman_collection.json`
 3. Drag and drop Postman collection to the Postman Desktop
-4. Retrieve credentials to authenticate requests via API gateway with OAuth2.0 using `Keycloak`
+4. Retrieve credentials to authorize requests via API gateway with OAuth2.0 using `Keycloak`
     1. Navigate to `Keycloak` at <http://localhost:8080/auth>
     2. Retrieve `token_endpoint`
        from [OpenID Endpoint Configuration](http://localhost:8080/auth/realms/spring-social-realm/.well-known/openid-configuration)
@@ -46,53 +46,59 @@ framework.
     4. Under Credentials tab, retrieve `Client Secret`
 5. Authenticate requests using Postman Authorization Tab...
 
-## REST API Endpoints
+## API Endpoints
 
-Request to these endpoints are passed through an API gateway which is authenticated and authorized with `Keycloak`
+Request to these endpoints are passed through an API gateway which is authorized by `Keycloak`
 
-### Users
+### User Service `/api/users`
 
-| api endpoint                     | method | description                          |
-|----------------------------------|:------:|--------------------------------------|
-| `/api/users`                     |  GET   | Retrieves users                      |
-| `/api/users`                     |  POST  | Creates a user                       |
-| `/api/users/{{userId}}`          |  PUT   | Updates a user                       |
-| `/api/users/{{userId}}`          | DELETE | Deletes a user                       |
-| `/api/users/{{userId}}`          |  GET   | Retrieves a user                     |
-| `/api/users/{{userId}}/posts`    |  GET   | Retrieves a user with their posts    |
-| `/api/users/{{userId}}/comments` |  GET   | Retrieves a user with their comments |
+| Endpoint               | Method | Description                          |
+|------------------------|:------:|--------------------------------------|
+| `N/A`                  |  GET   | Retrieves users                      |
+| `N/A`                  |  POST  | Creates a user                       |
+| `/{{userId}}`          |  PUT   | Updates a user                       |
+| `/{{userId}}`          | DELETE | Removes a user                       |
+| `/{{userId}}`          |  GET   | Retrieves a user                     |
+| `/{{userId}}/posts`    |  GET   | Retrieves a user with their posts    |
+| `/{{userId}}/comments` |  GET   | Retrieves a user with their comments |
 
-### Posts
+### Post Service `/api/posts`
 
-| api endpoint                     | method | description                          |
-|----------------------------------|:------:|--------------------------------------|
-| `/api/posts?userId={{userId}}`   |  GET   | Retrieves posts                      |
-| `/api/posts`                     |  POST  | Creates a post                       |
-| `/api/posts/{{postId}}`          |  PUT   | Updates a post                       |
-| `/api/posts/{{postId}}`          | DELETE | Deletes a post                       |
-| `/api/posts/{{postId}}`          |  GET   | Retrieves a post                     |
-| `/api/posts/{{postId}}/comments` |  GET   | Retrieves a post with their comments |
+| Api endpoint           | Method | Description                          |
+|------------------------|:------:|--------------------------------------|
+| `?userId={{userId}}`   |  GET   | Retrieves posts                      |
+| `N/A`                  |  POST  | Creates a post                       |
+| `/{{postId}}`          |  PUT   | Updates a post                       |
+| `/{{postId}}`          | DELETE | Removes a post                       |
+| `/{{postId}}`          |  GET   | Retrieves a post                     |
+| `/{{postId}}/comments` |  GET   | Retrieves a post with their comments |
 
-### Comments
+### Comment Service `/api/comments`
 
-| api endpoint                                        | method | description         |
-|-----------------------------------------------------|:------:|---------------------|
-| `/api/comments?userId={{userId}}&postId={{postId}}` |  GET   | Retrieves comments  |
-| `/api/comments`                                     |  POST  | Creates a comment   |
-| `/api/comments/{{commentId}}`                       |  PUT   | Updates a comment   |
-| `/api/comments/{{commentId}}`                       | DELETE | Deletes a comment   |
-| `/api/comments/{{commentId}}`                       |  GET   | Retrieves a comment |
+| Api endpoint                           | Method | Description         |
+|----------------------------------------|:------:|---------------------|
+| `?userId={{userId}}&postId={{postId}}` |  GET   | Retrieves comments  |
+| `N/A`                                  |  POST  | Creates a comment   |
+| `/{{commentId}}`                       |  PUT   | Updates a comment   |
+| `/{{commentId}}`                       | DELETE | Removes a comment   |
+| `/{{commentId}}`                       |  GET   | Retrieves a comment |
 
-### Friendship `/api/friendships`
+### Friendship Service `/api/friendships`
 
-| api endpoint                        | method | description            |
-|-------------------------------------|:------:|------------------------|
-| `/api/friendships`                  |  GET   | Retrieves friendships  |
-| `/api/friendships`                  |  POST  | Creates a friendship   |
-| `/api/friendships/{{friendshipId}}` |  PUT   | Updates a friendship   |
-| `/api/friendships/{{friendshipId}}` | DELETE | Deletes a friendship   |
-| `/api/friendships/{{friendshipId}}` |  GET   | Retrieves a friendship |
+| Api endpoint                     | Method | Description                             |
+|----------------------------------|:------:|-----------------------------------------|
+| `N/A`                            |  GET   | Retrieves friendships                   |
+| `/send`                          |  POST  | Sends a friend request                  |
+| `/accept`                        |  PUT   | Accepts a friend request                |
+| `/reject`                        |  PUT   | Rejects a friend request                |
+| `/{{friendshipId}}`              |  GET   | Retrieves a friendship                  |
+| `/user/{{userId}}/accepted-list` |  GET   | Retrieves a user's friend list          |
+| `/user/{{userId}}/rejected-list` |  GET   | Retrieves a user's rejected friend list |
+| `/user/{{userId}}/pending-list`  |  GET   | Retrieves a user's pending friend list  |
+
+### Notification Service `/api/notifications`
 
 ## Authors
+
 * Jerome Delos Reyes
 * Jayden Nguyen
