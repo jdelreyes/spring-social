@@ -34,7 +34,6 @@ public class FriendshipServiceImpl implements FriendshipService {
     @Value("${user.service.url}")
     public String userServiceUri;
 
-    //    FIXME: always a bad request, might be due to the first if statement
     @Override
     public ResponseEntity<FriendshipResponse> sendFriendRequest(FriendshipRequest friendshipRequest) {
         if (userExists(friendshipRequest.getRecipientUserId()) && userExists(friendshipRequest.getRequesterUserId())) {
