@@ -25,31 +25,22 @@ public class FriendshipController {
     @TimeLimiter(name = "circuitBreakerService")
     @Retry(name = "circuitBreakerService")
     @PostMapping("/send")
-    public CompletableFuture<ResponseEntity<?>> sendFriendRequest(@RequestBody
-                                                                  FriendshipRequest friendshipRequest) {
-        ResponseEntity<?> stringObjectMap =
-                friendshipService.sendFriendRequest(friendshipRequest);
+    public CompletableFuture<ResponseEntity<FriendshipResponse>> sendFriendRequest(@RequestBody
+                                                                                   FriendshipRequest friendshipRequest) {
+        ResponseEntity<FriendshipResponse> stringObjectMap = friendshipService.sendFriendRequest(friendshipRequest);
         return CompletableFuture.supplyAsync(() -> stringObjectMap);
     }
 
     @PutMapping("/accept")
-    public ResponseEntity<Map<String, Object>> acceptFriendRequest(@RequestBody
+    public ResponseEntity<FriendshipResponse> acceptFriendRequest(@RequestBody
                                                                    FriendshipRequest friendshipRequest) {
-        Map<String, Object> stringObjectMap =
-                friendshipService.acceptFriendRequest(friendshipRequest);
-        if ((Boolean) stringObjectMap.get("status"))
-            return new ResponseEntity<>(stringObjectMap, HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(stringObjectMap, HttpStatus.OK);
+      return friendshipService.acceptFriendRequest(friendshipRequest);
     }
 
     @PutMapping("/reject")
-    public ResponseEntity<Map<String, Object>> rejectFriendRequest(@RequestBody
+    public ResponseEntity<FriendshipResponse> rejectFriendRequest(@RequestBody
                                                                    FriendshipRequest friendshipRequest) {
-        Map<String, Object> stringObjectMap =
-                friendshipService.rejectFriendRequest(friendshipRequest);
-        if ((Boolean) stringObjectMap.get("status"))
-            return new ResponseEntity<>(stringObjectMap, HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(stringObjectMap, HttpStatus.OK);
+        return friendshipService.rejectFriendRequest(friendshipRequest);
     }
 
     @GetMapping("/user/{userId}/pending-list")

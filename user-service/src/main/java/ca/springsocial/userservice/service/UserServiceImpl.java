@@ -41,33 +41,18 @@ public class UserServiceImpl implements UserService {
     private String postServiceUri;
 
     @Override
-    public Map<String, Object> createUser(UserRequest userRequest) {
-        Map<String, Object> userHashMap = new HashMap<>();
-
-        if (!isEmailAddress(userRequest.getEmail())) {
-            userHashMap.put("status", false);
-            userHashMap.put("message", "invalid email address");
-            return userHashMap;
+    public ResponseEntity<?> createUser(UserRequest userRequest) {
+        if (!isEmailAddress(userRequest.getEmail()) && userRepository.findUserByUserName(userRequest.getUserName()) != null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
-        if (userRepository.findUserByUserName(userRequest.getUserName()) != null) {
-            userHashMap.put("status", false);
-            userHashMap.put("message", "userName already in use");
-            return userHashMap;
-        }
-
-        // make user
         User user = new User();
         user.setUserName(userRequest.getUserName());
         user.setEmail(userRequest.getEmail());
         user.setPassword(bCryptPasswordEncoder.encode(userRequest.getPassword()));
         user.setBio(userRequest.getBio());
 
-        Long userId = userRepository.save(user).getId();
-        userHashMap.put("status", true);
-        userHashMap.put("userId", userId);
-
-        return userHashMap;
+        userRepository.save(user);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @Override

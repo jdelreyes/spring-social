@@ -34,14 +34,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserServiceApplicationTests extends AbstractContainerBaseTest {
+    private static MockWebServer mockWebServer;
+    private static Long userId;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private UserRepository userRepository;
-    private static MockWebServer mockWebServer;
-    private static Long userId;
 
     @Test
     @Order(1)
@@ -120,7 +120,8 @@ class UserServiceApplicationTests extends AbstractContainerBaseTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/users/" + userId))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
-// todo
+
+    // todo
     @Test
     @Order(6)
     void deleteUser() throws Exception {

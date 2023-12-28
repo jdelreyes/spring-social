@@ -8,14 +8,12 @@ import ca.springsocial.userservice.service.UserServiceImpl;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
@@ -30,14 +28,9 @@ public class UserController {
         return userService.getUsers();
     }
 
-    @PostMapping()
-    public ResponseEntity<Map<String, Object>> createUser(@RequestBody UserRequest userRequest) {
-        Map<String, Object> userHashMap = userService.createUser(userRequest);
-
-        if ((Boolean) userHashMap.get("status"))
-            return new ResponseEntity<>(userHashMap, HttpStatus.CREATED);
-
-        return new ResponseEntity<>(userHashMap, HttpStatus.CONFLICT);
+    @PostMapping
+    public ResponseEntity<?> createUser(@RequestBody UserRequest userRequest) {
+        return userService.createUser(userRequest);
     }
 
     @PutMapping({"/{userId}"})

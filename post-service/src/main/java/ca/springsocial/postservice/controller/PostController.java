@@ -7,7 +7,6 @@ import ca.springsocial.postservice.service.PostServiceImpl;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,7 +72,7 @@ public class PostController {
 
     //    fallback methods
     public CompletableFuture<ResponseEntity<PostWithComments>> getPostCommentsFallback(String postId,
-                                                                                           RuntimeException runtimeException) {
+                                                                                       RuntimeException runtimeException) {
         return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
     }
 }

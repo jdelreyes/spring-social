@@ -1,9 +1,3 @@
-# NOTES:
-# cannot have conflicting container names
-
-# docker-compose -p spring-social -f docker-compose.yml up -d
-# COMMANDS:
-
 version: '3.8'
 
 services:
@@ -18,7 +12,6 @@ services:
       dockerfile: ./Dockerfile
     container_name: user-service
     environment:
-      # property available provided by spring
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
       - postgresql-user-service
@@ -36,7 +29,6 @@ services:
       dockerfile: ./Dockerfile
     container_name: post-service
     environment:
-      # property available provided by spring
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
       - mongodb-post-service
@@ -54,7 +46,6 @@ services:
       dockerfile: ./Dockerfile
     container_name: comment-service
     environment:
-      # property available provided by spring
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
       - postgresql-comment-service
@@ -73,7 +64,6 @@ services:
     container_name: friendship-service
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      # property available provided by spring
     depends_on:
       - mongodb-friendship-service
       - discovery-service
@@ -90,7 +80,6 @@ services:
       dockerfile: ./Dockerfile
     container_name: notification-service
     environment:
-      #      property available provided by spring
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
       - discovery-service
@@ -165,7 +154,7 @@ services:
     depends_on:
       - broker
     environment:
-      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_NAME: kafka-ui
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: broker:29092
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
       KAFKA_CLUSTERS_0_JMXPORT: 9997
@@ -206,7 +195,7 @@ services:
     networks:
       - spring-social
 
-#################### database ####################
+  #################### database ####################
 
   postgresql-user-service:
     image: postgres:latest

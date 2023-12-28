@@ -19,8 +19,6 @@ PostgresSQL. Each microservice responds to client request through exposed ports.
 * Docker and Postman introduction
 * Inter-service communication by sending a request to a service API endpoint
 
-
-
 ## Microservice Port
 
 User Service: `8081:8081`

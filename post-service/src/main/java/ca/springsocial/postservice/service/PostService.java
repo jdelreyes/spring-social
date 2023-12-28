@@ -3,7 +3,6 @@ package ca.springsocial.postservice.service;
 import ca.springsocial.postservice.dto.combined.PostWithComments;
 import ca.springsocial.postservice.dto.post.PostRequest;
 import ca.springsocial.postservice.dto.post.PostResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;

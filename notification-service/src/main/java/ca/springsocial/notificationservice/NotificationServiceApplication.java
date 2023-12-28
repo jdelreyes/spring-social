@@ -16,8 +16,8 @@ public class NotificationServiceApplication {
         SpringApplication.run(NotificationServiceApplication.class, args);
     }
 
-    @KafkaListener(topics = "notificationTopic", groupId = "notificationGroup")
+    @KafkaListener(topics = "notificationTopic")
     public void handleFriendRequestSentNotification(FriendRequestSentEvent friendRequestSentEvent) {
-        log.info("Sending out email notification for order number: {}", friendRequestSentEvent.getRequesterId());
+        log.info("Sending out notification for {}", friendRequestSentEvent.getRequesterUserId());
     }
 }

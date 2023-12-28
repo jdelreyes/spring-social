@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface FriendshipService {
-    ResponseEntity<?> sendFriendRequest(FriendshipRequest friendshipRequest);
+    ResponseEntity<FriendshipResponse> sendFriendRequest(FriendshipRequest friendshipRequest);
 
-    Map<String, Object> acceptFriendRequest(FriendshipRequest friendshipRequest);
+    ResponseEntity<FriendshipResponse> acceptFriendRequest(FriendshipRequest friendshipRequest);
 
-    Map<String, Object> rejectFriendRequest(FriendshipRequest friendshipRequest);
+    ResponseEntity<FriendshipResponse> rejectFriendRequest(FriendshipRequest friendshipRequest);
 
     List<FriendshipResponse> getPendingFriendList(Long userId);
 
