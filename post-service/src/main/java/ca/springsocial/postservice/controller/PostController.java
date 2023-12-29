@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -23,19 +22,18 @@ import java.util.concurrent.CompletableFuture;
 public class PostController {
     private final PostServiceImpl postService;
 
+    @CircuitBreaker(name = "circuitBreakerService", fallbackMethod = "createPostFallback")
+    @TimeLimiter(name = "circuitBreakerService")
+    @Retry(name = "circuitBreakerService")
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Map<String, Object> createPost(@RequestBody PostRequest postRequest) {
-        return postService.createPost(postRequest);
+    public CompletableFuture<ResponseEntity<PostResponse>> createPost(@RequestBody PostRequest postRequest) {
+        ResponseEntity<PostResponse> postResponseResponseEntity = postService.createPost(postRequest);
+        return CompletableFuture.supplyAsync(() -> postResponseResponseEntity);
     }
 
     @PutMapping("/{postId}")
-    public ResponseEntity<?> updatePost(@PathVariable("postId") String postId, @RequestBody PostRequest postRequest) {
-        boolean isPostUpdated = postService.updatePost(postId, postRequest);
-        if (!isPostUpdated) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<PostResponse> updatePost(@PathVariable("postId") String postId, @RequestBody PostRequest postRequest) {
+        return postService.updatePost(postId, postRequest);
     }
 
     @DeleteMapping({"/{postId}"})
@@ -73,6 +71,11 @@ public class PostController {
     //    fallback methods
     public CompletableFuture<ResponseEntity<PostWithComments>> getPostCommentsFallback(String postId,
                                                                                        RuntimeException runtimeException) {
+        return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
+    }
+
+    public CompletableFuture<ResponseEntity<PostResponse>> createPostFallback(PostRequest postRequest,
+                                                                              RuntimeException runtimeException) {
         return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
     }
 }

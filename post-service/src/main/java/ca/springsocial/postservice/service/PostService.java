@@ -6,12 +6,11 @@ import ca.springsocial.postservice.dto.post.PostResponse;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.Map;
 
 public interface PostService {
-    Map<String, Object> createPost(PostRequest postRequest);
+    ResponseEntity<PostResponse> createPost(PostRequest postRequest);
 
-    boolean updatePost(String postId, PostRequest postRequest);
+    ResponseEntity<PostResponse> updatePost(String postId, PostRequest postRequest);
 
     void deletePost(String postId);
 

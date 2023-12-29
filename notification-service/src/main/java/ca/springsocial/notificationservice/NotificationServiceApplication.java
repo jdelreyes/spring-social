@@ -1,6 +1,6 @@
 package ca.springsocial.notificationservice;
 
-import ca.springsocial.notificationservice.events.FriendRequestSentEvent;
+import ca.springsocial.notificationservice.events.friendship.FriendRequestSentEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,6 +18,6 @@ public class NotificationServiceApplication {
 
     @KafkaListener(topics = "notificationTopic")
     public void handleFriendRequestSentNotification(FriendRequestSentEvent friendRequestSentEvent) {
-        log.info("Sending out notification for {}", friendRequestSentEvent.getRequesterUserId());
+        log.info("Sending out notification for friend request from {}", friendRequestSentEvent.getRequesterUserId());
     }
 }

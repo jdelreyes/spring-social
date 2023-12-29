@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class DataLoader implements CommandLineRunner {
-    //    repo
     private final MongoTemplate mongoTemplate;
     private final FriendshipRepository friendshipRepository;
 
@@ -21,29 +20,37 @@ public class DataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 //        we can seed the database while booting up
-        Friendship friendshipAccepted = Friendship.builder()
-                .id("657904a97da850294d2b9e7d")
-                .requesterUserId(1L)
-                .recipientUserId(2L)
-                .status(FriendshipStatus.accepted)
-                .build();
+        if (friendshipRepository.findFriendshipById("657904a97da850294d2b9e7d") == null) {
+            Friendship friendshipAccepted = Friendship.builder()
+                    .id("657904a97da850294d2b9e7d")
+                    .requesterUserId(1L)
+                    .recipientUserId(2L)
+                    .friendshipStatus(FriendshipStatus.accepted)
+                    .build();
 
-        Friendship friendshipPending = Friendship.builder()
-                .id("6579047e7da850294d2b9e7c")
-                .requesterUserId(2L)
-                .recipientUserId(3L)
-                .status(FriendshipStatus.pending)
-                .build();
+            friendshipRepository.save(friendshipAccepted);
+        }
 
-        Friendship friendshipRejected = Friendship.builder()
-                .id("6579047e7da850294d2b9e7b")
-                .requesterUserId(3L)
-                .recipientUserId(1L)
-                .status(FriendshipStatus.rejected)
-                .build();
+        if (friendshipRepository.findFriendshipById("6579047e7da850294d2b9e7c") == null) {
+            Friendship friendshipPending = Friendship.builder()
+                    .id("6579047e7da850294d2b9e7c")
+                    .requesterUserId(2L)
+                    .recipientUserId(3L)
+                    .friendshipStatus(FriendshipStatus.pending)
+                    .build();
 
-        friendshipRepository.save(friendshipAccepted);
-        friendshipRepository.save(friendshipPending);
-        friendshipRepository.save(friendshipRejected);
+            friendshipRepository.save(friendshipPending);
+        }
+
+        if (friendshipRepository.findFriendshipById("6579047e7da850294d2b9e7b") == null) {
+            Friendship friendshipRejected = Friendship.builder()
+                    .id("6579047e7da850294d2b9e7b")
+                    .requesterUserId(3L)
+                    .recipientUserId(1L)
+                    .friendshipStatus(FriendshipStatus.rejected)
+                    .build();
+
+            friendshipRepository.save(friendshipRejected);
+        }
     }
 }
