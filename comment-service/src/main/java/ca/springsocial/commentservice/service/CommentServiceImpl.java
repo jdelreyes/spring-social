@@ -3,6 +3,7 @@ package ca.springsocial.commentservice.service;
 import ca.springsocial.commentservice.dto.comment.CommentRequest;
 import ca.springsocial.commentservice.dto.comment.CommentResponse;
 import ca.springsocial.commentservice.dto.post.PostResponse;
+import ca.springsocial.commentservice.dto.user.UserResponse;
 import ca.springsocial.commentservice.model.Comment;
 import ca.springsocial.commentservice.repository.CommentRepository;
 import jakarta.transaction.Transactional;
@@ -28,9 +29,11 @@ public class CommentServiceImpl implements CommentService {
 
     @Value("${post.service.url}")
     private String postServiceUri;
+    @Value("${user.service.url}")
+    private String userServiceUri;
 
     @Override
-    public ResponseEntity<?> createComment(CommentRequest commentRequest) {
+    public ResponseEntity<CommentResponse> createComment(CommentRequest commentRequest) {
         PostResponse postResponse = webClient.get()
                 .uri(postServiceUri + "/" + commentRequest.getPostId())
                 .retrieve()
@@ -40,7 +43,16 @@ public class CommentServiceImpl implements CommentService {
                         : Mono.error(ex))
                 .block();
 
-        if (postResponse != null) {
+        UserResponse userResponse = webClient.get()
+                .uri(userServiceUri + "/" + commentRequest.getUserId())
+                .retrieve()
+                .bodyToMono(UserResponse.class)
+                .onErrorResume(WebClientResponseException.class, ex -> ex.getStatusCode().is4xxClientError()
+                        ? Mono.empty()
+                        : Mono.error(ex))
+                .block();
+
+        if (postResponse != null && userResponse != null) {
             Comment comment = new Comment();
             comment.setContent(commentRequest.getContent());
             comment.setPostId(postResponse.getId());
@@ -63,16 +75,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentResponse updateComment(Long commentId, CommentRequest commentRequest) {
+    public ResponseEntity<CommentResponse> updateComment(Long commentId, CommentRequest commentRequest) {
         Comment comment = commentRepository.findCommentById(commentId);
         if (comment != null) {
             comment.setContent(commentRequest.getContent());
-            Comment savedComment = commentRepository.save(comment);
-
-            return mapToCommentResponse(savedComment);
+            return new ResponseEntity<>(mapToCommentResponse(comment), HttpStatus.OK);
         }
-
-        return null;
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @Override

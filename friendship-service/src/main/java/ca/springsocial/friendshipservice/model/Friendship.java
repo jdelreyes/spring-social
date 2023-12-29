@@ -18,5 +18,5 @@ public class Friendship {
     private String id;
     private Long requesterUserId;
     private Long recipientUserId;
-    private FriendshipStatus status;
+    private FriendshipStatus friendshipStatus;
 }

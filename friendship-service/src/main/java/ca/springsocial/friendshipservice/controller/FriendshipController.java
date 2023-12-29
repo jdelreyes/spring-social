@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
@@ -33,13 +32,13 @@ public class FriendshipController {
 
     @PutMapping("/accept")
     public ResponseEntity<FriendshipResponse> acceptFriendRequest(@RequestBody
-                                                                   FriendshipRequest friendshipRequest) {
-      return friendshipService.acceptFriendRequest(friendshipRequest);
+                                                                  FriendshipRequest friendshipRequest) {
+        return friendshipService.acceptFriendRequest(friendshipRequest);
     }
 
     @PutMapping("/reject")
     public ResponseEntity<FriendshipResponse> rejectFriendRequest(@RequestBody
-                                                                   FriendshipRequest friendshipRequest) {
+                                                                  FriendshipRequest friendshipRequest) {
         return friendshipService.rejectFriendRequest(friendshipRequest);
     }
 

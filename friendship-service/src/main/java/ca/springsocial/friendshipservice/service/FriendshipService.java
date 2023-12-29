@@ -5,7 +5,6 @@ import ca.springsocial.friendshipservice.dto.friendship.FriendshipResponse;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.Map;
 
 public interface FriendshipService {
     ResponseEntity<FriendshipResponse> sendFriendRequest(FriendshipRequest friendshipRequest);

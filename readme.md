@@ -1,7 +1,7 @@
 # Spring Social
 
-An API-based social media where users can post, comment, send friend requests and, receive notifications written using
-the Spring Boot framework.
+An API-based social media where users can post, comment, send friend requests and, receive notifications regarding
+friend requests written using the Spring Boot framework.
 
 ## Architecture
 
@@ -62,7 +62,7 @@ the Spring Boot framework.
 
 Request to these endpoints are passed through an API gateway which is authorized by `Keycloak`
 
-### User Service - `/api/users`
+### User Service `/api/users`
 
 | Endpoint               | Method | Description                          |
 |------------------------|:------:|--------------------------------------|
@@ -74,9 +74,9 @@ Request to these endpoints are passed through an API gateway which is authorized
 | `/{{userId}}/posts`    |  GET   | Retrieves a user with their posts    |
 | `/{{userId}}/comments` |  GET   | Retrieves a user with their comments |
 
-### Post Service - `/api/posts`
+### Post Service `/api/posts`
 
-| Api endpoint           | Method | Description                          |
+| Endpoint               | Method | Description                          |
 |------------------------|:------:|--------------------------------------|
 | `?userId={{userId}}`   |  GET   | Retrieves posts                      |
 | `N/A`                  |  POST  | Creates a post                       |
@@ -85,9 +85,9 @@ Request to these endpoints are passed through an API gateway which is authorized
 | `/{{postId}}`          |  GET   | Retrieves a post                     |
 | `/{{postId}}/comments` |  GET   | Retrieves a post with their comments |
 
-### Comment Service - `/api/comments`
+### Comment Service `/api/comments`
 
-| Api endpoint                           | Method | Description         |
+| Endpoint                               | Method | Description         |
 |----------------------------------------|:------:|---------------------|
 | `?userId={{userId}}&postId={{postId}}` |  GET   | Retrieves comments  |
 | `N/A`                                  |  POST  | Creates a comment   |
@@ -95,9 +95,9 @@ Request to these endpoints are passed through an API gateway which is authorized
 | `/{{commentId}}`                       | DELETE | Removes a comment   |
 | `/{{commentId}}`                       |  GET   | Retrieves a comment |
 
-### Friendship Service - `/api/friendships`
+### Friendship Service `/api/friendships`
 
-| Api endpoint                     | Method | Description                             |
+| Endpoint                         | Method | Description                             |
 |----------------------------------|:------:|-----------------------------------------|
 | `N/A`                            |  GET   | Retrieves friendships                   |
 | `/send`                          |  POST  | Sends a friend request                  |
@@ -108,7 +108,11 @@ Request to these endpoints are passed through an API gateway which is authorized
 | `/user/{{userId}}/rejected-list` |  GET   | Retrieves a user's rejected friend list |
 | `/user/{{userId}}/pending-list`  |  GET   | Retrieves a user's pending friend list  |
 
-### Notification Service - `/api/notifications`
+### Notification Service `/api/notifications`
+
+| Endpoint      | Method | Description                                                      |
+|---------------|:------:|------------------------------------------------------------------|
+| `/{{userId}}` |  GET   | Retrieves friendship, post, and comment notifications for a user |
 
 ## Authors
 

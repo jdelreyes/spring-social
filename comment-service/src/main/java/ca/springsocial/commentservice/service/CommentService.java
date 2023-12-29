@@ -7,9 +7,9 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface CommentService {
-    ResponseEntity<?> createComment(CommentRequest commentRequest);
+    ResponseEntity<CommentResponse> createComment(CommentRequest commentRequest);
 
-    CommentResponse updateComment(Long commentId, CommentRequest commentRequest);
+    ResponseEntity<CommentResponse> updateComment(Long commentId, CommentRequest commentRequest);
 
     void deleteComment(Long commentId);
 

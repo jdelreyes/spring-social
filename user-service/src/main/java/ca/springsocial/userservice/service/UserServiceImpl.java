@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
     private String postServiceUri;
 
     @Override
-    public ResponseEntity<?> createUser(UserRequest userRequest) {
+    public ResponseEntity<UserResponse> createUser(UserRequest userRequest) {
         if (!isEmailAddress(userRequest.getEmail()) && userRepository.findUserByUserName(userRequest.getUserName()) != null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -52,11 +52,11 @@ public class UserServiceImpl implements UserService {
         user.setBio(userRequest.getBio());
 
         userRepository.save(user);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+        return new ResponseEntity<>(mapToUserResponse(user), HttpStatus.CREATED);
     }
 
     @Override
-    public boolean updateUser(Long userId, UserRequest userRequest) {
+    public ResponseEntity<UserResponse> updateUser(Long userId, UserRequest userRequest) {
         User user = userRepository.findUserById(userId);
 
         if (user != null) {
@@ -66,9 +66,9 @@ public class UserServiceImpl implements UserService {
 
             userRepository.save(user);
 
-            return true;
+            return new ResponseEntity<>(mapToUserResponse(user), HttpStatus.OK);
         }
-        return false;
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @Override

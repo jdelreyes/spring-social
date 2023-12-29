@@ -4,10 +4,9 @@ import ca.springsocial.postservice.dto.combined.PostWithComments;
 import ca.springsocial.postservice.dto.comment.CommentResponse;
 import ca.springsocial.postservice.dto.post.PostRequest;
 import ca.springsocial.postservice.dto.post.PostResponse;
+import ca.springsocial.postservice.dto.user.UserResponse;
 import ca.springsocial.postservice.model.Post;
 import ca.springsocial.postservice.repository.PostRepository;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,10 +17,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -34,26 +33,34 @@ public class PostServiceImpl implements PostService {
 
     @Value("${comment.service.url}")
     private String commentServiceUri;
+    @Value("${user.service.url}")
+    private String userServiceUri;
 
     @Override
-    public Map<String, Object> createPost(PostRequest postRequest) {
-        Post post = Post.builder()
-                .title(postRequest.getTitle())
-                .content(postRequest.getContent())
-                .userId(postRequest.getUserId())
-                .build();
+    public ResponseEntity<PostResponse> createPost(PostRequest postRequest) {
+        UserResponse userResponse = webClient.get()
+                .uri(userServiceUri + "?userId=" + postRequest.getUserId())
+                .retrieve()
+                .bodyToMono(UserResponse.class)
+                .onErrorResume(WebClientResponseException.class, ex -> ex.getStatusCode().is4xxClientError()
+                        ? Mono.empty()
+                        : Mono.error(ex))
+                .block();
 
-        String postId = postRepository.save(post).getId();
+        if (userResponse != null) {
+            Post post = Post.builder()
+                    .title(postRequest.getTitle())
+                    .content(postRequest.getContent())
+                    .userId(postRequest.getUserId())
+                    .build();
 
-        Map<String, Object> postHashMap = new HashMap<>();
-        postHashMap.put("postId", postId);
-        postHashMap.put("status", true);
-
-        return postHashMap;
+            return new ResponseEntity<>(mapToPostResponse(post), HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @Override
-    public boolean updatePost(String postId, PostRequest postRequest) {
+    public ResponseEntity<PostResponse> updatePost(String postId, PostRequest postRequest) {
         Post post = queryPost("id", postId);
 
         if (post != null) {
@@ -61,10 +68,9 @@ public class PostServiceImpl implements PostService {
             post.setContent(postRequest.getContent());
 
             postRepository.save(post);
-            return true;
+            return new ResponseEntity<>(mapToPostResponse(post), HttpStatus.OK);
         }
-
-        return false;
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @Override
@@ -122,34 +128,6 @@ public class PostServiceImpl implements PostService {
         Query query = new Query();
         query.addCriteria(Criteria.where(key).is(value));
         return mongoTemplate.find(query, Post.class);
-    }
-
-    private Map<String, Object> validateUserIdFromCookie(HttpServletRequest httpServletRequest) {
-        Long userId = getUserIdFromCookie(httpServletRequest);
-        if (userId == null)
-            return new HashMap<String, Object>() {{
-                put("status", false);
-                put("message", "no logged in user");
-            }};
-        return new HashMap<String, Object>() {{
-            put("status", true);
-            put("userId", userId);
-        }};
-    }
-
-    private Long getUserIdFromCookie(HttpServletRequest httpServletRequest) {
-        Cookie[] cookies = httpServletRequest.getCookies();
-
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("remember-me".equals(cookie.getName())) {
-                    // userId value;
-                    return Long.parseLong(cookie.getValue());
-                }
-            }
-        }
-
-        return null;
     }
 
     private PostResponse mapToPostResponse(Post post) {

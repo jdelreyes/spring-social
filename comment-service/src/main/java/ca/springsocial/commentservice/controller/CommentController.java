@@ -6,7 +6,6 @@ import ca.springsocial.commentservice.service.CommentServiceImpl;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +26,7 @@ public class CommentController {
     @TimeLimiter(name = "circuitBreakerService")
     @Retry(name = "circuitBreakerService")
     @PostMapping
-    public CompletableFuture<ResponseEntity<?>> createComment(@RequestBody CommentRequest commentRequest, HttpServletRequest httpServletRequest) {
+    public CompletableFuture<ResponseEntity<?>> createComment(@RequestBody CommentRequest commentRequest) {
         ResponseEntity<?> mapResponseEntity = commentService.createComment(commentRequest);
         return CompletableFuture.supplyAsync(() -> mapResponseEntity);
     }
@@ -42,10 +41,7 @@ public class CommentController {
 
     @PutMapping("/{commentId}")
     public ResponseEntity<?> updateComment(@PathVariable Long commentId, @RequestBody CommentRequest commentRequest) {
-        CommentResponse commentResponse = commentService.updateComment(commentId, commentRequest);
-        if (commentResponse != null)
-            return new ResponseEntity<>(commentResponse, HttpStatus.NO_CONTENT);
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return commentService.updateComment(commentId, commentRequest);
     }
 
     @DeleteMapping("/{commentId}")
@@ -66,7 +62,6 @@ public class CommentController {
 
     //    fallback
     public CompletableFuture<ResponseEntity<Map<String, Object>>> createCommentFallback(CommentRequest commentRequest,
-                                                                                        HttpServletRequest httpServletRequest,
                                                                                         RuntimeException runtimeException) {
         return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE));
     }

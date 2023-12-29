@@ -1,4 +1,4 @@
-package ca.springsocial.notificationservice.events;
+package ca.springsocial.notificationservice.events.friendship;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

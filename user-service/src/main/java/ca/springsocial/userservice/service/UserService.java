@@ -9,9 +9,9 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface UserService {
-    ResponseEntity<?> createUser(UserRequest userRequest);
+    ResponseEntity<UserResponse> createUser(UserRequest userRequest);
 
-    boolean updateUser(Long userId, UserRequest userRequest);
+    ResponseEntity<UserResponse> updateUser(Long userId, UserRequest userRequest);
 
     void deleteUser(Long userId);
 

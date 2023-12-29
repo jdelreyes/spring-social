@@ -29,16 +29,13 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest userRequest) {
         return userService.createUser(userRequest);
     }
 
     @PutMapping({"/{userId}"})
-    public ResponseEntity<?> updateUser(@PathVariable("userId") Long userId, @RequestBody UserRequest userRequest) {
-        boolean isUserUpdated = userService.updateUser(userId, userRequest);
-        if (!isUserUpdated) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<UserResponse> updateUser(@PathVariable("userId") Long userId, @RequestBody UserRequest userRequest) {
+        return userService.updateUser(userId, userRequest);
     }
 
     @DeleteMapping({"/{userId}"})
