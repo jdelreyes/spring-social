@@ -23,6 +23,9 @@ RUN mkdir /app
 
 COPY --from=builder /home/gradle/src/build/libs/*.jar /app/notification-service.jar
 
+ENV SPRING_DATASOURCE_USERNAME=rootadmin
+ENV SPRING_DATASOURCE_PASSWORD=password
+
 # EXPOSE the port where the application will be listening on
 # EXPOSE does not make the ports of  the container accessible to the host
 EXPOSE 8085

@@ -141,56 +141,6 @@ public class UserServiceImpl implements UserService {
                 .matches();
     }
 
-    private boolean passwordMatches(String password, String HashedPassword) {
-        return bCryptPasswordEncoder.matches(password, HashedPassword);
-    }
-
-    private void setCookie(HttpServletResponse response, HashMap<String, Long> userId) {
-        Cookie cookie = new Cookie("remember-me", userId.get("userId").toString());
-
-//        7 days
-        int seconds = 60 * 60 * 24 * 7;
-        String rootDirectory = "/";
-
-        cookie.setMaxAge(seconds);
-        cookie.setPath(rootDirectory);
-        response.addCookie(cookie);
-    }
-
-    private Map<String, Object> validateUserIdFromCookie(HttpServletRequest httpServletRequest) {
-        Long userId = getUserIdFromCookie(httpServletRequest);
-        if (userId == null)
-            return new HashMap<String, Object>() {{
-                put("status", false);
-                put("message", "no logged in user");
-            }};
-        return new HashMap<String, Object>() {{
-            put("status", true);
-            put("userId", userId);
-        }};
-    }
-
-    private Long getUserIdFromCookie(HttpServletRequest httpServletRequest) {
-        Cookie[] cookies = httpServletRequest.getCookies();
-
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("remember-me".equals(cookie.getName())) {
-                    // userId value;
-                    return Long.parseLong(cookie.getValue());
-                }
-            }
-        }
-
-        return null;
-    }
-
-    public void removeCookie(HttpServletResponse response) {
-        Cookie cookie = new Cookie("remember-me", null);
-        cookie.setMaxAge(0); // Set the expiration time to zero (in the past)
-        response.addCookie(cookie);
-    }
-
     private UserResponse mapToUserResponse(User user) {
         return UserResponse.builder()
                 .id(user.getId())

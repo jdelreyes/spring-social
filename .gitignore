@@ -5,16 +5,10 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 data/
-todo.md
 
 ### MACOS ###
 .DS_Store
-*/.DS_Store
-*/*/.DS_Store
-*/*/*/.DS_Store
-*/*/*/*/.DS_Store
-*/*/*/*/*/.DS_Store
-*/*/*/*/*/*/.DS_Store
+**/.DS_Store
 
 ### STS ###
 .apt_generated

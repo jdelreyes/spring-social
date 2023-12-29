@@ -261,11 +261,27 @@ services:
     networks:
       - spring-social
 
+  postgresql-notification-service:
+    image: postgres:latest
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: rootadmin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: notification-service
+    volumes:
+      - ./data/postgres/notifications:/var/lib/postgresql/data
+      - ./init/postgres/docker-entrypoint-initdb.d/notification-service-init.sql:/docker-entrypoint-initdb.d/init.sql
+    container_name: postgresql-notification-service
+    restart: unless-stopped
+    networks:
+      - spring-social
+
   postgresql-keycloak:
     image: postgres:latest
     restart: unless-stopped
     ports:
-      - "5434:5432"
+      - "5435:5432"
     environment:
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: password
