@@ -29,8 +29,9 @@ public class FriendshipServiceImpl implements FriendshipService {
     private final FriendshipRepository friendshipRepository;
     private final MongoTemplate mongoTemplate;
     private final WebClient webClient;
+
     @Value("${user.service.url}")
-    public String userServiceUri;
+    private String userServiceUri;
 
     @Override
     public ResponseEntity<FriendshipResponse> sendFriendRequest(FriendshipRequest friendshipRequest) {
@@ -42,7 +43,8 @@ public class FriendshipServiceImpl implements FriendshipService {
                     .build();
 
             friendshipRepository.save(friendship);
-            kafkaTemplate.send("notificationTopic", new FriendRequestSentEvent(friendshipRequest.getRequesterUserId()));
+            kafkaTemplate.send("friendRequestSentEventTopic", new FriendRequestSentEvent(friendshipRequest.getRecipientUserId(),
+                    friendshipRequest.getRequesterUserId()));
 
             return new ResponseEntity<>(mapToFriendshipResponse(friendship), HttpStatus.CREATED);
         }

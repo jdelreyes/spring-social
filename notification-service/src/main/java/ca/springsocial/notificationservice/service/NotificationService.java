@@ -1,7 +1,11 @@
 package ca.springsocial.notificationservice.service;
 
+import ca.springsocial.notificationservice.dto.notification.NotificationResponse;
 import ca.springsocial.notificationservice.events.friendship.FriendRequestSentEvent;
 
+import java.util.List;
+
 public interface NotificationService {
-    void handleFriendRequestSentNotification(FriendRequestSentEvent friendRequestSentEvent);
+    List<NotificationResponse> getUserNotifications(Long userId);
+    List<NotificationResponse> getNotifications();
 }

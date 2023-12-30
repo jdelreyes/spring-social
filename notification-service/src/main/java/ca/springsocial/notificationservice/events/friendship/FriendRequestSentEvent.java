@@ -8,5 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FriendRequestSentEvent {
+    private Long recipientUserId;
     private Long requesterUserId;
 }

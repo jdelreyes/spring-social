@@ -18,17 +18,21 @@ repositories {
 dependencies {
 //    spring
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-actuator:3.1.4")
     implementation("org.springframework.boot:spring-boot-starter-web")
 //    test
-    implementation("org.springframework.kafka:spring-kafka:3.1.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+//    kafka
+    implementation("org.springframework.kafka:spring-kafka:3.1.0")
 //    lombok
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
-    implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
+    // webflux
+    implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.4")
+    // resilience4j
+    implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j:3.0.3")
 //    eureka
+    implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:4.0.3")
 //	micrometer
     implementation("io.micrometer:micrometer-observation:1.11.3")

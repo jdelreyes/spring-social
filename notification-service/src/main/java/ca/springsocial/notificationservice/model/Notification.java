@@ -1,8 +1,7 @@
 package ca.springsocial.notificationservice.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -16,5 +15,6 @@ public class Notification {
     private Long id;
     private String title;
     private String description;
-    private LocalDateTime dateTimeStamp = LocalDateTime.now();
+    private LocalDateTime localDateTimeStamp = LocalDateTime.now();
+    private Long userId;
 }
