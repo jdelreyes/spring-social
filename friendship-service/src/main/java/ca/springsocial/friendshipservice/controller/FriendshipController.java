@@ -2,6 +2,7 @@ package ca.springsocial.friendshipservice.controller;
 
 import ca.springsocial.friendshipservice.dto.friendship.FriendshipRequest;
 import ca.springsocial.friendshipservice.dto.friendship.FriendshipResponse;
+import ca.springsocial.friendshipservice.enums.FriendshipStatus;
 import ca.springsocial.friendshipservice.service.FriendshipServiceImpl;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
@@ -42,22 +44,25 @@ public class FriendshipController {
         return friendshipService.rejectFriendRequest(friendshipRequest);
     }
 
-    @GetMapping("/user/{userId}/pending-list")
+    @GetMapping("/pending-list")
     @ResponseStatus(HttpStatus.OK)
-    List<FriendshipResponse> getPendingFriendList(@PathVariable Long userId) {
-        return friendshipService.getPendingFriendList(userId);
+    List<FriendshipResponse> getPendingFriendList(@RequestParam Optional<Long> userId) {
+        userId.ifPresent(aLong -> friendshipService.getUserFriendListByFriendshipStatus(aLong, FriendshipStatus.pending));
+        return friendshipService.getFriendListByFriendshipStatus(FriendshipStatus.pending);
     }
 
-    @GetMapping("/user/{userId}/accepted-list")
+    @GetMapping("/accepted-list")
     @ResponseStatus(HttpStatus.OK)
-    List<FriendshipResponse> getAcceptedFriendList(@PathVariable Long userId) {
-        return friendshipService.getAcceptedFriendList(userId);
+    List<FriendshipResponse> getAcceptedFriendList(@RequestParam Optional<Long> userId) {
+        userId.ifPresent(aLong -> friendshipService.getUserFriendListByFriendshipStatus(aLong, FriendshipStatus.accepted));
+        return friendshipService.getFriendListByFriendshipStatus(FriendshipStatus.accepted);
     }
 
-    @GetMapping("/user/{userId}/rejected-list")
+    @GetMapping("/rejected-list")
     @ResponseStatus(HttpStatus.OK)
-    List<FriendshipResponse> getRejectedFriendRequest(@PathVariable Long userId) {
-        return friendshipService.getRejectedFriendList(userId);
+    List<FriendshipResponse> getRejectedFriendRequest(@RequestParam Optional<Long> userId) {
+        userId.ifPresent(aLong -> friendshipService.getUserFriendListByFriendshipStatus(aLong, FriendshipStatus.rejected));
+        return friendshipService.getFriendListByFriendshipStatus(FriendshipStatus.rejected);
     }
 
     @GetMapping

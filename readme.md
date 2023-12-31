@@ -97,16 +97,16 @@ Request to these endpoints are passed through an API gateway which is authorized
 
 ### Friendship Service `/api/friendships`
 
-| Endpoint                         | Method | Description                             |
-|----------------------------------|:------:|-----------------------------------------|
-| `N/A`                            |  GET   | Retrieves friendships                   |
-| `/send`                          |  POST  | Sends a friend request                  |
-| `/accept`                        |  PUT   | Accepts a friend request                |
-| `/reject`                        |  PUT   | Rejects a friend request                |
-| `/{{friendshipId}}`              |  GET   | Retrieves a friendship                  |
-| `/user/{{userId}}/accepted-list` |  GET   | Retrieves a user's friend list          |
-| `/user/{{userId}}/rejected-list` |  GET   | Retrieves a user's rejected friend list |
-| `/user/{{userId}}/pending-list`  |  GET   | Retrieves a user's pending friend list  |
+| Endpoint                           | Method | Description                       |
+|------------------------------------|:------:|-----------------------------------|
+| `N/A`                              |  GET   | Retrieves friendships             |
+| `/send`                            |  POST  | Sends a friend request            |
+| `/accept`                          |  PUT   | Accepts a friend request          |
+| `/reject`                          |  PUT   | Rejects a friend request          |
+| `/{{friendshipId}}`                |  GET   | Retrieves a friendship            |
+| `/accepted-list?userId={{userId}}` |  GET   | Retrieves an accepted friend list |
+| `/pending-list?userId={{userId}}`  |  GET   | Retrieves a pending friend list   |
+| `/rejected-list?userId={{userId}}` |  GET   | Retrieves a rejected friend list  |
 
 ### Notification Service `/api/notifications`
 

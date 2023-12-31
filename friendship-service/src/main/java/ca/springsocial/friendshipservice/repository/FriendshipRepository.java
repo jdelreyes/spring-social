@@ -11,5 +11,8 @@ public interface FriendshipRepository extends MongoRepository<Friendship, String
 
     Friendship findFriendshipById(String friendshipId);
 
-    List<Friendship> findAllByRecipientUserIdOrRequesterUserIdAndFriendshipStatus(Long recipientUserId, Long requesterUserId, FriendshipStatus friendshipStatus);
+    List<Friendship> findFriendshipByRecipientUserIdOrRequesterUserIdAndFriendshipStatus(Long recipientUserId, Long requesterUserId, FriendshipStatus friendshipStatus);
+
+    List<Friendship> findFriendshipByFriendshipStatus(FriendshipStatus friendshipStatus);
+
 }

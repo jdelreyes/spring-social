@@ -5,7 +5,6 @@ import ca.springsocial.notificationservice.dto.user.UserResponse;
 import ca.springsocial.notificationservice.events.friendship.FriendRequestSentEvent;
 import ca.springsocial.notificationservice.model.Notification;
 import ca.springsocial.notificationservice.repository.NotificationRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +18,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
@@ -42,30 +40,24 @@ public class NotificationServiceImpl implements NotificationService {
 
     @KafkaListener(topics = "friendRequestSentEventTopic")
     private void handleFriendRequestSentNotification(FriendRequestSentEvent friendRequestSentEvent) {
-        log.info("friend request object: " + friendRequestSentEvent);
-//        fixme: Caused by: java.lang.NullPointerException:
-//         Cannot invoke "org.springframework.web.reactive.function.client.WebClient.get()" because "this.webClient" is null
-//         I used @RequiredArgsConstructor to inject final fields including WebClient but it still doesnt work
-//         ive already checked dependencies and there was a webflux dependency included already
         UserResponse userResponse = webClient.get()
-                .uri(userServiceUri + "/" + friendRequestSentEvent.getRequesterUserId())
+                .uri(userServiceUri + "/" + friendRequestSentEvent.getRequesterUserId().toString())
                 .retrieve()
                 .bodyToMono(UserResponse.class)
                 .onErrorResume(WebClientResponseException.class, ex -> ex.getStatusCode().is4xxClientError()
                         ? Mono.empty()
                         : Mono.error(ex))
                 .block();
+        if (userResponse != null) {
+            log.info("userResponse: " + userResponse);
 
-        log.info("userResponse: " + userResponse);
-        log.info(" " + userResponse.getUserName());
-        log.info(" " + friendRequestSentEvent.getRequesterUserId() + " " + friendRequestSentEvent.getRecipientUserId());
+            Notification notification = new Notification();
+            notification.setTitle("Friend Request Notification");
+            notification.setDescription(userResponse.getUserName() + " has sent you a friend request");
+            notification.setUserId(friendRequestSentEvent.getRecipientUserId());
 
-        Notification notification = new Notification();
-        notification.setTitle("Friend Request Notification");
-        notification.setDescription(userResponse.getUserName() + " has sent you a friend request");
-        notification.setUserId(friendRequestSentEvent.getRecipientUserId());
-
-        notificationRepository.save(notification);
+            notificationRepository.save(notification);
+        }
     }
 
     private NotificationResponse mapToNotificationResponse(Notification notification) {

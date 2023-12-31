@@ -2,6 +2,7 @@ package ca.springsocial.friendshipservice.service;
 
 import ca.springsocial.friendshipservice.dto.friendship.FriendshipRequest;
 import ca.springsocial.friendshipservice.dto.friendship.FriendshipResponse;
+import ca.springsocial.friendshipservice.enums.FriendshipStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -13,11 +14,9 @@ public interface FriendshipService {
 
     ResponseEntity<FriendshipResponse> rejectFriendRequest(FriendshipRequest friendshipRequest);
 
-    List<FriendshipResponse> getPendingFriendList(Long userId);
+    List<FriendshipResponse> getFriendListByFriendshipStatus(FriendshipStatus friendshipStatus);
 
-    List<FriendshipResponse> getAcceptedFriendList(Long userId);
-
-    List<FriendshipResponse> getRejectedFriendList(Long userId);
+    List<FriendshipResponse> getUserFriendListByFriendshipStatus(Long userId, FriendshipStatus friendshipStatus);
 
     List<FriendshipResponse> getFriendships();
 

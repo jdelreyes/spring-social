@@ -39,7 +39,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public ResponseEntity<PostResponse> createPost(PostRequest postRequest) {
         UserResponse userResponse = webClient.get()
-                .uri(userServiceUri + "?userId=" + postRequest.getUserId())
+                .uri(userServiceUri + "/" + postRequest.getUserId())
                 .retrieve()
                 .bodyToMono(UserResponse.class)
                 .onErrorResume(WebClientResponseException.class, ex -> ex.getStatusCode().is4xxClientError()

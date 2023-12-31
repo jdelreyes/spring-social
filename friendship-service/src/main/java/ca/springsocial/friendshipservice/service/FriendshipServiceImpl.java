@@ -84,25 +84,19 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public List<FriendshipResponse> getPendingFriendList(Long userId) {
-        List<Friendship> friendshipList = friendshipRepository.findAllByRecipientUserIdOrRequesterUserIdAndFriendshipStatus(userId,
-                userId, FriendshipStatus.pending);
+    public List<FriendshipResponse> getFriendListByFriendshipStatus(FriendshipStatus friendshipStatus) {
+        List<Friendship> friendshipList = friendshipRepository.findFriendshipByFriendshipStatus(friendshipStatus);
         return friendshipList.stream().map(this::mapToFriendshipResponse).toList();
     }
 
     @Override
-    public List<FriendshipResponse> getAcceptedFriendList(Long userId) {
-        List<Friendship> friendshipList = friendshipRepository.findAllByRecipientUserIdOrRequesterUserIdAndFriendshipStatus(userId,
-                userId, FriendshipStatus.accepted);
+    public List<FriendshipResponse> getUserFriendListByFriendshipStatus(Long userId, FriendshipStatus friendshipStatus) {
+        List<Friendship> friendshipList =
+                friendshipRepository
+                        .findFriendshipByRecipientUserIdOrRequesterUserIdAndFriendshipStatus(userId, userId, friendshipStatus);
         return friendshipList.stream().map(this::mapToFriendshipResponse).toList();
     }
 
-    @Override
-    public List<FriendshipResponse> getRejectedFriendList(Long userId) {
-        List<Friendship> friendshipList = friendshipRepository.findAllByRecipientUserIdOrRequesterUserIdAndFriendshipStatus(userId,
-                userId, FriendshipStatus.rejected);
-        return friendshipList.stream().map(this::mapToFriendshipResponse).toList();
-    }
 
     @Override
     public List<FriendshipResponse> getFriendships() {
