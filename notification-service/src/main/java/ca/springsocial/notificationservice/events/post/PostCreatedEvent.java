@@ -1,4 +1,4 @@
-package ca.springsocial.postservice.events;
+package ca.springsocial.notificationservice.events.post;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

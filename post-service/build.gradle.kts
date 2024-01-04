@@ -41,6 +41,8 @@ dependencies {
     implementation("io.micrometer:micrometer-tracing-bridge-brave:1.1.4")
 //	zipkin
     implementation("io.zipkin.reporter2:zipkin-reporter-brave:2.16.4")
+//    kafka
+    implementation("org.springframework.kafka:spring-kafka:3.1.0")
 }
 
 tasks.withType<Test> {

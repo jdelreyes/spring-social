@@ -22,7 +22,7 @@ friend requests written using the Spring Boot framework.
 
 ## Running
 
-1. Navigate to the folder repository.
+1. Navigate to the directory.
    ```shell
    cd spring-social
    ```
@@ -30,7 +30,8 @@ friend requests written using the Spring Boot framework.
    ```shell
    docker-compose -p spring-social -f docker-compose.yml up -d
    ```
-3. Add keycloak hostname with a port value of 127.0.0.1 to your machine's host file so that authorization requests are
+3. Add **keycloak** hostname with a port value of **127.0.0.1** to your machine's host file so that authorization
+   requests are
    mapped to dockerized keycloak. Restart your machine if necessary.
 
 ## Testing
@@ -39,8 +40,8 @@ friend requests written using the Spring Boot framework.
 2. Locate Postman collection at `./postman/spring-social.postman_collection.json`
 3. Drag and drop the Postman collection to the Postman Desktop
 4. Retrieve credentials to authorize requests via API gateway with OAuth2.0
-    1. Navigate to Keycloak webpage at <http://localhost:8080/auth>
-    2. Login with `admin` username and `password` password credentials
+    1. Navigate to the [Keycloak webpage](http://localhost:8080/auth)
+    2. Login with '**admin**' as username and '**password**' as password for credentials
     3. Retrieve `token_endpoint`
        from [OpenID Endpoint Configuration](http://localhost:8080/auth/realms/spring-social-realm/.well-known/openid-configuration)
     4. Under the [Clients](http://localhost:8080/auth/admin/master/console/#/realms/spring-social-realm/clients)
@@ -66,8 +67,8 @@ Request to these endpoints are passed through an API gateway which is authorized
 
 | Endpoint               | Method | Description                          |
 |------------------------|:------:|--------------------------------------|
-| `N/A`                  |  GET   | Retrieves users                      |
-| `N/A`                  |  POST  | Creates a user                       |
+| N/A                    |  GET   | Retrieves users                      |
+| N/A                    |  POST  | Creates a user                       |
 | `/{{userId}}`          |  PUT   | Updates a user                       |
 | `/{{userId}}`          | DELETE | Removes a user                       |
 | `/{{userId}}`          |  GET   | Retrieves a user                     |
@@ -79,7 +80,7 @@ Request to these endpoints are passed through an API gateway which is authorized
 | Endpoint               | Method | Description                          |
 |------------------------|:------:|--------------------------------------|
 | `?userId={{userId}}`   |  GET   | Retrieves posts                      |
-| `N/A`                  |  POST  | Creates a post                       |
+| N/A                    |  POST  | Creates a post                       |
 | `/{{postId}}`          |  PUT   | Updates a post                       |
 | `/{{postId}}`          | DELETE | Removes a post                       |
 | `/{{postId}}`          |  GET   | Retrieves a post                     |
@@ -90,7 +91,7 @@ Request to these endpoints are passed through an API gateway which is authorized
 | Endpoint                               | Method | Description         |
 |----------------------------------------|:------:|---------------------|
 | `?userId={{userId}}&postId={{postId}}` |  GET   | Retrieves comments  |
-| `N/A`                                  |  POST  | Creates a comment   |
+| N/A                                    |  POST  | Creates a comment   |
 | `/{{commentId}}`                       |  PUT   | Updates a comment   |
 | `/{{commentId}}`                       | DELETE | Removes a comment   |
 | `/{{commentId}}`                       |  GET   | Retrieves a comment |
@@ -99,7 +100,7 @@ Request to these endpoints are passed through an API gateway which is authorized
 
 | Endpoint                           | Method | Description                       |
 |------------------------------------|:------:|-----------------------------------|
-| `N/A`                              |  GET   | Retrieves friendships             |
+| N/A                                |  GET   | Retrieves friendships             |
 | `/send`                            |  POST  | Sends a friend request            |
 | `/accept`                          |  PUT   | Accepts a friend request          |
 | `/reject`                          |  PUT   | Rejects a friend request          |

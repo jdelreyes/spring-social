@@ -3,6 +3,7 @@ package ca.springsocial.notificationservice.service;
 import ca.springsocial.notificationservice.dto.notification.NotificationResponse;
 import ca.springsocial.notificationservice.dto.user.UserResponse;
 import ca.springsocial.notificationservice.events.friendship.FriendRequestSentEvent;
+import ca.springsocial.notificationservice.events.post.PostCreatedEvent;
 import ca.springsocial.notificationservice.model.Notification;
 import ca.springsocial.notificationservice.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Value("${user.service.url}")
     private String userServiceUri;
+    @Value("${friendship.service.url}")
+    private String friendshipServiceUri;
 
     @Override
     public List<NotificationResponse> getUserNotifications(Long userId) {
@@ -58,6 +61,12 @@ public class NotificationServiceImpl implements NotificationService {
 
             notificationRepository.save(notification);
         }
+    }
+
+    @KafkaListener(topics = "postCreatedEventTopic")
+    private void handlePostCreatedEventTopic(PostCreatedEvent postCreatedEvent) {
+        // todo: communicate to friendship service to notify user's friends using id
+//          postCreatedEvent (postId, userId)
     }
 
     private NotificationResponse mapToNotificationResponse(Notification notification) {
