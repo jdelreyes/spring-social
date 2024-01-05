@@ -1,7 +1,7 @@
 # Spring Social
 
-An API-based social media where users can post, comment, send friend requests and, receive notifications regarding
-friend requests written using the Spring Boot framework.
+An API-based social media where users can post, comment, manage friend requests and, receive notifications written using
+the Spring Boot framework.
 
 ## Architecture
 

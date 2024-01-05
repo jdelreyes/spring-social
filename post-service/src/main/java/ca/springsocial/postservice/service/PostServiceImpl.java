@@ -5,6 +5,7 @@ import ca.springsocial.postservice.dto.comment.CommentResponse;
 import ca.springsocial.postservice.dto.post.PostRequest;
 import ca.springsocial.postservice.dto.post.PostResponse;
 import ca.springsocial.postservice.dto.user.UserResponse;
+import ca.springsocial.postservice.events.PostCreatedEvent;
 import ca.springsocial.postservice.model.Post;
 import ca.springsocial.postservice.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -30,6 +32,7 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final MongoTemplate mongoTemplate;
     private final WebClient webClient;
+    private final KafkaTemplate<String, PostCreatedEvent> kafkaTemplate;
 
     @Value("${comment.service.url}")
     private String commentServiceUri;
@@ -53,6 +56,8 @@ public class PostServiceImpl implements PostService {
                     .content(postRequest.getContent())
                     .userId(postRequest.getUserId())
                     .build();
+
+            kafkaTemplate.send("postCreatedEventTopic", new PostCreatedEvent(userResponse.getId(), post.getId()));
 
             return new ResponseEntity<>(mapToPostResponse(post), HttpStatus.CREATED);
         }

@@ -1,7 +1,9 @@
 package ca.springsocial.notificationservice.service;
 
+import ca.springsocial.notificationservice.dto.friendship.FriendshipResponse;
 import ca.springsocial.notificationservice.dto.notification.NotificationResponse;
 import ca.springsocial.notificationservice.dto.user.UserResponse;
+import ca.springsocial.notificationservice.enums.friendship.FriendshipStatus;
 import ca.springsocial.notificationservice.events.friendship.FriendRequestSentEvent;
 import ca.springsocial.notificationservice.events.post.PostCreatedEvent;
 import ca.springsocial.notificationservice.model.Notification;
@@ -16,6 +18,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +54,9 @@ public class NotificationServiceImpl implements NotificationService {
                         ? Mono.empty()
                         : Mono.error(ex))
                 .block();
-        if (userResponse != null) {
+        if (userResponse == null)
+            return;
+        if (friendRequestSentEvent.getFriendshipStatus().equals(FriendshipStatus.pending)) {
             log.info("userResponse: " + userResponse);
 
             Notification notification = new Notification();
@@ -61,12 +66,62 @@ public class NotificationServiceImpl implements NotificationService {
 
             notificationRepository.save(notification);
         }
+        if (friendRequestSentEvent.getFriendshipStatus().equals(FriendshipStatus.accepted)) {
+            log.info("userResponse: " + userResponse);
+
+            Notification notification = new Notification();
+            notification.setTitle("Friend Request Accepted Notification");
+            notification.setDescription(userResponse.getUserName() + " has accepted your friend request");
+            notification.setUserId(friendRequestSentEvent.getRecipientUserId());
+
+            notificationRepository.save(notification);
+
+        }
     }
 
     @KafkaListener(topics = "postCreatedEventTopic")
     private void handlePostCreatedEventTopic(PostCreatedEvent postCreatedEvent) {
-        // todo: communicate to friendship service to notify user's friends using id
-//          postCreatedEvent (postId, userId)
+        List<FriendshipResponse> friendshipResponseList = webClient.get()
+                .uri(friendshipServiceUri + "/accepted-list?userId=" + postCreatedEvent.getUserId())
+                .retrieve()
+                .bodyToFlux(FriendshipResponse.class)
+                .collectList()
+                .block();
+
+        if (friendshipResponseList == null) return;
+
+        friendshipResponseList.forEach(friendshipResponse -> {
+            Long friendId;
+            Long authorId;
+//            code might be confusing
+//             see spring-social/friendship-service/src/main/java/ca/springsocial/friendshipservice/service/FriendshipServiceImpl.java
+//             getUserFriendListByFriendshipStatus() method definition for more info
+//             to summarize, Friendship model takes requester and recipient user id's to make a friendship object.
+//             in order to get all the friends of a user, we have to query it so that it recognizes that a user can be
+//             the requester or recipient
+            if (Objects.equals(friendshipResponse.getRecipientUserId(), postCreatedEvent.getUserId())) {
+                friendId = friendshipResponse.getRequesterUserId();
+                authorId = friendshipResponse.getRecipientUserId();
+            } else {
+                friendId = friendshipResponse.getRecipientUserId();
+                authorId = friendshipResponse.getRequesterUserId();
+            }
+
+            UserResponse userResponse = webClient.get()
+                    .uri(userServiceUri + "/" + authorId)
+                    .retrieve()
+                    .bodyToMono(UserResponse.class)
+                    .block();
+
+            if (userResponse == null) return;
+
+            Notification notification = new Notification();
+            notification.setTitle("Friend Post Notification");
+            notification.setDescription(userResponse.getUserName() + " has posted");
+            notification.setUserId(friendId);
+
+            notificationRepository.save(notification);
+        });
     }
 
     private NotificationResponse mapToNotificationResponse(Notification notification) {

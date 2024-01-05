@@ -1,5 +1,6 @@
 package ca.springsocial.friendshipservice.events;
 
+import ca.springsocial.friendshipservice.enums.FriendshipStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,4 +11,5 @@ import lombok.NoArgsConstructor;
 public class FriendRequestSentEvent {
     private Long recipientUserId;
     private Long requesterUserId;
+    private FriendshipStatus friendshipStatus;
 }
