@@ -43,8 +43,9 @@ public class FriendshipServiceImpl implements FriendshipService {
                     .build();
 
             friendshipRepository.save(friendship);
-            kafkaTemplate.send("friendRequestSentEventTopic", new FriendRequestSentEvent(friendshipRequest.getRecipientUserId(),
-                    friendshipRequest.getRequesterUserId(), friendship.getFriendshipStatus()));
+            kafkaTemplate.send("friendRequestSentEventTopic", new FriendRequestSentEvent(friendship.getId(),
+                    friendshipRequest.getRecipientUserId(), friendshipRequest.getRequesterUserId(),
+                    friendship.getFriendshipStatus()));
 
             return new ResponseEntity<>(mapToFriendshipResponse(friendship), HttpStatus.CREATED);
         }
@@ -64,8 +65,9 @@ public class FriendshipServiceImpl implements FriendshipService {
         friendship.setFriendshipStatus(FriendshipStatus.accepted);
 
         friendshipRepository.save(friendship);
-        kafkaTemplate.send("friendRequestSentEventTopic", new FriendRequestSentEvent(friendshipRequest.getRecipientUserId(),
-                friendshipRequest.getRequesterUserId(), friendship.getFriendshipStatus()));
+        kafkaTemplate.send("friendRequestSentEventTopic", new FriendRequestSentEvent(friendship.getId(),
+                friendshipRequest.getRecipientUserId(), friendshipRequest.getRequesterUserId(),
+                friendship.getFriendshipStatus()));
 
         return new ResponseEntity<>(mapToFriendshipResponse(friendship), HttpStatus.OK);
     }

@@ -4,6 +4,7 @@ import ca.springsocial.commentservice.dto.comment.CommentRequest;
 import ca.springsocial.commentservice.dto.comment.CommentResponse;
 import ca.springsocial.commentservice.dto.post.PostResponse;
 import ca.springsocial.commentservice.dto.user.UserResponse;
+import ca.springsocial.commentservice.events.CommentCreatedEvent;
 import ca.springsocial.commentservice.model.Comment;
 import ca.springsocial.commentservice.repository.CommentRepository;
 import jakarta.transaction.Transactional;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -21,11 +23,11 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final WebClient webClient;
+    private final KafkaTemplate<String, CommentCreatedEvent> kafkaTemplate;
 
     @Value("${post.service.url}")
     private String postServiceUri;
@@ -56,9 +58,11 @@ public class CommentServiceImpl implements CommentService {
             Comment comment = new Comment();
             comment.setContent(commentRequest.getContent());
             comment.setPostId(postResponse.getId());
-            comment.setUserId(commentRequest.getUserId());
+            comment.setUserId(userResponse.getId());
 
             commentRepository.save(comment);
+            kafkaTemplate.send("commentCreatedEventTopic", new CommentCreatedEvent(comment.getId(),
+                    comment.getUserId(), comment.getPostId()));
 
             return new ResponseEntity<>(mapToCommentResponse(comment), HttpStatus.CREATED);
         }

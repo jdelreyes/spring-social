@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 public class PostCreatedEvent {
-    private Long userId;
     private String postId;
+    private Long authorId;
 }

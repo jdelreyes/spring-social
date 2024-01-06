@@ -57,7 +57,7 @@ public class PostServiceImpl implements PostService {
                     .userId(postRequest.getUserId())
                     .build();
 
-            kafkaTemplate.send("postCreatedEventTopic", new PostCreatedEvent(userResponse.getId(), post.getId()));
+            kafkaTemplate.send("postCreatedEventTopic", new PostCreatedEvent(post.getId(), userResponse.getId()));
 
             return new ResponseEntity<>(mapToPostResponse(post), HttpStatus.CREATED);
         }
