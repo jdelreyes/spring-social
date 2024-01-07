@@ -111,9 +111,15 @@ Request to these endpoints are passed through an API gateway which is authorized
 
 ### Notification Service `/api/notifications`
 
-| Endpoint             | Method | Description                                                      |
-|----------------------|:------:|------------------------------------------------------------------|
-| `?userId={{userId}}` |  GET   | Retrieves friendship, post, and comment notifications for a user |
+| Endpoint             | Method | Description                                           |
+|----------------------|:------:|-------------------------------------------------------|
+| `?userId={{userId}}` |  GET   | Retrieves friendship, post, and comment notifications |
+
+### Feed Service `/api/feeds`
+
+| Endpoint             | Method | Description         |
+|----------------------|:------:|---------------------|
+| `?userId={{userId}}` |  GET   | Retrieves post feed |
 
 ## Authors
 

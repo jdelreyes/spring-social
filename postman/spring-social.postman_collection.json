@@ -12,41 +12,6 @@
 				{
 					"name": "getUsers",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "accessTokenUrl",
-									"value": "http://keycloak:8080/auth/realms/spring-social-realm/protocol/openid-connect/token",
-									"type": "string"
-								},
-								{
-									"key": "clientSecret",
-									"value": "UuncPOvHW6g3D6quAjQXKjlzThZxxk3i",
-									"type": "string"
-								},
-								{
-									"key": "clientId",
-									"value": "spring-social-client",
-									"type": "string"
-								},
-								{
-									"key": "grant_type",
-									"value": "client_credentials",
-									"type": "string"
-								},
-								{
-									"key": "tokenName",
-									"value": "spring-social-client",
-									"type": "string"
-								},
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -175,56 +140,6 @@
 				{
 					"name": "getUserWithComments",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "clientSecret",
-									"value": "QTKuoCrxAr4GWHU67gAEuJD3ZIbPOz2s",
-									"type": "string"
-								},
-								{
-									"key": "refreshTokenUrl",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								},
-								{
-									"key": "accessTokenUrl",
-									"value": "http://keycloak:8080/auth/realms/spring-social-realm/protocol/openid-connect/token",
-									"type": "string"
-								},
-								{
-									"key": "clientId",
-									"value": "spring-social-client",
-									"type": "string"
-								},
-								{
-									"key": "tokenName",
-									"value": "spring-cloud-client",
-									"type": "string"
-								},
-								{
-									"key": "grant_type",
-									"value": "client_credentials",
-									"type": "string"
-								},
-								{
-									"key": "headerPrefix",
-									"value": "Bearer",
-									"type": "string"
-								},
-								{
-									"key": "client_authentication",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -394,46 +309,6 @@
 				{
 					"name": "getUserPosts",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "clientSecret",
-									"value": "Adyq4WQtlvzEtL8Og04JOomRmq4tqOrk",
-									"type": "string"
-								},
-								{
-									"key": "tokenName",
-									"value": "Token",
-									"type": "string"
-								},
-								{
-									"key": "clientId",
-									"value": "spring-social-client",
-									"type": "string"
-								},
-								{
-									"key": "accessTokenUrl",
-									"value": "http://localhost:8080/auth/realms/spring-social-realm/protocol/openid-connect/token",
-									"type": "string"
-								},
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								},
-								{
-									"key": "client_authentication",
-									"value": "header",
-									"type": "string"
-								},
-								{
-									"key": "grant_type",
-									"value": "client_credentials",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -616,56 +491,6 @@
 				{
 					"name": "sendFriendRequest",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "clientSecret",
-									"value": "w4G5fdXQMO28KREunZZEIgjkeooxGOcA",
-									"type": "string"
-								},
-								{
-									"key": "refreshTokenUrl",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								},
-								{
-									"key": "accessTokenUrl",
-									"value": "http://keycloak:8080/auth/realms/spring-social-realm/protocol/openid-connect/token",
-									"type": "string"
-								},
-								{
-									"key": "clientId",
-									"value": "spring-social-client",
-									"type": "string"
-								},
-								{
-									"key": "tokenName",
-									"value": "spring-cloud-client",
-									"type": "string"
-								},
-								{
-									"key": "grant_type",
-									"value": "client_credentials",
-									"type": "string"
-								},
-								{
-									"key": "headerPrefix",
-									"value": "Bearer",
-									"type": "string"
-								},
-								{
-									"key": "client_authentication",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -695,56 +520,6 @@
 				{
 					"name": "acceptFriendRequest",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "clientSecret",
-									"value": "QTKuoCrxAr4GWHU67gAEuJD3ZIbPOz2s",
-									"type": "string"
-								},
-								{
-									"key": "refreshTokenUrl",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								},
-								{
-									"key": "accessTokenUrl",
-									"value": "http://keycloak:8080/auth/realms/spring-social-realm/protocol/openid-connect/token",
-									"type": "string"
-								},
-								{
-									"key": "clientId",
-									"value": "spring-social-client",
-									"type": "string"
-								},
-								{
-									"key": "tokenName",
-									"value": "spring-cloud-client",
-									"type": "string"
-								},
-								{
-									"key": "grant_type",
-									"value": "client_credentials",
-									"type": "string"
-								},
-								{
-									"key": "headerPrefix",
-									"value": "Bearer",
-									"type": "string"
-								},
-								{
-									"key": "client_authentication",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "PUT",
 						"header": [],
 						"body": {
@@ -801,16 +576,16 @@
 					"response": []
 				},
 				{
-					"name": "getFriendshipById",
+					"name": "getFriendship",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8083/api/friendships/{{friendshipId}}",
+							"raw": "localhost:8181/api/friendships/{{friendshipId}}",
 							"host": [
 								"localhost"
 							],
-							"port": "8083",
+							"port": "8181",
 							"path": [
 								"api",
 								"friendships",
@@ -826,11 +601,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8083/api/friendships/pending-list?userId={{userId}}",
+							"raw": "localhost:8181/api/friendships/pending-list?userId={{userId}}",
 							"host": [
 								"localhost"
 							],
-							"port": "8083",
+							"port": "8181",
 							"path": [
 								"api",
 								"friendships",
@@ -878,11 +653,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8083/api/friendships/rejected-list?userId={{userId}}",
+							"raw": "localhost:8181/api/friendships/rejected-list?userId={{userId}}",
 							"host": [
 								"localhost"
 							],
-							"port": "8083",
+							"port": "8181",
 							"path": [
 								"api",
 								"friendships",
@@ -948,6 +723,101 @@
 					"response": []
 				}
 			]
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "refreshRequestParams",
+				"value": [],
+				"type": "any"
+			},
+			{
+				"key": "tokenRequestParams",
+				"value": [],
+				"type": "any"
+			},
+			{
+				"key": "authRequestParams",
+				"value": [],
+				"type": "any"
+			},
+			{
+				"key": "tokenName",
+				"value": "{{clientId}}",
+				"type": "string"
+			},
+			{
+				"key": "challengeAlgorithm",
+				"value": "S256",
+				"type": "string"
+			},
+			{
+				"key": "grant_type",
+				"value": "client_credentials",
+				"type": "string"
+			},
+			{
+				"key": "clientSecret",
+				"value": "{{clientSecret}}",
+				"type": "string"
+			},
+			{
+				"key": "clientId",
+				"value": "{{clientSecret}}",
+				"type": "string"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			},
+			{
+				"key": "client_authentication",
+				"value": "header",
+				"type": "string"
+			},
+			{
+				"key": "accessTokenUrl",
+				"value": "{{accessTokenUrl}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "clientId",
+			"value": "spring-social-client"
+		},
+		{
+			"key": "accessTokenUrl",
+			"value": "http://keycloak:8080/auth/realms/spring-social-realm/protocol/openid-connect/token"
+		},
+		{
+			"key": "clientSecret",
+			"value": "",
+			"type": "string"
 		}
 	]
 }
