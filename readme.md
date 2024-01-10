@@ -57,7 +57,6 @@ the Spring Boot framework.
         * **Client ID**: spring-social-client
         * **Client Secret**: *the `Client Secret` retrieved from 4.iv step*
     3. Click on **Get New Access Token** button
-6. Have fun :)
 
 ## API Endpoints
 
@@ -121,7 +120,3 @@ Request to these endpoints are passed through an API gateway which is authorized
 |----------------------|:------:|---------------------|
 | `?userId={{userId}}` |  GET   | Retrieves post feed |
 
-## Authors
-
-* Jerome Delos Reyes
-* Jayden Nguyen

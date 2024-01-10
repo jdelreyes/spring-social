@@ -21,6 +21,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator:3.1.4")
 //	api gateway
     implementation("org.springframework.cloud:spring-cloud-starter-gateway:4.0.8")
+//    eureka
     implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:4.0.3")
     //	keycloak

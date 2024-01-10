@@ -17,10 +17,9 @@ repositories {
 
 dependencies {
 //   spring
-    implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.springframework.boot:spring-boot-starter-web")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     implementation("org.springframework.boot:spring-boot-starter-actuator:3.1.4")
+    implementation("org.springframework.boot:spring-boot-starter-web")
 //    test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("org.testcontainers:testcontainers-bom:1.18.1")
@@ -45,6 +44,3 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-tasks.bootBuildImage {
-    builder.set("paketobuildpacks/builder-jammy-base:latest")
-}

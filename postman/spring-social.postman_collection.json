@@ -723,11 +723,51 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "feeds",
+			"item": [
+				{
+					"name": "getFeeds",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8181/api/feeds?userId={{userId}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8181",
+							"path": [
+								"api",
+								"feeds"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "{{userId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"auth": {
 		"type": "oauth2",
 		"oauth2": [
+			{
+				"key": "refreshTokenUrl",
+				"value": "{{accessTokenUrl}}",
+				"type": "string"
+			},
+			{
+				"key": "clientId",
+				"value": "{{clientId}}",
+				"type": "string"
+			},
 			{
 				"key": "refreshRequestParams",
 				"value": [],
@@ -760,11 +800,6 @@
 			},
 			{
 				"key": "clientSecret",
-				"value": "{{clientSecret}}",
-				"type": "string"
-			},
-			{
-				"key": "clientId",
 				"value": "{{clientSecret}}",
 				"type": "string"
 			},

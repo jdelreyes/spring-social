@@ -24,7 +24,7 @@ RUN mkdir /app
 
 COPY --from=builder /home/gradle/src/build/libs/*.jar /app/feed-service.jar
 
-EXPOSE 8081
+EXPOSE 8086
 
 # runs the application
 ENTRYPOINT ["java", "-jar", "/app/feed-service.jar"]

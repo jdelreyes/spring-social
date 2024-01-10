@@ -3,7 +3,7 @@ version: '3.8'
 services:
   #  just a label
   user-service:
-    image: user-service
+    image: user-service:latest
     ports:
       - "8081:8081"
     #    builds app
@@ -20,7 +20,7 @@ services:
       - spring-social
 
   post-service:
-    image: post-service
+    image: post-service:latest
     ports:
       - "8084:8084"
     #    builds app
@@ -37,7 +37,7 @@ services:
       - spring-social
 
   comment-service:
-    image: comment-service
+    image: comment-service:latest
     ports:
       - "8082:8082"
     #    builds app
@@ -54,7 +54,7 @@ services:
       - spring-social
 
   friendship-service:
-    image: friendship-service
+    image: friendship-service:latest
     ports:
       - "8083:8083"
     #    builds app
@@ -71,7 +71,7 @@ services:
       - spring-social
 
   notification-service:
-    image: notification-service
+    image: notification-service:latest
     ports:
       - "8085:8085"
     #    builds app
@@ -79,6 +79,23 @@ services:
       context: ./notification-service
       dockerfile: ./Dockerfile
     container_name: notification-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - discovery-service
+      - broker
+    networks:
+      - spring-social
+
+  feed-service:
+    image: feed-service:latest
+    ports:
+      - "8086:8086"
+    #    builds app
+    build:
+      context: ./feed-service
+      dockerfile: ./Dockerfile
+    container_name: feed-service
     environment:
       SPRING_PROFILES_ACTIVE: docker
     depends_on:

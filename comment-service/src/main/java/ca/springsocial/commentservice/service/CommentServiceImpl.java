@@ -7,7 +7,6 @@ import ca.springsocial.commentservice.dto.user.UserResponse;
 import ca.springsocial.commentservice.events.CommentCreatedEvent;
 import ca.springsocial.commentservice.model.Comment;
 import ca.springsocial.commentservice.repository.CommentRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,20 +53,20 @@ public class CommentServiceImpl implements CommentService {
                         : Mono.error(ex))
                 .block();
 
-        if (postResponse != null && userResponse != null) {
-            Comment comment = new Comment();
-            comment.setContent(commentRequest.getContent());
-            comment.setPostId(postResponse.getId());
-            comment.setUserId(userResponse.getId());
+        if (postResponse == null || userResponse == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-            commentRepository.save(comment);
-            kafkaTemplate.send("commentCreatedEventTopic", new CommentCreatedEvent(comment.getId(),
-                    comment.getUserId(), comment.getPostId()));
+        Comment comment = new Comment();
+        comment.setContent(commentRequest.getContent());
+        comment.setPostId(postResponse.getId());
+        comment.setUserId(userResponse.getId());
 
-            return new ResponseEntity<>(mapToCommentResponse(comment), HttpStatus.CREATED);
-        }
+        commentRepository.save(comment);
+        kafkaTemplate.send("commentCreatedEventTopic", new CommentCreatedEvent(comment.getId(),
+                comment.getUserId(), comment.getPostId()));
 
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(mapToCommentResponse(comment), HttpStatus.CREATED);
+
     }
 
     @Override

@@ -1,7 +1,6 @@
 package ca.springsocial.feedservice.controller;
 
 import ca.springsocial.feedservice.dto.feed.FeedResponse;
-import ca.springsocial.feedservice.dto.post.PostResponse;
 import ca.springsocial.feedservice.service.FeedServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

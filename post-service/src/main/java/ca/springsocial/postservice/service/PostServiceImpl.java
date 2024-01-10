@@ -50,18 +50,18 @@ public class PostServiceImpl implements PostService {
                         : Mono.error(ex))
                 .block();
 
-        if (userResponse != null) {
-            Post post = Post.builder()
-                    .title(postRequest.getTitle())
-                    .content(postRequest.getContent())
-                    .userId(postRequest.getUserId())
-                    .build();
+        if (userResponse == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-            kafkaTemplate.send("postCreatedEventTopic", new PostCreatedEvent(post.getId(), userResponse.getId()));
+        Post post = Post.builder()
+                .title(postRequest.getTitle())
+                .content(postRequest.getContent())
+                .userId(postRequest.getUserId())
+                .build();
 
-            return new ResponseEntity<>(mapToPostResponse(post), HttpStatus.CREATED);
-        }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        kafkaTemplate.send("postCreatedEventTopic", new PostCreatedEvent(post.getId(), userResponse.getId()));
+
+        return new ResponseEntity<>(mapToPostResponse(post), HttpStatus.CREATED);
     }
 
     @Override
