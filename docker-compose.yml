@@ -163,22 +163,6 @@ services:
     networks:
       - spring-social
 
-  kafka-ui:
-    container_name: kafka-ui
-    image: provectuslabs/kafka-ui:latest
-    ports:
-      - "8282:8080"
-    depends_on:
-      - broker
-    environment:
-      KAFKA_CLUSTERS_0_NAME: kafka-ui
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: broker:29092
-      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
-      KAFKA_CLUSTERS_0_JMXPORT: 9997
-      SERVER_SERVLET_CONTEXT_PATH: /kafkaui
-    networks:
-      - spring-social
-
   keycloak:
     image: jboss/keycloak:latest
     restart: unless-stopped

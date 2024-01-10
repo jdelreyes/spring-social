@@ -20,6 +20,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +36,9 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     @Override
     public ResponseEntity<FriendshipResponse> sendFriendRequest(FriendshipRequest friendshipRequest) {
-        if (userExists(friendshipRequest.getRecipientUserId()) && userExists(friendshipRequest.getRequesterUserId())) {
+        if (!userExists(friendshipRequest.getRecipientUserId()) && !userExists(friendshipRequest.getRequesterUserId())) 
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
             Friendship friendship = Friendship.builder()
                     .requesterUserId(friendshipRequest.getRequesterUserId())
                     .recipientUserId(friendshipRequest.getRecipientUserId())
@@ -48,8 +51,7 @@ public class FriendshipServiceImpl implements FriendshipService {
                     friendship.getFriendshipStatus()));
 
             return new ResponseEntity<>(mapToFriendshipResponse(friendship), HttpStatus.CREATED);
-        }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        
     }
 
     @Override
@@ -63,6 +65,7 @@ public class FriendshipServiceImpl implements FriendshipService {
 
 // updates to accepted
         friendship.setFriendshipStatus(FriendshipStatus.accepted);
+        friendship.setDateTimeStatusChanged(LocalDateTime.now());
 
         friendshipRepository.save(friendship);
         kafkaTemplate.send("friendRequestSentEventTopic", new FriendRequestSentEvent(friendship.getId(),
@@ -82,6 +85,8 @@ public class FriendshipServiceImpl implements FriendshipService {
                         friendshipRequest.getRecipientUserId(), friendshipRequest.getRequesterUserId());
 
         friendship.setFriendshipStatus(FriendshipStatus.rejected);
+        friendship.setDateTimeStatusChanged(LocalDateTime.now());
+
         friendshipRepository.save(friendship);
 
 
@@ -150,6 +155,7 @@ public class FriendshipServiceImpl implements FriendshipService {
                 .id(friendship.getId())
                 .recipientUserId(friendship.getRecipientUserId())
                 .requesterUserId(friendship.getRequesterUserId())
+                .dateTimeStatusChanged(friendship.getDateTimeStatusChanged())
                 .friendshipStatus(friendship.getFriendshipStatus())
                 .build();
     }

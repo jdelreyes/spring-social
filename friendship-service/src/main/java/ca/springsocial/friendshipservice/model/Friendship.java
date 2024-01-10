@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,5 +20,7 @@ public class Friendship {
     private String id;
     private Long requesterUserId;
     private Long recipientUserId;
+    @Builder.Default
+    private LocalDateTime dateTimeStatusChanged = LocalDateTime.now();
     private FriendshipStatus friendshipStatus;
 }

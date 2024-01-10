@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,5 +16,6 @@ public class FriendshipResponse {
     private String id;
     private Long requesterUserId;
     private Long recipientUserId;
+    private LocalDateTime dateTimeStatusChanged;
     private FriendshipStatus friendshipStatus;
 }
