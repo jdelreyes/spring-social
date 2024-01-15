@@ -19,8 +19,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,22 +36,22 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     @Override
     public ResponseEntity<FriendshipResponse> sendFriendRequest(FriendshipRequest friendshipRequest) {
-        if (!userExists(friendshipRequest.getRecipientUserId()) && !userExists(friendshipRequest.getRequesterUserId())) 
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (!userExists(friendshipRequest.getRecipientUserId()) && !userExists(friendshipRequest.getRequesterUserId()))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-            Friendship friendship = Friendship.builder()
-                    .requesterUserId(friendshipRequest.getRequesterUserId())
-                    .recipientUserId(friendshipRequest.getRecipientUserId())
-                    .friendshipStatus(FriendshipStatus.pending)
-                    .build();
+        Friendship friendship = Friendship.builder()
+                .requesterUserId(friendshipRequest.getRequesterUserId())
+                .recipientUserId(friendshipRequest.getRecipientUserId())
+                .friendshipStatus(FriendshipStatus.pending)
+                .build();
 
-            friendshipRepository.save(friendship);
-            kafkaTemplate.send("friendRequestSentEventTopic", new FriendRequestSentEvent(friendship.getId(),
-                    friendshipRequest.getRecipientUserId(), friendshipRequest.getRequesterUserId(),
-                    friendship.getFriendshipStatus()));
+        friendshipRepository.save(friendship);
+        kafkaTemplate.send("friendRequestSentEventTopic", new FriendRequestSentEvent(friendship.getId(),
+                friendshipRequest.getRecipientUserId(), friendshipRequest.getRequesterUserId(),
+                friendship.getFriendshipStatus()));
 
-            return new ResponseEntity<>(mapToFriendshipResponse(friendship), HttpStatus.CREATED);
-        
+        return new ResponseEntity<>(mapToFriendshipResponse(friendship), HttpStatus.CREATED);
+
     }
 
     @Override
